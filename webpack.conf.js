@@ -1,8 +1,8 @@
 import webpack from 'webpack';
 import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 
-export let FILE_NAME = 'mylibrary';
-export let MODULE_NAME = 'mylibrary';
+export let FILE_NAME = 'zalgo-promise';
+export let MODULE_NAME = 'zalgo';
 
 function getWebpackConfig(filename) {
 
