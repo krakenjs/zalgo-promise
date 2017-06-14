@@ -11,6 +11,7 @@ describe('window cases', () => {
         let windowThenAccessed = false;
         let windowThenCalled = false;
 
+        // $FlowFixMe
         Object.defineProperty(window, 'then', {
             configurable: true,
             get() {
@@ -34,40 +35,7 @@ describe('window cases', () => {
             if (windowThenAccessed) {
                 throw new Error(`Expected window.then to not be accessed`);
             }
-        });
-    });
-
-    it('should not access or call then if passed a foreign window object', () => {
-
-        let value = 'foobar';
-
-        let windowThenAccessed = false;
-        let windowThenCalled = false;
-
-        Object.defineProperty(window.parent, 'then', {
-            configurable: true,
-            get() {
-                windowThenAccessed = true;
-                return () => {
-                    windowThenCalled = true;
-                };
-            }
-        });
-
-        return SyncPromise.resolve(value).then(result => {
-            return window.parent;
-        }).then(result => {
-            delete window.parent.then;
-            if (result !== window.parent) {
-                throw new Error(`Expected result to be window`);
-            }
-            if (windowThenCalled) {
-                throw new Error(`Expected window.then to not be called`);
-            }
-            if (windowThenAccessed) {
-                throw new Error(`Expected window.then to not be accessed`);
-            }
-        });
+        }).toPromise();
     });
 
     it('should not access or call then if passed an instance of window.constructor', () => {
@@ -77,11 +45,10 @@ describe('window cases', () => {
         let windowThenAccessed = false;
         let windowThenCalled = false;
 
-        window.constructor = function() {
-            // pass
-        };
+        window.constructor = class {};
         let win = new window.constructor();
 
+        // $FlowFixMe
         Object.defineProperty(win, 'then', {
             configurable: true,
             get() {
@@ -105,7 +72,7 @@ describe('window cases', () => {
             if (windowThenAccessed) {
                 throw new Error(`Expected window.then to not be accessed`);
             }
-        });
+        }).toPromise();
     });
 
     it('should not access or call then if passed a window object where accessing then throws an error', () => {
@@ -114,6 +81,7 @@ describe('window cases', () => {
 
         let win = {};
 
+        // $FlowFixMe
         Object.defineProperty(win, 'then', {
             configurable: true,
             get() {
@@ -127,6 +95,6 @@ describe('window cases', () => {
             if (result !== win) {
                 throw new Error(`Expected result to be window`);
             }
-        });
+        }).toPromise();
     });
 });

@@ -11,10 +11,13 @@ describe('reject cases', () => {
         return SyncPromise.reject(new Error(error)).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise and catch the error in then', () => {
@@ -24,10 +27,13 @@ describe('reject cases', () => {
         return SyncPromise.reject(new Error(error)).then(result => {
             throw new Error(`Success handler should not be called`);
         }, err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected existing promise and catch the error', () => {
@@ -40,7 +46,7 @@ describe('reject cases', () => {
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise with the constructor and catch the error', () => {
@@ -53,20 +59,22 @@ describe('reject cases', () => {
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise asynchronously with the constructor and catch the error', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return new SyncPromise((resolve, reject) => setTimeout(() => reject(new Error(error)), 50)).then(result => {
+        return new SyncPromise((resolve, reject) => {
+            setTimeout(() => reject(new Error(error)), 50);
+        }).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise by throwing in the constructor and catch the error', () => {
@@ -79,7 +87,7 @@ describe('reject cases', () => {
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise and not call any subsequent thens', () => {
@@ -91,10 +99,13 @@ describe('reject cases', () => {
         }).then(result => {
             throw new Error('This should never be called either');
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a rejected promise and handle the error then call then', () => {
@@ -105,6 +116,9 @@ describe('reject cases', () => {
         return SyncPromise.reject(new Error(error)).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
@@ -113,7 +127,7 @@ describe('reject cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject synchronously', () => {
@@ -141,10 +155,13 @@ describe('reject cases', () => {
         return promise.then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should fail when trying to create a rejected promise with an existing promise', () => {
@@ -178,10 +195,13 @@ describe('reject cases', () => {
         }).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should allow rejecting the promise by returning an async rejected promise in then', () => {
@@ -191,15 +211,18 @@ describe('reject cases', () => {
 
         return SyncPromise.resolve(value).then(() => {
             return new SyncPromise((resolve, reject) => {
-                return setTimeout(() => reject(new Error(error)), 50);
+                setTimeout(() => reject(new Error(error)), 50);
             });
         }).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject when an error is thrown in a then', () => {
@@ -212,10 +235,13 @@ describe('reject cases', () => {
         }).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject with the latest error when an error is thrown in a then', () => {
@@ -233,10 +259,13 @@ describe('reject cases', () => {
         }).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error2) {
                 throw new Error(`Expected ${err.message} to be ${error2}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should turn an undefined rejection into an actual error', () => {
@@ -247,7 +276,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new Error(`Expected Error object to be thrown`);
             }
-        });
+        }).toPromise();
     });
 
     it('should turn a null rejection into an actual error', () => {
@@ -258,7 +287,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new Error(`Expected Error object to be thrown`);
             }
-        });
+        }).toPromise();
     });
 
     it('should turn a null string rejection into an actual error', () => {
@@ -269,7 +298,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new Error(`Expected Error object to be thrown`);
             }
-        });
+        }).toPromise();
     });
 
     it('should turn an false rejection into an actual error', () => {
@@ -280,10 +309,10 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new Error(`Expected Error object to be thrown`);
             }
-        });
+        }).toPromise();
     });
 
-    it('should turn keep a string rejection as a string', () => {
+    it('should keep a string rejection as a string', () => {
 
         let error = 'SERIOUS_ERROR';
 
@@ -291,9 +320,9 @@ describe('reject cases', () => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err !== error) {
-                throw new Error(`Expected ${err} to be ${error}`);
+                throw new Error(`Expected ${Object.prototype.toString.call(err)} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject when trying to return a promise in its own then method', () => {
@@ -319,6 +348,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
+            // $FlowFixMe
             promise.then(123);
         } catch (err) {
             caughtErr = err;
@@ -335,6 +365,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
+            // $FlowFixMe
             promise.then(null, 123);
         } catch (err) {
             caughtErr = err;
@@ -351,6 +382,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
+            // $FlowFixMe
             promise.catch(123);
         } catch (err) {
             caughtErr = err;
@@ -421,7 +453,7 @@ describe('reject cases', () => {
             if (!finallyCalled) {
                 throw new Error(`Expected finally to be called`);
             }
-        });
+        }).toPromise();
     });
 
     it('should call unhandled promise method only once for a given error', (done) => {

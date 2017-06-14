@@ -4,7 +4,7 @@ export function trycatch(method, successHandler, errorHandler) {
     let isCalled = false;
     let isSuccess = false;
     let isError = false;
-    let err, 
+    let err,
         res;
 
     function flush() {

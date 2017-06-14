@@ -12,7 +12,7 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a resolved promise with a compound value and get the value', () => {
@@ -31,7 +31,7 @@ describe('resolve cases', () => {
             if (result2 !== value2) {
                 throw new Error(`Expected ${result2} to be ${value2}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a resolved existing promise and get the value', () => {
@@ -42,7 +42,7 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a resolved promise with the constructor and get the value', () => {
@@ -53,18 +53,20 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a resolved promise asynchronously with the constructor and get the value', () => {
 
         let value = 'foobar';
 
-        return new SyncPromise(resolve => setTimeout(() => resolve(value), 50)).then(result => {
+        return new SyncPromise(resolve => {
+            setTimeout(() => resolve(value), 50);
+        }).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should create a resolved promise and get the value', () => {
@@ -75,7 +77,7 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should resolve synchronously', () => {
@@ -102,7 +104,7 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should resolve with an existing promise', () => {
@@ -113,7 +115,7 @@ describe('resolve cases', () => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should allow returning a promise in then', () => {
@@ -127,7 +129,7 @@ describe('resolve cases', () => {
             if (result !== value2) {
                 throw new Error(`Expected ${result} to be ${value2}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should allow returning an asynchronous promise in then', () => {
@@ -137,13 +139,13 @@ describe('resolve cases', () => {
 
         return SyncPromise.resolve(value).then(result => {
             return new SyncPromise(resolve => {
-                return setTimeout(() => resolve(value2), 50);
+                setTimeout(() => resolve(value2), 50);
             });
         }).then(result => {
             if (result !== value2) {
                 throw new Error(`Expected ${result} to be ${value2}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should fail when trying to resolve an existing promise with a promise', () => {
@@ -176,6 +178,6 @@ describe('resolve cases', () => {
             if (!finallyCalled) {
                 throw new Error(`Expected finally to be called`);
             }
-        });
+        }).toPromise();
     });
 });

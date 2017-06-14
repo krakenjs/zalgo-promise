@@ -6,7 +6,7 @@ describe('promise method cases', () => {
 
     it('should work with a set of resolved promises in promise.all', () => {
 
-        return SyncPromise.all([
+        return Promise.resolve(SyncPromise.all([
             SyncPromise.resolve(1),
             SyncPromise.resolve(2),
             SyncPromise.resolve(3)
@@ -20,7 +20,7 @@ describe('promise method cases', () => {
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${three}`);
             }
-        });
+        }));
     });
 
     it('should work with a set of resolved values or promises in promise.all', () => {
@@ -39,7 +39,7 @@ describe('promise method cases', () => {
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${three}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject with any rejected promise from promise.all', () => {
@@ -53,10 +53,13 @@ describe('promise method cases', () => {
         ]).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject with the first rejected promise from promise.all', () => {
@@ -71,10 +74,13 @@ describe('promise method cases', () => {
         ]).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should call promise.delay and wait some time', () => {
@@ -90,7 +96,7 @@ describe('promise method cases', () => {
             if (timeoutCalled) {
                 throw new Error(`Expected timeout to not be called`);
             }
-        });
+        }).toPromise();
     });
 
     it('should work with a set of resolved promises in promise.hash', () => {
@@ -109,7 +115,7 @@ describe('promise method cases', () => {
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${three}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should work with a set of resolved values or promises in promise.hash', () => {
@@ -128,7 +134,7 @@ describe('promise method cases', () => {
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${three}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject with any rejected promise from promise.hash', () => {
@@ -142,10 +148,13 @@ describe('promise method cases', () => {
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 
     it('should reject with the first rejected promise from promise.hash', () => {
@@ -160,9 +169,12 @@ describe('promise method cases', () => {
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
+            if (!(err instanceof Error)) {
+                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+            }
             if (err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
-        });
+        }).toPromise();
     });
 });
