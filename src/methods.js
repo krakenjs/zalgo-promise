@@ -4,7 +4,21 @@ import { SyncPromise } from './promise';
 import { isPromise } from './utils';
 import { onPossiblyUnhandledException } from './exceptions';
 
-SyncPromise.all = function(promises) {
+SyncPromise.resolve = function SyncPromiseResolve(value) {
+
+    if (isPromise(value)) {
+        return value;
+    }
+
+    return new SyncPromise().resolve(value);
+};
+
+SyncPromise.reject = function SyncPromiseReject(error) {
+    return new SyncPromise().reject(error);
+};
+
+
+SyncPromise.all = function SyncPromiseAll(promises) {
 
     let promise = new SyncPromise();
     let count = promises.length;
@@ -34,17 +48,17 @@ SyncPromise.all = function(promises) {
 
 SyncPromise.onPossiblyUnhandledException = onPossiblyUnhandledException;
 
-SyncPromise.try = function syncPromiseTry(method) {
+SyncPromise.try = function SyncPromiseTry(method) {
     return SyncPromise.resolve().then(method);
 };
 
-SyncPromise.delay = function syncPromiseDelay(delay) {
+SyncPromise.delay = function SyncPromiseDelay(delay) {
     return new SyncPromise(resolve => {
         setTimeout(resolve, delay);
     });
 };
 
-SyncPromise.hash = function(obj) {
+SyncPromise.hash = function SyncPromiseHash(obj) {
 
     let results = {};
     let promises = [];
