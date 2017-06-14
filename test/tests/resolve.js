@@ -1,6 +1,6 @@
 /* @flow */
 
-import { ZalgoPromise } from 'src/index';
+import { ZalgoPromise } from 'src/promise';
 
 describe('resolve cases', () => {
 

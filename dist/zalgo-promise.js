@@ -1,5 +1,5 @@
 !function(root, factory) {
-    "object" == typeof exports && "object" == typeof module ? module.exports = factory() : "function" == typeof define && define.amd ? define("zalgo", [], factory) : "object" == typeof exports ? exports.zalgo = factory() : root.zalgo = factory();
+    "object" == typeof exports && "object" == typeof module ? module.exports = factory() : "function" == typeof define && define.amd ? define("ZalgoPromise", [], factory) : "object" == typeof exports ? exports.ZalgoPromise = factory() : root.ZalgoPromise = factory();
 }(this, function() {
     return function(modules) {
         function __webpack_require__(moduleId) {
@@ -90,18 +90,9 @@
         },
         "./src/index.js": function(module, exports, __webpack_require__) {
             "use strict";
-            Object.defineProperty(exports, "__esModule", {
-                value: !0
-            });
             var _promise = __webpack_require__("./src/promise.js");
-            Object.keys(_promise).forEach(function(key) {
-                "default" !== key && "__esModule" !== key && Object.defineProperty(exports, key, {
-                    enumerable: !0,
-                    get: function() {
-                        return _promise[key];
-                    }
-                });
-            });
+            module.exports = _promise.ZalgoPromise;
+            module.exports.ZalgoPromise = _promise.ZalgoPromise;
         },
         "./src/promise.js": function(module, exports, __webpack_require__) {
             "use strict";

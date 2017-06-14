@@ -1,13 +1,13 @@
 <head>
-	<title>zalgo-promise Demo</title>
+	<title>ZalgoPromise demo</title>
 </head>
 
 <body>
   <script src="../dist/zalgo-promise.js"></script>
 
 	<script>
-      zalgo-promise.createButton(document.body, 'Click Me', function(event) {
-				window.alert('Button was clicked!');
-			});
+        ZalgoPromise.resolve('hello world!').then(function(message) {
+			console.log(message);
+		});
 	</script>
 </body>
