@@ -14,13 +14,13 @@ SyncPromise.all = function(promises) {
 
         let prom = isPromise(promises[i]) ? promises[i] : SyncPromise.resolve(promises[i]);
 
-        prom.then(function(result) {
+        prom.then((result) => {
             results[i] = result;
             count -= 1;
             if (count === 0) {
                 promise.resolve(results);
             }
-        }, function(err) {
+        }, (err) => {
             promise.reject(err);
         });
     }
@@ -36,13 +36,13 @@ SyncPromise.onPossiblyUnhandledException = onPossiblyUnhandledException;
 
 SyncPromise.try = function syncPromiseTry(method) {
     return SyncPromise.resolve().then(method);
-}
+};
 
 SyncPromise.delay = function syncPromiseDelay(delay) {
     return new SyncPromise(resolve => {
         setTimeout(resolve, delay);
     });
-}
+};
 
 SyncPromise.hash = function(obj) {
 
@@ -60,4 +60,4 @@ SyncPromise.hash = function(obj) {
     return SyncPromise.all(promises).then(() => {
         return results;
     });
-}
+};

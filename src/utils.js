@@ -4,7 +4,8 @@ export function trycatch(method, successHandler, errorHandler) {
     let isCalled = false;
     let isSuccess = false;
     let isError = false;
-    let err, res;
+    let err, 
+        res;
 
     function flush() {
         if (isCalled) {
@@ -17,11 +18,11 @@ export function trycatch(method, successHandler, errorHandler) {
     }
 
     try {
-        method(function(result) {
+        method((result) => {
             res = result;
             isSuccess = true;
             flush();
-        }, function(error) {
+        }, (error) => {
             err = error;
             isError = true;
             flush();
@@ -62,8 +63,8 @@ export function isPromise(item) {
             return true;
         }
     } catch (err) {
-        return false
+        return false;
     }
 
-    return false
+    return false;
 }

@@ -17,13 +17,11 @@ export let SyncPromise = function SyncPromise(handler) {
     if (!handler) {
         return;
     }
-
-    let self = this;
-
-    trycatch(handler, function(res) {
-        return self.resolve(res);
-    }, function(err) {
-        return self.reject(err);
+    
+    trycatch(handler, (res) => {
+        return this.resolve(res);
+    }, (err) => {
+        return this.reject(err);
     });
 };
 
@@ -83,7 +81,7 @@ SyncPromise.prototype.reject = function(error) {
 SyncPromise.prototype.asyncReject = function(error) {
     this.silentReject = true;
     this.reject(error);
-}
+};
 
 SyncPromise.prototype.dispatch = function() {
 
@@ -96,7 +94,8 @@ SyncPromise.prototype.dispatch = function() {
         let handler = this.handlers.shift();
 
         let isError = false;
-        let result, error;
+        let result, 
+            error;
 
         try {
             if (this.resolved) {
@@ -148,9 +147,9 @@ SyncPromise.prototype.then = function(onSuccess, onError) {
     let promise = new SyncPromise(null, this);
 
     this.handlers.push({
-        promise: promise,
-        onSuccess: onSuccess,
-        onError: onError
+        promise,
+        onSuccess,
+        onError
     });
 
     this.silentReject = true;
@@ -165,12 +164,12 @@ SyncPromise.prototype.catch = function(onError) {
 };
 
 SyncPromise.prototype.finally = function(handler) {
-    return this.then(function(result) {
+    return this.then((result) => {
         return SyncPromise.try(handler)
             .then(() => {
                 return result;
             });
-    }, function(err) {
+    }, (err) => {
         return SyncPromise.try(handler)
             .then(() => {
                 throw err;

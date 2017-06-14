@@ -17,7 +17,7 @@ describe('window cases', () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
-                }
+                };
             }
         });
 
@@ -50,7 +50,7 @@ describe('window cases', () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
-                }
+                };
             }
         });
 
@@ -77,7 +77,9 @@ describe('window cases', () => {
         let windowThenAccessed = false;
         let windowThenCalled = false;
 
-        window.constructor = function() {};
+        window.constructor = function() {
+            // pass
+        };
         let win = new window.constructor();
 
         Object.defineProperty(win, 'then', {
@@ -86,7 +88,7 @@ describe('window cases', () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
-                }
+                };
             }
         });
 

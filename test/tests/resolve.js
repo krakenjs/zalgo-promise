@@ -38,7 +38,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return (new SyncPromise).resolve(value).then(result => {
+        return (new SyncPromise()).resolve(value).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -152,7 +152,7 @@ describe('resolve cases', () => {
         let caughtErr;
 
         try {
-            new SyncPromise(resolve => resolve(SyncPromise.resolve(value)));
+            new SyncPromise(resolve => resolve(SyncPromise.resolve(value))); // eslint-disable-line
         } catch (err) {
             caughtErr = err;
         }

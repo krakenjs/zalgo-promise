@@ -34,7 +34,7 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return (new SyncPromise).reject(new Error(error)).then(result => {
+        return (new SyncPromise()).reject(new Error(error)).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
@@ -122,7 +122,7 @@ describe('reject cases', () => {
 
         SyncPromise.reject(new Error('Some error')).then(result => {
             throw new Error(`Success handler should not be called`);
-        }).catch(err => {
+        }).catch(() => {
             hasRejected = true;
         });
 
@@ -153,7 +153,9 @@ describe('reject cases', () => {
         let caughtErr;
 
         let promise = SyncPromise.reject(new Error(error));
-        promise.catch(() => {});
+        promise.catch(() => {
+            // pass
+        });
 
         try {
             SyncPromise.reject(promise);
@@ -226,7 +228,7 @@ describe('reject cases', () => {
             throw new Error(error);
         }).then(result => {
             throw new Error(`Success handler should not be called`);
-        }).catch(err => {
+        }).catch(() => {
             throw new Error(error2);
         }).then(result => {
             throw new Error(`Success handler should not be called`);
@@ -239,8 +241,6 @@ describe('reject cases', () => {
 
     it('should turn an undefined rejection into an actual error', () => {
 
-        let error = 'SERIOUS_ERROR';
-
         return SyncPromise.reject(undefined).then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
@@ -251,8 +251,6 @@ describe('reject cases', () => {
     });
 
     it('should turn a null rejection into an actual error', () => {
-
-        let error = 'SERIOUS_ERROR';
 
         return SyncPromise.reject(null).then(result => {
             throw new Error(`Success handler should not be called`);
@@ -265,8 +263,6 @@ describe('reject cases', () => {
 
     it('should turn a null string rejection into an actual error', () => {
 
-        let error = 'SERIOUS_ERROR';
-
         return SyncPromise.reject('').then(result => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
@@ -277,8 +273,6 @@ describe('reject cases', () => {
     });
 
     it('should turn an false rejection into an actual error', () => {
-
-        let error = 'SERIOUS_ERROR';
 
         return SyncPromise.reject(false).then(result => {
             throw new Error(`Success handler should not be called`);
@@ -299,7 +293,7 @@ describe('reject cases', () => {
             if (err !== error) {
                 throw new Error(`Expected ${err} to be ${error}`);
             }
-        })
+        });
     });
 
     it('should reject when trying to return a promise in its own then method', () => {
@@ -309,7 +303,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
-            promise.then(() => promise)
+            promise.then(() => promise);
         } catch (err) {
             caughtErr = err;
         }
@@ -369,7 +363,9 @@ describe('reject cases', () => {
 
     it('should call unhandled promise method when promise is rejected without having a handler', (done) => {
 
-        window.onerror = () => {};
+        window.onerror = () => {
+            // pass
+        };
 
         let listener = SyncPromise.onPossiblyUnhandledException(err => {
             listener.cancel();
@@ -384,15 +380,17 @@ describe('reject cases', () => {
 
     it('should not call unhandled promise method when promise is async-rejected without having a handler', (done) => {
 
-        window.onerror = () => {};
+        window.onerror = () => {
+            // pass
+        };
 
         let onPossiblyUnhandledExceptionCalled = false;
 
-        let listener = SyncPromise.onPossiblyUnhandledException(err => {
+        let listener = SyncPromise.onPossiblyUnhandledException(() => {
             onPossiblyUnhandledExceptionCalled = true;
         });
 
-        (new SyncPromise).asyncReject(new Error('foobar'));
+        (new SyncPromise()).asyncReject(new Error('foobar'));
 
         setTimeout(() => {
             listener.cancel();
@@ -405,7 +403,9 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and call finally even if the error is not caught', () => {
 
-        window.onerror = () => {};
+        window.onerror = () => {
+            // pass
+        };
 
         let error = 'SERIOUS_ERROR';
         let finallyCalled = false;
@@ -426,12 +426,14 @@ describe('reject cases', () => {
 
     it('should call unhandled promise method only once for a given error', (done) => {
 
-        window.onerror = () => {};
+        window.onerror = () => {
+            // pass
+        };
 
         let error = new Error('foobar');
         let handlerCalled = 0;
 
-        let listener = SyncPromise.onPossiblyUnhandledException(err => {
+        let listener = SyncPromise.onPossiblyUnhandledException(() => {
             handlerCalled += 1;
         });
 
@@ -450,11 +452,13 @@ describe('reject cases', () => {
 
     it('should not call unhandled promise method when promise is rejected after a handler is subsequently added', (done) => {
 
-        window.onerror = () => {};
+        window.onerror = () => {
+            // pass
+        };
 
         let onPossiblyUnhandledExceptionCalled = false;
 
-        let listener = SyncPromise.onPossiblyUnhandledException(err => {
+        let listener = SyncPromise.onPossiblyUnhandledException(() => {
             onPossiblyUnhandledExceptionCalled = true;
         });
 
@@ -462,10 +466,10 @@ describe('reject cases', () => {
 
         setTimeout(() => {
 
-            promise.catch(() => {});
+            promise.catch(() => {
+                // pass
+            });
             promise.reject(new Error('foobar'));
-
-            console.karma(promise.silentReject);
 
             setTimeout(() => {
                 listener.cancel();

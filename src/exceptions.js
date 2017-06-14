@@ -2,10 +2,23 @@
 let possiblyUnhandledPromiseHandlers = [];
 let possiblyUnhandledPromises = [];
 let possiblyUnhandledPromiseTimeout;
+let dispatchedErrors = [];
 
-export function addPossiblyUnhandledPromise(promise) {
-    possiblyUnhandledPromises.push(promise);
-    possiblyUnhandledPromiseTimeout = possiblyUnhandledPromiseTimeout || setTimeout(flushPossiblyUnhandledPromises, 1);
+function dispatchError(err) {
+
+    if (dispatchedErrors.indexOf(err) !== -1) {
+        return;
+    }
+
+    dispatchedErrors.push(err);
+
+    setTimeout(() => {
+        throw err;
+    }, 1);
+
+    for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
+        possiblyUnhandledPromiseHandlers[j](err);
+    }
 }
 
 function flushPossiblyUnhandledPromises() {
@@ -35,24 +48,12 @@ function flushPossiblyUnhandledPromises() {
     }
 }
 
-let dispatchedErrors = [];
-
-function dispatchError(err) {
-
-    if (dispatchedErrors.indexOf(err) !== -1) {
-        return;
-    }
-
-    dispatchedErrors.push(err);
-
-    setTimeout(() => {
-        throw err;
-    }, 1);
-
-    for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-        possiblyUnhandledPromiseHandlers[j](err);
-    }
+export function addPossiblyUnhandledPromise(promise) {
+    possiblyUnhandledPromises.push(promise);
+    possiblyUnhandledPromiseTimeout = possiblyUnhandledPromiseTimeout || setTimeout(flushPossiblyUnhandledPromises, 1);
 }
+
+
 
 export function onPossiblyUnhandledException(handler) {
     possiblyUnhandledPromiseHandlers.push(handler);
