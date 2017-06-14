@@ -3,7 +3,7 @@
 import { isPromise, trycatch } from './utils';
 import { onPossiblyUnhandledException, addPossiblyUnhandledPromise } from './exceptions';
 
-export class SyncPromise<R : mixed> {
+export class ZalgoPromise<R : mixed> {
 
     resolved : boolean
     rejected : boolean
@@ -11,7 +11,7 @@ export class SyncPromise<R : mixed> {
     value : R
     error : mixed
     handlers : Array<{
-        promise : SyncPromise<*>,
+        promise : ZalgoPromise<*>,
         onSuccess : ?(result : R) => mixed,
         onError : ?(error : mixed) => mixed
     }>
@@ -33,7 +33,7 @@ export class SyncPromise<R : mixed> {
         trycatch(handler, res => this.resolve(res), err => this.reject(err));
     }
 
-    resolve(result : R) : SyncPromise<R> {
+    resolve(result : R) : ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -49,7 +49,7 @@ export class SyncPromise<R : mixed> {
         return this;
     }
 
-    reject(error : mixed) : SyncPromise<R> {
+    reject(error : mixed) : ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -126,7 +126,7 @@ export class SyncPromise<R : mixed> {
         }
     }
 
-    then<X : mixed>(onSuccess : ?(result : R) => X | SyncPromise<X>, onError : ?(error : mixed) => mixed) : SyncPromise<X> {
+    then<X : mixed>(onSuccess : ?(result : R) => X | ZalgoPromise<X>, onError : ?(error : mixed) => mixed) : ZalgoPromise<X> {
 
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
@@ -136,7 +136,7 @@ export class SyncPromise<R : mixed> {
             throw new Error('Promise.then expected a function for error handler');
         }
 
-        let promise : SyncPromise<X> = new SyncPromise();
+        let promise : ZalgoPromise<X> = new ZalgoPromise();
 
         this.handlers.push({
             promise,
@@ -151,18 +151,18 @@ export class SyncPromise<R : mixed> {
         return promise;
     }
 
-    catch(onError : (error : mixed) => mixed) : SyncPromise<R> {
+    catch(onError : (error : mixed) => mixed) : ZalgoPromise<R> {
         return this.then(undefined, onError);
     }
 
     finally(handler : () => mixed) {
         return this.then((result) => {
-            return SyncPromise.try(handler)
+            return ZalgoPromise.try(handler)
                 .then(() => {
                     return result;
                 });
         }, (err) => {
-            return SyncPromise.try(handler)
+            return ZalgoPromise.try(handler)
                 .then(() => {
                     throw err;
                 });
@@ -176,23 +176,23 @@ export class SyncPromise<R : mixed> {
         return window.Promise.resolve(this);
     }
 
-    static resolve<X : mixed>(value : X | SyncPromise<X>) : SyncPromise<X> {
+    static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {
 
-        if (isPromise(value) || value instanceof SyncPromise) {
+        if (isPromise(value) || value instanceof ZalgoPromise) {
             // $FlowFixMe
             return value;
         }
 
-        return new SyncPromise().resolve(value);
+        return new ZalgoPromise().resolve(value);
     }
 
-    static reject(error : mixed) : SyncPromise<R> {
-        return new SyncPromise().reject(error);
+    static reject(error : mixed) : ZalgoPromise<R> {
+        return new ZalgoPromise().reject(error);
     }
 
-    static all<Y>(promises : Array<Y | SyncPromise<Y>>) : SyncPromise<Array<Y>> {
+    static all<Y>(promises : Array<Y | ZalgoPromise<Y>>) : ZalgoPromise<Array<Y>> {
 
-        let promise : SyncPromise<Array<Y>> = new SyncPromise();
+        let promise : ZalgoPromise<Array<Y>> = new ZalgoPromise();
         let count = promises.length;
         let results : Array<Y> = [];
 
@@ -201,7 +201,7 @@ export class SyncPromise<R : mixed> {
             let val = promises[i];
 
             // $FlowFixMe
-            let prom = SyncPromise.resolve(val);
+            let prom = ZalgoPromise.resolve(val);
 
             prom.then(result => {
                 results[i] = result;
@@ -226,29 +226,29 @@ export class SyncPromise<R : mixed> {
     }
 
     static try(method : () => mixed) {
-        return SyncPromise.resolve().then(method);
+        return ZalgoPromise.resolve().then(method);
     }
 
-    static delay(delay : number) : SyncPromise<void> {
-        return new SyncPromise(resolve => {
+    static delay(delay : number) : ZalgoPromise<void> {
+        return new ZalgoPromise(resolve => {
             setTimeout(resolve, delay);
         });
     }
 
-    static hash<X : mixed>(obj : { [string] : X | SyncPromise<X> }) : SyncPromise<{ [string] : X }> {
+    static hash<X : mixed>(obj : { [string] : X | ZalgoPromise<X> }) : ZalgoPromise<{ [string] : X }> {
 
         let results = {};
         let promises = [];
 
         for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
-                promises.push(SyncPromise.resolve(obj[key]).then(result => {
+                promises.push(ZalgoPromise.resolve(obj[key]).then(result => {
                     results[key] = result;
                 }));
             }
         }
 
-        return SyncPromise.all(promises).then(() => {
+        return ZalgoPromise.all(promises).then(() => {
             return results;
         });
     }

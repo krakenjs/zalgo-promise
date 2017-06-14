@@ -1,6 +1,6 @@
 /* @flow */
 
-import { SyncPromise } from 'src/index';
+import { ZalgoPromise } from 'src/index';
 
 describe('window cases', () => {
 
@@ -22,7 +22,7 @@ describe('window cases', () => {
             }
         });
 
-        return SyncPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(result => {
             return window;
         }).then(result => {
             delete window.then;
@@ -59,7 +59,7 @@ describe('window cases', () => {
             }
         });
 
-        return SyncPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(result => {
             return win;
         }).then(result => {
             delete window.constructor;
@@ -89,7 +89,7 @@ describe('window cases', () => {
             }
         });
 
-        return SyncPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(result => {
             return win;
         }).then(result => {
             if (result !== win) {

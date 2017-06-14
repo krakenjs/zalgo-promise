@@ -1,6 +1,6 @@
 /* @flow */
 
-import { SyncPromise } from 'src/index';
+import { ZalgoPromise } from 'src/index';
 
 describe('resolve cases', () => {
 
@@ -8,7 +8,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return SyncPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -20,7 +20,7 @@ describe('resolve cases', () => {
         let value1 = 'foobar';
         let value2 = 'fizzbuzz';
 
-        return SyncPromise.resolve(value1).then(result1 => {
+        return ZalgoPromise.resolve(value1).then(result1 => {
             return [ result1, value2 ];
         }).then(([ result1, result2 ]) => {
 
@@ -38,7 +38,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return (new SyncPromise()).resolve(value).then(result => {
+        return (new ZalgoPromise()).resolve(value).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -49,7 +49,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return new SyncPromise(resolve => resolve(value)).then(result => {
+        return new ZalgoPromise(resolve => resolve(value)).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -60,7 +60,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return new SyncPromise(resolve => {
+        return new ZalgoPromise(resolve => {
             setTimeout(() => resolve(value), 50);
         }).then(result => {
             if (result !== value) {
@@ -73,7 +73,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return SyncPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -84,7 +84,7 @@ describe('resolve cases', () => {
 
         let hasResolved = false;
 
-        SyncPromise.resolve().then(result => {
+        ZalgoPromise.resolve().then(result => {
             hasResolved = true;
         });
 
@@ -96,7 +96,7 @@ describe('resolve cases', () => {
     it('should only be able to resolve a promise once', () => {
 
         let value = 'foobar';
-        let promise = SyncPromise.resolve(value);
+        let promise = ZalgoPromise.resolve(value);
         promise.resolve('fizzbuzz');
         promise.resolve('$$%^&*');
 
@@ -111,7 +111,7 @@ describe('resolve cases', () => {
 
         let value = 'foobar';
 
-        return SyncPromise.resolve(SyncPromise.resolve(value)).then(result => {
+        return ZalgoPromise.resolve(ZalgoPromise.resolve(value)).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${result} to be ${value}`);
             }
@@ -123,8 +123,8 @@ describe('resolve cases', () => {
         let value = 'foobar';
         let value2 = 'fizzbuzz';
 
-        return SyncPromise.resolve(value).then(result => {
-            return SyncPromise.resolve(value2);
+        return ZalgoPromise.resolve(value).then(result => {
+            return ZalgoPromise.resolve(value2);
         }).then(result => {
             if (result !== value2) {
                 throw new Error(`Expected ${result} to be ${value2}`);
@@ -137,8 +137,8 @@ describe('resolve cases', () => {
         let value = 'foobar';
         let value2 = 'fizzbuzz';
 
-        return SyncPromise.resolve(value).then(result => {
-            return new SyncPromise(resolve => {
+        return ZalgoPromise.resolve(value).then(result => {
+            return new ZalgoPromise(resolve => {
                 setTimeout(() => resolve(value2), 50);
             });
         }).then(result => {
@@ -154,7 +154,7 @@ describe('resolve cases', () => {
         let caughtErr;
 
         try {
-            new SyncPromise(resolve => resolve(SyncPromise.resolve(value))); // eslint-disable-line
+            new ZalgoPromise(resolve => resolve(ZalgoPromise.resolve(value))); // eslint-disable-line
         } catch (err) {
             caughtErr = err;
         }
@@ -169,7 +169,7 @@ describe('resolve cases', () => {
         let value = 'foobar';
         let finallyCalled = false;
 
-        return SyncPromise.resolve(value).finally(() => {
+        return ZalgoPromise.resolve(value).finally(() => {
             finallyCalled = true;
         }).then(result => {
             if (result !== value) {

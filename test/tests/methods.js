@@ -1,15 +1,15 @@
 /* @flow */
 
-import { SyncPromise } from 'src/index';
+import { ZalgoPromise } from 'src/index';
 
 describe('promise method cases', () => {
 
     it('should work with a set of resolved promises in promise.all', () => {
 
-        return Promise.resolve(SyncPromise.all([
-            SyncPromise.resolve(1),
-            SyncPromise.resolve(2),
-            SyncPromise.resolve(3)
+        return Promise.resolve(ZalgoPromise.all([
+            ZalgoPromise.resolve(1),
+            ZalgoPromise.resolve(2),
+            ZalgoPromise.resolve(3)
         ]).then(([ one, two, three ]) => {
             if (one !== 1) {
                 throw new Error(`Expected 1, got ${one}`);
@@ -25,9 +25,9 @@ describe('promise method cases', () => {
 
     it('should work with a set of resolved values or promises in promise.all', () => {
 
-        return SyncPromise.all([
+        return ZalgoPromise.all([
             1,
-            SyncPromise.resolve(2),
+            ZalgoPromise.resolve(2),
             3
         ]).then(([ one, two, three ]) => {
             if (one !== 1) {
@@ -46,10 +46,10 @@ describe('promise method cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return SyncPromise.all([
-            SyncPromise.resolve(1),
-            SyncPromise.reject(new Error(error)),
-            SyncPromise.resolve(3)
+        return ZalgoPromise.all([
+            ZalgoPromise.resolve(1),
+            ZalgoPromise.reject(new Error(error)),
+            ZalgoPromise.resolve(3)
         ]).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
@@ -67,10 +67,10 @@ describe('promise method cases', () => {
         let error = 'SERIOUS_ERROR';
         let error2 = 'SERIOUS_ERROR2';
 
-        return SyncPromise.all([
-            SyncPromise.resolve(1),
-            SyncPromise.reject(new Error(error)),
-            SyncPromise.reject(new Error(error2))
+        return ZalgoPromise.all([
+            ZalgoPromise.resolve(1),
+            ZalgoPromise.reject(new Error(error)),
+            ZalgoPromise.reject(new Error(error2))
         ]).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
@@ -91,7 +91,7 @@ describe('promise method cases', () => {
             timeoutCalled = true;
         }, 100);
 
-        return SyncPromise.delay(10).then(() => {
+        return ZalgoPromise.delay(10).then(() => {
             clearTimeout(timeout);
             if (timeoutCalled) {
                 throw new Error(`Expected timeout to not be called`);
@@ -101,10 +101,10 @@ describe('promise method cases', () => {
 
     it('should work with a set of resolved promises in promise.hash', () => {
 
-        return SyncPromise.hash({
-            one: SyncPromise.resolve(1),
-            two: SyncPromise.resolve(2),
-            three: SyncPromise.resolve(3)
+        return ZalgoPromise.hash({
+            one: ZalgoPromise.resolve(1),
+            two: ZalgoPromise.resolve(2),
+            three: ZalgoPromise.resolve(3)
         }).then(({ one, two, three }) => {
             if (one !== 1) {
                 throw new Error(`Expected 1, got ${one}`);
@@ -120,9 +120,9 @@ describe('promise method cases', () => {
 
     it('should work with a set of resolved values or promises in promise.hash', () => {
 
-        return SyncPromise.hash({
+        return ZalgoPromise.hash({
             one: 1,
-            two: SyncPromise.resolve(2),
+            two: ZalgoPromise.resolve(2),
             three: 3
         }).then(({ one, two, three }) => {
             if (one !== 1) {
@@ -141,10 +141,10 @@ describe('promise method cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return SyncPromise.hash({
-            one: SyncPromise.resolve(1),
-            two: SyncPromise.reject(new Error(error)),
-            three: SyncPromise.resolve(3)
+        return ZalgoPromise.hash({
+            one: ZalgoPromise.resolve(1),
+            two: ZalgoPromise.reject(new Error(error)),
+            three: ZalgoPromise.resolve(3)
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
@@ -162,10 +162,10 @@ describe('promise method cases', () => {
         let error = 'SERIOUS_ERROR';
         let error2 = 'SERIOUS_ERROR2';
 
-        return SyncPromise.hash({
-            one: SyncPromise.resolve(1),
-            two: SyncPromise.reject(new Error(error)),
-            three: SyncPromise.reject(new Error(error2))
+        return ZalgoPromise.hash({
+            one: ZalgoPromise.resolve(1),
+            two: ZalgoPromise.reject(new Error(error)),
+            three: ZalgoPromise.reject(new Error(error2))
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
