@@ -111,7 +111,7 @@
             Object.defineProperty(exports, "__esModule", {
                 value: !0
             });
-            exports.SyncPromise = void 0;
+            exports.ZalgoPromise = void 0;
             var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
                 return typeof obj;
             } : function(obj) {
@@ -131,10 +131,10 @@
                     staticProps && defineProperties(Constructor, staticProps);
                     return Constructor;
                 };
-            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), SyncPromise = function() {
-                function SyncPromise(handler) {
+            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), ZalgoPromise = function() {
+                function ZalgoPromise(handler) {
                     var _this = this;
-                    _classCallCheck(this, SyncPromise);
+                    _classCallCheck(this, ZalgoPromise);
                     this.resolved = !1;
                     this.rejected = !1;
                     this.silentReject = !1;
@@ -146,7 +146,7 @@
                         return _this.reject(err);
                     });
                 }
-                _createClass(SyncPromise, [ {
+                _createClass(ZalgoPromise, [ {
                     key: "resolve",
                     value: function(result) {
                         if (this.resolved || this.rejected) return this;
@@ -207,7 +207,7 @@
                     value: function(onSuccess, onError) {
                         if (onSuccess && "function" != typeof onSuccess && !onSuccess.call) throw new Error("Promise.then expected a function for success handler");
                         if (onError && "function" != typeof onError && !onError.call) throw new Error("Promise.then expected a function for error handler");
-                        var promise = new SyncPromise();
+                        var promise = new ZalgoPromise();
                         this.handlers.push({
                             promise: promise,
                             onSuccess: onSuccess,
@@ -226,11 +226,11 @@
                     key: "finally",
                     value: function(handler) {
                         return this.then(function(result) {
-                            return SyncPromise.try(handler).then(function() {
+                            return ZalgoPromise.try(handler).then(function() {
                                 return result;
                             });
                         }, function(err) {
-                            return SyncPromise.try(handler).then(function() {
+                            return ZalgoPromise.try(handler).then(function() {
                                 throw err;
                             });
                         });
@@ -244,19 +244,19 @@
                 } ], [ {
                     key: "resolve",
                     value: function(value) {
-                        return (0, _utils.isPromise)(value) || value instanceof SyncPromise ? value : new SyncPromise().resolve(value);
+                        return (0, _utils.isPromise)(value) || value instanceof ZalgoPromise ? value : new ZalgoPromise().resolve(value);
                     }
                 }, {
                     key: "reject",
                     value: function(error) {
-                        return new SyncPromise().reject(error);
+                        return new ZalgoPromise().reject(error);
                     }
                 }, {
                     key: "all",
                     value: function(promises) {
-                        for (var promise = new SyncPromise(), count = promises.length, results = [], i = 0; i < promises.length; i++) !function(i) {
+                        for (var promise = new ZalgoPromise(), count = promises.length, results = [], i = 0; i < promises.length; i++) !function(i) {
                             var val = promises[i];
-                            SyncPromise.resolve(val).then(function(result) {
+                            ZalgoPromise.resolve(val).then(function(result) {
                                 results[i] = result;
                                 count -= 1;
                                 0 === count && promise.resolve(results);
@@ -275,12 +275,12 @@
                 }, {
                     key: "try",
                     value: function(method) {
-                        return SyncPromise.resolve().then(method);
+                        return ZalgoPromise.resolve().then(method);
                     }
                 }, {
                     key: "delay",
                     value: function(_delay) {
-                        return new SyncPromise(function(resolve) {
+                        return new ZalgoPromise(function(resolve) {
                             setTimeout(resolve, _delay);
                         });
                     }
@@ -289,18 +289,18 @@
                     value: function(obj) {
                         var results = {}, promises = [];
                         for (var key in obj) !function(key) {
-                            obj.hasOwnProperty(key) && promises.push(SyncPromise.resolve(obj[key]).then(function(result) {
+                            obj.hasOwnProperty(key) && promises.push(ZalgoPromise.resolve(obj[key]).then(function(result) {
                                 results[key] = result;
                             }));
                         }(key);
-                        return SyncPromise.all(promises).then(function() {
+                        return ZalgoPromise.all(promises).then(function() {
                             return results;
                         });
                     }
                 } ]);
-                return SyncPromise;
+                return ZalgoPromise;
             }();
-            exports.SyncPromise = SyncPromise;
+            exports.ZalgoPromise = ZalgoPromise;
         },
         "./src/utils.js": function(module, exports, __webpack_require__) {
             "use strict";
