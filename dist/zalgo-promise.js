@@ -43,7 +43,7 @@
     }({
         "./src/exceptions.js": function(module, exports, __webpack_require__) {
             "use strict";
-            function dispatchError(err) {
+            function dispatchPossiblyUnhandledError(err) {
                 if (-1 === dispatchedErrors.indexOf(err)) {
                     dispatchedErrors.push(err);
                     setTimeout(function() {
@@ -51,27 +51,6 @@
                     }, 1);
                     for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) possiblyUnhandledPromiseHandlers[j](err);
                 }
-            }
-            function flushPossiblyUnhandledPromises() {
-                possiblyUnhandledPromiseTimeout = null;
-                var promises = possiblyUnhandledPromises;
-                possiblyUnhandledPromises = [];
-                for (var i = 0; i < promises.length; i++) {
-                    (function(i) {
-                        var promise = promises[i];
-                        if (promise.silentReject) return "continue";
-                        promise.handlers.push({
-                            onError: function(err) {
-                                promise.silentReject || dispatchError(err);
-                            }
-                        });
-                        promise.dispatch();
-                    })(i);
-                }
-            }
-            function addPossiblyUnhandledPromise(promise) {
-                possiblyUnhandledPromises.push(promise);
-                possiblyUnhandledPromiseTimeout = possiblyUnhandledPromiseTimeout || setTimeout(flushPossiblyUnhandledPromises, 1);
             }
             function onPossiblyUnhandledException(handler) {
                 possiblyUnhandledPromiseHandlers.push(handler);
@@ -84,9 +63,9 @@
             Object.defineProperty(exports, "__esModule", {
                 value: !0
             });
-            exports.addPossiblyUnhandledPromise = addPossiblyUnhandledPromise;
+            exports.dispatchPossiblyUnhandledError = dispatchPossiblyUnhandledError;
             exports.onPossiblyUnhandledException = onPossiblyUnhandledException;
-            var possiblyUnhandledPromiseHandlers = [], possiblyUnhandledPromises = [], possiblyUnhandledPromiseTimeout = void 0, dispatchedErrors = [];
+            var possiblyUnhandledPromiseHandlers = [], dispatchedErrors = [];
         },
         "./src/index.js": function(module, exports, __webpack_require__) {
             "use strict";
@@ -103,11 +82,7 @@
                 value: !0
             });
             exports.ZalgoPromise = void 0;
-            var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
-                return typeof obj;
-            } : function(obj) {
-                return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-            }, _createClass = function() {
+            var _createClass = function() {
                 function defineProperties(target, props) {
                     for (var i = 0; i < props.length; i++) {
                         var descriptor = props[i];
@@ -128,14 +103,29 @@
                     _classCallCheck(this, ZalgoPromise);
                     this.resolved = !1;
                     this.rejected = !1;
-                    this.silentReject = !1;
+                    this.errorHandled = !1;
                     this.handlers = [];
-                    (0, _exceptions.addPossiblyUnhandledPromise)(this);
-                    handler && (0, _utils.trycatch)(handler, function(res) {
-                        return _this.resolve(res);
-                    }, function(err) {
-                        return _this.reject(err);
-                    });
+                    if (handler) {
+                        var _result = void 0, _error = void 0, resolved = !1, rejected = !1, isAsync = !1;
+                        try {
+                            handler(function(res) {
+                                if (isAsync) _this.resolve(res); else {
+                                    resolved = !0;
+                                    _result = res;
+                                }
+                            }, function(err) {
+                                if (isAsync) _this.reject(err); else {
+                                    rejected = !0;
+                                    _error = err;
+                                }
+                            });
+                        } catch (err) {
+                            this.reject(err);
+                            return;
+                        }
+                        isAsync = !0;
+                        resolved ? this.resolve(_result) : rejected && this.reject(_error);
+                    }
                 }
                 _createClass(ZalgoPromise, [ {
                     key: "resolve",
@@ -150,6 +140,7 @@
                 }, {
                     key: "reject",
                     value: function(error) {
+                        var _this2 = this;
                         if (this.resolved || this.rejected) return this;
                         if ((0, _utils.isPromise)(error)) throw new Error("Can not reject promise with another promise");
                         if (!error) {
@@ -158,39 +149,52 @@
                         }
                         this.rejected = !0;
                         this.error = error;
+                        this.errorHandled || setTimeout(function() {
+                            _this2.errorHandled || (0, _exceptions.dispatchPossiblyUnhandledError)(error);
+                        }, 1);
                         this.dispatch();
                         return this;
                     }
                 }, {
                     key: "asyncReject",
                     value: function(error) {
-                        this.silentReject = !0;
+                        this.errorHandled = !0;
                         this.reject(error);
                     }
                 }, {
                     key: "dispatch",
                     value: function() {
-                        var _this2 = this;
-                        if (this.resolved || this.rejected) for (;this.handlers.length; ) {
-                            (function() {
-                                var handler = _this2.handlers.shift(), isError = !1, result = void 0, error = void 0;
-                                try {
-                                    if (_this2.resolved) result = handler.onSuccess ? handler.onSuccess(_this2.value) : _this2.value; else if (_this2.rejected) if (handler.onError) result = handler.onError(_this2.error); else {
+                        var _this3 = this, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
+                        if (resolved || rejected) {
+                            for (var i = 0; i < handlers.length; ) {
+                                (function() {
+                                    var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise;
+                                    i += 1;
+                                    var isError = !1, result = void 0, error = void 0;
+                                    if (resolved) try {
+                                        result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                                    } catch (err) {
                                         isError = !0;
-                                        error = _this2.error;
+                                        error = err;
+                                    } else if (rejected) if (onError) try {
+                                        result = onError(_this3.error);
+                                    } catch (err) {
+                                        isError = !0;
+                                        error = err;
+                                    } else {
+                                        isError = !0;
+                                        error = _this3.error;
                                     }
-                                } catch (err) {
-                                    isError = !0;
-                                    error = err;
-                                }
-                                if (result === _this2) throw new Error("Can not return a promise from the the then handler of the same promise");
-                                if (!handler.promise) return "continue";
-                                isError ? handler.promise.reject(error) : (0, _utils.isPromise)(result) && "object" === (void 0 === result ? "undefined" : _typeof(result)) && null !== result && "function" == typeof result.then ? result.then(function(res) {
-                                    handler.promise.resolve(res);
-                                }, function(err) {
-                                    handler.promise.reject(err);
-                                }) : handler.promise.resolve(result);
-                            })();
+                                    if (result === _this3) throw new Error("Can not return a promise from the the then handler of the same promise");
+                                    if (!promise) return "continue";
+                                    isError ? promise.reject(error) : (0, _utils.isPromise)(result) ? result.then(function(res) {
+                                        promise.resolve(res);
+                                    }, function(err) {
+                                        promise.reject(err);
+                                    }) : promise.resolve(result);
+                                })();
+                            }
+                            handlers.length = 0;
                         }
                     }
                 }, {
@@ -204,7 +208,7 @@
                             onSuccess: onSuccess,
                             onError: onError
                         });
-                        this.silentReject = !0;
+                        this.errorHandled = !0;
                         this.dispatch();
                         return promise;
                     }
@@ -292,33 +296,10 @@
                 return ZalgoPromise;
             }();
             exports.ZalgoPromise = ZalgoPromise;
+            new ZalgoPromise().resolve(void 0);
         },
         "./src/utils.js": function(module, exports, __webpack_require__) {
             "use strict";
-            function trycatch(method, successHandler, errorHandler) {
-                function flush() {
-                    if (isCalled) {
-                        if (isError) return errorHandler(err);
-                        if (isSuccess) return successHandler(res);
-                    }
-                }
-                var isCalled = !1, isSuccess = !1, isError = !1, err = void 0, res = void 0;
-                try {
-                    method(function(result) {
-                        res = result;
-                        isSuccess = !0;
-                        flush();
-                    }, function(error) {
-                        err = error;
-                        isError = !0;
-                        flush();
-                    });
-                } catch (error) {
-                    return errorHandler(error);
-                }
-                isCalled = !0;
-                flush();
-            }
             function isPromise(item) {
                 try {
                     if (!item) return !1;
@@ -337,7 +318,6 @@
             Object.defineProperty(exports, "__esModule", {
                 value: !0
             });
-            exports.trycatch = trycatch;
             exports.isPromise = isPromise;
             var toString = {}.toString;
         }
