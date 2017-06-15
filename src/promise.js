@@ -112,53 +112,72 @@ export class ZalgoPromise<R : mixed> {
 
     dispatch() {
 
-        if (!this.resolved && !this.rejected) {
+        let { resolved, rejected, handlers } = this;
+
+        if (!resolved && !rejected) {
             return;
         }
 
-        while (this.handlers.length) {
+        let i = 0;
 
-            let handler = this.handlers.shift();
+        while (i < handlers.length) {
+
+            let { onSuccess, onError, promise } = handlers[i];
+            i += 1;
 
             let isError = false;
-            let result,
-                error;
+            let result;
+            let error;
 
-            try {
-                if (this.resolved) {
-                    result = handler.onSuccess ? handler.onSuccess(this.value) : this.value;
-                } else if (this.rejected) {
-                    if (handler.onError) {
-                        result = handler.onError(this.error);
-                    } else {
-                        isError = true;
-                        error = this.error;
-                    }
+            if (resolved) {
+
+                try {
+                    result = onSuccess ? onSuccess(this.value) : this.value;
+                } catch (err) {
+                    isError = true;
+                    error = err;
                 }
-            } catch (err) {
-                isError = true;
-                error = err;
+
+            } else if (rejected) {
+
+                if (onError) {
+
+                    try {
+                        result = onError(this.error);
+                    } catch (err) {
+                        isError = true;
+                        error = err;
+                    }
+
+                } else {
+                    isError = true;
+                    error = this.error;
+                }
             }
 
             if (result === this) {
                 throw new Error('Can not return a promise from the the then handler of the same promise');
             }
 
-            if (!handler.promise) {
+            if (!promise) {
                 continue;
             }
 
             if (isError) {
-                handler.promise.reject(error);
+                promise.reject(error);
 
-            } else if (isPromise(result) && typeof result === 'object' && result !== null && typeof result.then === 'function') {
-                result.then(res => { handler.promise.resolve(res); },
-                            err => { handler.promise.reject(err);  });
+            } else if (isPromise(result)) {
+
+                // $FlowFixMe
+                result.then(res => { promise.resolve(res); },
+                            err => { promise.reject(err);  });
 
             } else {
-                handler.promise.resolve(result);
+                promise.resolve(result);
             }
         }
+
+        handlers.length = 0;
     }
 
     then<X : mixed>(onSuccess : void | (result : R) => X | ZalgoPromise<X>, onError : void | (error : mixed) => mixed) : ZalgoPromise<X> {
