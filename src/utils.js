@@ -1,40 +1,4 @@
 
-export function trycatch(method, successHandler, errorHandler) {
-
-    let isCalled = false;
-    let isSuccess = false;
-    let isError = false;
-    let err,
-        res;
-
-    function flush() {
-        if (isCalled) {
-            if (isError) {
-                return errorHandler(err);
-            } else if (isSuccess) {
-                return successHandler(res);
-            }
-        }
-    }
-
-    try {
-        method((result) => {
-            res = result;
-            isSuccess = true;
-            flush();
-        }, (error) => {
-            err = error;
-            isError = true;
-            flush();
-        });
-    } catch (error) {
-        return errorHandler(error);
-    }
-
-    isCalled = true;
-    flush();
-}
-
 let toString = ({}).toString;
 
 export function isPromise(item) {

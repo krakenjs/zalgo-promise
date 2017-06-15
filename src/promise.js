@@ -1,6 +1,6 @@
 /* @flow */
 
-import { isPromise, trycatch } from './utils';
+import { isPromise } from './utils';
 import { onPossiblyUnhandledException, addPossiblyUnhandledPromise } from './exceptions';
 
 export class ZalgoPromise<R : mixed> {
@@ -12,8 +12,8 @@ export class ZalgoPromise<R : mixed> {
     error : mixed
     handlers : Array<{
         promise : ZalgoPromise<*>,
-        onSuccess : ?(result : R) => mixed,
-        onError : ?(error : mixed) => mixed
+        onSuccess : void | (result : R) => mixed,
+        onError : void | (error : mixed) => mixed
     }>
 
     constructor(handler : ?(resolve : (result : R) => void, reject : (error : mixed) => void) => void) {
@@ -26,11 +26,46 @@ export class ZalgoPromise<R : mixed> {
 
         addPossiblyUnhandledPromise(this);
 
-        if (!handler) {
-            return;
-        }
+        if (handler) {
 
-        trycatch(handler, res => this.resolve(res), err => this.reject(err));
+            let result;
+            let error;
+            let resolved = false;
+            let rejected = false;
+            let isAsync = false;
+
+            try {
+                handler(res => {
+                    if (isAsync) {
+                        this.resolve(res);
+                    } else {
+                        resolved = true;
+                        result = res;
+                    }
+
+                }, err => {
+                    if (isAsync) {
+                        this.reject(err);
+                    } else {
+                        rejected = true;
+                        error = err;
+                    }
+                });
+
+            } catch (err) {
+                this.reject(err);
+                return;
+            }
+
+            isAsync = true;
+
+            if (resolved) {
+                // $FlowFixMe
+                this.resolve(result);
+            } else if (rejected) {
+                this.reject(error);
+            }
+        }
     }
 
     resolve(result : R) : ZalgoPromise<R> {
@@ -126,7 +161,7 @@ export class ZalgoPromise<R : mixed> {
         }
     }
 
-    then<X : mixed>(onSuccess : ?(result : R) => X | ZalgoPromise<X>, onError : ?(error : mixed) => mixed) : ZalgoPromise<X> {
+    then<X : mixed>(onSuccess : void | (result : R) => X | ZalgoPromise<X>, onError : void | (error : mixed) => mixed) : ZalgoPromise<X> {
 
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
@@ -190,7 +225,7 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().reject(error);
     }
 
-    static all<Y>(promises : Array<Y | ZalgoPromise<Y>>) : ZalgoPromise<Array<Y>> {
+    static all<Y : mixed>(promises : Array<Y | ZalgoPromise<Y>>) : ZalgoPromise<Array<Y>> {
 
         let promise : ZalgoPromise<Array<Y>> = new ZalgoPromise();
         let count = promises.length;
@@ -200,10 +235,8 @@ export class ZalgoPromise<R : mixed> {
 
             let val = promises[i];
 
-            // $FlowFixMe
-            let prom = ZalgoPromise.resolve(val);
-
-            prom.then(result => {
+            ZalgoPromise.resolve(val).then(result => {
+                // $FlowFixMe
                 results[i] = result;
                 count -= 1;
                 if (count === 0) {
@@ -253,3 +286,7 @@ export class ZalgoPromise<R : mixed> {
         });
     }
 }
+
+let prom : ZalgoPromise<mixed> = new ZalgoPromise();
+
+prom.resolve(undefined);
