@@ -1,13 +1,13 @@
 /* @flow */
 
 import { isPromise } from './utils';
-import { onPossiblyUnhandledException, addPossiblyUnhandledPromise } from './exceptions';
+import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
 
 export class ZalgoPromise<R : mixed> {
 
     resolved : boolean
     rejected : boolean
-    silentReject : boolean
+    errorHandled : boolean
     value : R
     error : mixed
     handlers : Array<{
@@ -20,11 +20,9 @@ export class ZalgoPromise<R : mixed> {
 
         this.resolved = false;
         this.rejected = false;
-        this.silentReject = false;
+        this.errorHandled = false;
 
         this.handlers = [];
-
-        addPossiblyUnhandledPromise(this);
 
         if (handler) {
 
@@ -100,13 +98,22 @@ export class ZalgoPromise<R : mixed> {
 
         this.rejected = true;
         this.error = error;
+
+        if (!this.errorHandled) {
+            setTimeout(() => {
+                if (!this.errorHandled) {
+                    dispatchPossiblyUnhandledError(error);
+                }
+            }, 1);
+        }
+
         this.dispatch();
 
         return this;
     }
 
     asyncReject(error : mixed) {
-        this.silentReject = true;
+        this.errorHandled = true;
         this.reject(error);
     }
 
@@ -198,7 +205,7 @@ export class ZalgoPromise<R : mixed> {
             onError
         });
 
-        this.silentReject = true;
+        this.errorHandled = true;
 
         this.dispatch();
 
