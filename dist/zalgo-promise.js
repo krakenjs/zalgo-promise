@@ -81,11 +81,7 @@
                 value: !0
             });
             exports.ZalgoPromise = void 0;
-            var _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
-                return typeof obj;
-            } : function(obj) {
-                return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-            }, _createClass = function() {
+            var _createClass = function() {
                 function defineProperties(target, props) {
                     for (var i = 0; i < props.length; i++) {
                         var descriptor = props[i];
@@ -169,38 +165,31 @@
                     value: function() {
                         var _this3 = this, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                         if (resolved || rejected) for (;handlers.length; ) {
-                            var _ret = function() {
+                            (function() {
                                 var _handlers$shift = handlers.shift(), onSuccess = _handlers$shift.onSuccess, onError = _handlers$shift.onError, promise = _handlers$shift.promise, result = void 0;
                                 if (resolved) try {
                                     result = onSuccess ? onSuccess(_this3.value) : _this3.value;
                                 } catch (err) {
-                                    return {
-                                        v: promise.reject(err)
-                                    };
+                                    promise.reject(err);
+                                    return "continue";
                                 } else if (rejected) {
-                                    if (!onError) return {
-                                        v: promise.reject(_this3.error)
-                                    };
+                                    if (!onError) {
+                                        promise.reject(_this3.error);
+                                        return "continue";
+                                    }
                                     try {
                                         result = onError(_this3.error);
                                     } catch (err) {
-                                        return {
-                                            v: promise.reject(err)
-                                        };
+                                        promise.reject(err);
+                                        return "continue";
                                     }
                                 }
-                                if (result === _this3) throw new Error("Can not return a promise from the the then handler of the same promise");
-                                return (0, _utils.isPromise)(result) ? {
-                                    v: result.then(function(res) {
-                                        promise.resolve(res);
-                                    }, function(err) {
-                                        promise.reject(err);
-                                    })
-                                } : {
-                                    v: promise.resolve(result)
-                                };
-                            }();
-                            if ("object" === (void 0 === _ret ? "undefined" : _typeof(_ret))) return _ret.v;
+                                (0, _utils.isPromise)(result) ? result.then(function(res) {
+                                    promise.resolve(res);
+                                }, function(err) {
+                                    promise.reject(err);
+                                }) : promise.resolve(result);
+                            })();
                         }
                     }
                 }, {
