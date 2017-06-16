@@ -257,11 +257,13 @@ export class ZalgoPromise<R : mixed> {
         let count = promises.length;
         let results : Array<Y> = [];
 
+        if (!count) {
+            promise.resolve(results);
+            return promise;
+        }
+
         for (let i = 0; i < promises.length; i++) {
-
-            let val = promises[i];
-
-            ZalgoPromise.resolve(val).then(result => {
+            ZalgoPromise.resolve(promises[i]).then(result => {
                 // $FlowFixMe
                 results[i] = result;
                 count -= 1;
@@ -271,10 +273,6 @@ export class ZalgoPromise<R : mixed> {
             }, err => {
                 promise.reject(err);
             });
-        }
-
-        if (!count) {
-            promise.resolve(results);
         }
 
         return promise;
