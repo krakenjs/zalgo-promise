@@ -180,4 +180,15 @@ describe('resolve cases', () => {
             }
         }).toPromise();
     });
+
+    it('should be able to attach a then handler in the then handler for a promise', () => {
+
+        let promise = ZalgoPromise.resolve();
+
+        return promise.then(() => {
+            return promise.then(() => {
+                // pass
+            });
+        }).toPromise();
+    });
 });

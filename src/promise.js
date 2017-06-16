@@ -125,12 +125,9 @@ export class ZalgoPromise<R : mixed> {
             return;
         }
 
-        let i = 0;
+        while (handlers.length) {
 
-        while (i < handlers.length) {
-
-            let { onSuccess, onError, promise } = handlers[i];
-            i += 1;
+            let { onSuccess, onError, promise } = handlers.shift();
 
             let isError = false;
             let result;
@@ -183,8 +180,6 @@ export class ZalgoPromise<R : mixed> {
                 promise.resolve(result);
             }
         }
-
-        handlers.length = 0;
     }
 
     then<X : mixed>(onSuccess : void | (result : R) => X | ZalgoPromise<X>, onError : void | (error : mixed) => mixed) : ZalgoPromise<X> {
