@@ -136,34 +136,34 @@ export class ZalgoPromise<R : mixed> {
                 try {
                     result = onSuccess ? onSuccess(this.value) : this.value;
                 } catch (err) {
-                    return promise.reject(err);
+                    promise.reject(err);
+                    continue;
                 }
 
             } else if (rejected) {
 
                 if (!onError) {
-                    return promise.reject(this.error);
+                    promise.reject(this.error);
+                    continue;
                 }
 
                 try {
                     result = onError(this.error);
                 } catch (err) {
-                    return promise.reject(err);
+                    promise.reject(err);
+                    continue;
                 }
-            }
-
-            if (result === this) {
-                throw new Error('Can not return a promise from the the then handler of the same promise');
             }
 
             if (isPromise(result)) {
 
                 // $FlowFixMe
-                return result.then(res => { promise.resolve(res); },
+                result.then(res => { promise.resolve(res); },
                                    err => { promise.reject(err);  });
-            }
+            } else {
 
-            return promise.resolve(result);
+                promise.resolve(result);
+            }
         }
     }
 

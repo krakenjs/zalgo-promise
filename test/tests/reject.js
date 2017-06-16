@@ -325,23 +325,6 @@ describe('reject cases', () => {
         }).toPromise();
     });
 
-    it('should reject when trying to return a promise in its own then method', () => {
-
-        let value = 'foobar';
-        let promise = ZalgoPromise.resolve(value);
-        let caughtErr;
-
-        try {
-            promise.then(() => promise);
-        } catch (err) {
-            caughtErr = err;
-        }
-
-        if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
-        }
-    });
-
     it('should fail when trying to pass a non-function into then as a success handler', () => {
 
         let promise = ZalgoPromise.resolve('foobar');
