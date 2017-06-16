@@ -39,7 +39,7 @@
             return Object.prototype.hasOwnProperty.call(object, property);
         };
         __webpack_require__.p = "";
-        return __webpack_require__(__webpack_require__.s = "./src/index.js");
+        return __webpack_require__(__webpack_require__.s = "./src/export.js");
     }({
         "./src/exceptions.js": function(module, exports, __webpack_require__) {
             "use strict";
@@ -67,11 +67,10 @@
             exports.onPossiblyUnhandledException = onPossiblyUnhandledException;
             var possiblyUnhandledPromiseHandlers = [], dispatchedErrors = [];
         },
-        "./src/index.js": function(module, exports, __webpack_require__) {
+        "./src/export.js": function(module, exports, __webpack_require__) {
             "use strict";
-            var _promise = __webpack_require__("./src/promise.js");
-            module.exports = _promise.ZalgoPromise;
-            module.exports.ZalgoPromise = _promise.ZalgoPromise;
+            module.exports = __webpack_require__("./src/promise.js").ZalgoPromise;
+            module.exports.ZalgoPromise = __webpack_require__("./src/promise.js").ZalgoPromise;
         },
         "./src/promise.js": function(module, exports, __webpack_require__) {
             "use strict";
@@ -249,9 +248,13 @@
                 }, {
                     key: "all",
                     value: function(promises) {
-                        for (var promise = new ZalgoPromise(), count = promises.length, results = [], i = 0; i < promises.length; i++) !function(i) {
-                            var val = promises[i];
-                            ZalgoPromise.resolve(val).then(function(result) {
+                        var promise = new ZalgoPromise(), count = promises.length, results = [];
+                        if (!count) {
+                            promise.resolve(results);
+                            return promise;
+                        }
+                        for (var i = 0; i < promises.length; i++) !function(i) {
+                            ZalgoPromise.resolve(promises[i]).then(function(result) {
                                 results[i] = result;
                                 count -= 1;
                                 0 === count && promise.resolve(results);
@@ -259,7 +262,6 @@
                                 promise.reject(err);
                             });
                         }(i);
-                        count || promise.resolve(results);
                         return promise;
                     }
                 }, {
