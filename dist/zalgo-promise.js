@@ -164,36 +164,31 @@
                     key: "dispatch",
                     value: function() {
                         var _this3 = this, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
-                        if (resolved || rejected) {
-                            for (var i = 0; i < handlers.length; ) {
-                                (function() {
-                                    var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise;
-                                    i += 1;
-                                    var isError = !1, result = void 0, error = void 0;
-                                    if (resolved) try {
-                                        result = onSuccess ? onSuccess(_this3.value) : _this3.value;
-                                    } catch (err) {
-                                        isError = !0;
-                                        error = err;
-                                    } else if (rejected) if (onError) try {
-                                        result = onError(_this3.error);
-                                    } catch (err) {
-                                        isError = !0;
-                                        error = err;
-                                    } else {
-                                        isError = !0;
-                                        error = _this3.error;
-                                    }
-                                    if (result === _this3) throw new Error("Can not return a promise from the the then handler of the same promise");
-                                    if (!promise) return "continue";
-                                    isError ? promise.reject(error) : (0, _utils.isPromise)(result) ? result.then(function(res) {
-                                        promise.resolve(res);
-                                    }, function(err) {
-                                        promise.reject(err);
-                                    }) : promise.resolve(result);
-                                })();
-                            }
-                            handlers.length = 0;
+                        if (resolved || rejected) for (;handlers.length; ) {
+                            (function() {
+                                var _handlers$shift = handlers.shift(), onSuccess = _handlers$shift.onSuccess, onError = _handlers$shift.onError, promise = _handlers$shift.promise, isError = !1, result = void 0, error = void 0;
+                                if (resolved) try {
+                                    result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                                } catch (err) {
+                                    isError = !0;
+                                    error = err;
+                                } else if (rejected) if (onError) try {
+                                    result = onError(_this3.error);
+                                } catch (err) {
+                                    isError = !0;
+                                    error = err;
+                                } else {
+                                    isError = !0;
+                                    error = _this3.error;
+                                }
+                                if (result === _this3) throw new Error("Can not return a promise from the the then handler of the same promise");
+                                if (!promise) return "continue";
+                                isError ? promise.reject(error) : (0, _utils.isPromise)(result) ? result.then(function(res) {
+                                    promise.resolve(res);
+                                }, function(err) {
+                                    promise.reject(err);
+                                }) : promise.resolve(result);
+                            })();
                         }
                     }
                 }, {
