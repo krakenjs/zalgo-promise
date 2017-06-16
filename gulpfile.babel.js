@@ -14,13 +14,13 @@ gulp.task('build', [ 'test', 'webpack' ]);
 gulp.task('webpack', [ 'webpack-major', 'webpack-major-min' ]);
 
 gulp.task('webpack-major', ['lint'], function() {
-  return gulp.src('src/index.js')
+  return gulp.src('src/export.js')
       .pipe(webpackStream(WEBPACK_CONFIG_MAJOR, webpack))
       .pipe(gulp.dest('dist'));
 });
 
 gulp.task('webpack-major-min', ['lint'], function() {
-  return gulp.src('src/index.js')
+  return gulp.src('src/export.js')
       .pipe(webpackStream(WEBPACK_CONFIG_MAJOR_MIN, webpack))
       .pipe(gulp.dest('dist'));
 });
