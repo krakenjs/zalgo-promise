@@ -129,33 +129,26 @@ export class ZalgoPromise<R : mixed> {
 
             let { onSuccess, onError, promise } = handlers.shift();
 
-            let isError = false;
             let result;
-            let error;
 
             if (resolved) {
 
                 try {
                     result = onSuccess ? onSuccess(this.value) : this.value;
                 } catch (err) {
-                    isError = true;
-                    error = err;
+                    return promise.reject(err);
                 }
 
             } else if (rejected) {
 
-                if (onError) {
+                if (!onError) {
+                    return promise.reject(this.error);
+                }
 
-                    try {
-                        result = onError(this.error);
-                    } catch (err) {
-                        isError = true;
-                        error = err;
-                    }
-
-                } else {
-                    isError = true;
-                    error = this.error;
+                try {
+                    result = onError(this.error);
+                } catch (err) {
+                    return promise.reject(err);
                 }
             }
 
@@ -163,22 +156,14 @@ export class ZalgoPromise<R : mixed> {
                 throw new Error('Can not return a promise from the the then handler of the same promise');
             }
 
-            if (!promise) {
-                continue;
-            }
-
-            if (isError) {
-                promise.reject(error);
-
-            } else if (isPromise(result)) {
+            if (isPromise(result)) {
 
                 // $FlowFixMe
-                result.then(res => { promise.resolve(res); },
-                            err => { promise.reject(err);  });
-
-            } else {
-                promise.resolve(result);
+                return result.then(res => { promise.resolve(res); },
+                                   err => { promise.reject(err);  });
             }
+
+            return promise.resolve(result);
         }
     }
 
