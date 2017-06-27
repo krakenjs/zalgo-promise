@@ -219,7 +219,7 @@ export class ZalgoPromise<R : mixed> {
 
     static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {
 
-        if (isPromise(value) || value instanceof ZalgoPromise) {
+        if (value instanceof ZalgoPromise || isPromise(value)) {
             // $FlowFixMe
             return value;
         }
@@ -262,8 +262,17 @@ export class ZalgoPromise<R : mixed> {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try(method : () => mixed) {
-        return ZalgoPromise.resolve().then(method);
+    static try(method : () => mixed, context : ?mixed, args : ?Array<mixed>) {
+
+        let result;
+
+        try {
+            result = method.apply(context, args || []);
+        } catch (err) {
+            return ZalgoPromise.reject(err);
+        }
+
+        return ZalgoPromise.resolve(result);
     }
 
     static delay(delay : number) : ZalgoPromise<void> {
