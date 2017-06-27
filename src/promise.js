@@ -15,6 +15,7 @@ export class ZalgoPromise<R : mixed> {
         onSuccess : void | (result : R) => mixed,
         onError : void | (error : mixed) => mixed
     }>
+    dispatching : boolean
 
     constructor(handler : ?(resolve : (result : R) => void, reject : (error : mixed) => void) => void) {
 
@@ -119,15 +120,21 @@ export class ZalgoPromise<R : mixed> {
 
     dispatch() {
 
-        let { resolved, rejected, handlers } = this;
+        let { dispatching, resolved, rejected, handlers } = this;
+
+        if (dispatching) {
+            return;
+        }
 
         if (!resolved && !rejected) {
             return;
         }
 
-        while (handlers.length) {
+        this.dispatching = true;
 
-            let { onSuccess, onError, promise } = handlers.shift();
+        for (let i = 0; i < handlers.length; i++) {
+
+            let { onSuccess, onError, promise } = handlers[i];
 
             let result;
 
@@ -165,6 +172,9 @@ export class ZalgoPromise<R : mixed> {
                 promise.resolve(result);
             }
         }
+
+        handlers.length = 0;
+        this.dispatching = false;
     }
 
     then<X : mixed>(onSuccess : void | (result : R) => X | ZalgoPromise<X>, onError : void | (error : mixed) => mixed) : ZalgoPromise<X> {
