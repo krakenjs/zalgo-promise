@@ -217,4 +217,98 @@ describe('promise method cases', () => {
             }
         }).toPromise();
     });
+
+    it('should work with a simple method passed to promise.try', () => {
+
+        let value = 'foobar';
+
+        return ZalgoPromise.try(() => {
+            return value;
+        }).then(result => {
+            if (result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
+
+    it('should work with a conditional method passed to promise.try', () => {
+
+        let value = 'foobar';
+
+        return ZalgoPromise.try(() => {
+            if (value === 'foobar') {
+                return value;
+            }
+        }).then(result => {
+            if (result && result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
+
+    it('should work with a promise returning method passed to promise.try', () => {
+
+        let value = 'foobar';
+
+        return ZalgoPromise.try(() => {
+            return ZalgoPromise.resolve(value);
+        }).then(result => {
+            if (result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
+
+    it('should work with a conditional promise returning method passed to promise.try', () => {
+
+        let value = 'foobar';
+
+        return ZalgoPromise.try(() => {
+            if (value === 'foobar') {
+                return ZalgoPromise.resolve(value);
+            }
+        }).then(result => {
+            if (result && result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
+
+    it('should work with a conditional promise returning method passed to promise.try, with an inner promise.try', () => {
+
+        let value = 'foobar';
+
+        return ZalgoPromise.try(() => {
+            if (value === 'foobar') {
+                return ZalgoPromise.try(() => {
+                    return value;
+                });
+            }
+        }).then(result => {
+            if (result && result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
+
+    it('should work with a conditional promise returning method passed to promise.try, calling an external function', () => {
+
+        let value = 'foobar';
+
+        function getValue() : ZalgoPromise<string> {
+            return ZalgoPromise.try(() => {
+                return value;
+            });
+        }
+        return ZalgoPromise.try(() => {
+            if (value === 'foobar') {
+                // $FlowFixMe
+                return getValue();
+            }
+        }).then(result => {
+            if (result && result !== value) {
+                throw new Error(`Expected ${result} to equal ${value}`);
+            }
+        }).toPromise();
+    });
 });
