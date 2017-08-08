@@ -430,7 +430,7 @@ describe('reject cases', () => {
         }).finally(() => {
             finallyCalled = true;
         }).catch(err => {
-            if (err.message !== error) {
+            if (err instanceof Error && err.message !== error) {
                 throw new Error(`Expected ${err.message} to be ${error}`);
             }
             if (!finallyCalled) {

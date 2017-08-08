@@ -188,7 +188,7 @@ export class ZalgoPromise<R : mixed> {
         this.dispatching = false;
     }
 
-    then<X : mixed>(onSuccess : void | (result : R) => X | ZalgoPromise<X>, onError : void | (error : mixed) => mixed) : ZalgoPromise<X> {
+    then<X : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | X), onError : void | (error : mixed) => (ZalgoPromise<X> | X)) : ZalgoPromise<X> {
 
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
@@ -213,11 +213,11 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    catch(onError : (error : mixed) => mixed) : ZalgoPromise<R> {
+    catch<X : mixed>(onError : (error : mixed) => X | ZalgoPromise<X>) : ZalgoPromise<X> {
         return this.then(undefined, onError);
     }
 
-    finally(handler : () => mixed) {
+    finally(handler : () => mixed) : ZalgoPromise<R> {
         return this.then((result) => {
             return ZalgoPromise.try(handler)
                 .then(() => {
@@ -283,7 +283,7 @@ export class ZalgoPromise<R : mixed> {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try(method : () => mixed, context : ?mixed, args : ?Array<mixed>) {
+    static try<X : mixed>(method : () => (ZalgoPromise<X> | X), context : ?mixed, args : ?Array<mixed>) : ZalgoPromise<X> {
 
         let result;
 
@@ -320,7 +320,3 @@ export class ZalgoPromise<R : mixed> {
         });
     }
 }
-
-let prom : ZalgoPromise<mixed> = new ZalgoPromise();
-
-prom.resolve(undefined);
