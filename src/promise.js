@@ -279,6 +279,32 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
+    static map<Y : mixed, Z : mixed>(promises : Array<Y>, method : (item : Y) => (ZalgoPromise<Z> | Z)) : ZalgoPromise<Array<Z>> {
+
+        let promise : ZalgoPromise<Array<Z>> = new ZalgoPromise();
+        let count = promises.length;
+        let results : Array<Z> = [];
+
+        if (!count) {
+            promise.resolve(results);
+            return promise;
+        }
+
+        for (let i = 0; i < promises.length; i++) {
+            ZalgoPromise.try(() => method(promises[i])).then(result => {
+                results[i] = result;
+                count -= 1;
+                if (count === 0) {
+                    promise.resolve(results);
+                }
+            }, err => {
+                promise.reject(err);
+            });
+        }
+
+        return promise;
+    }
+
     static onPossiblyUnhandledException(handler : (err : mixed) => mixed) : { cancel : () => void } {
         return onPossiblyUnhandledException(handler);
     }

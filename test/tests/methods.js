@@ -177,4 +177,44 @@ describe('promise method cases', () => {
             }
         }).toPromise();
     });
+
+
+
+    it('should work with a set of values in promise.map', () => {
+
+        return Promise.resolve(ZalgoPromise.map([
+            1,
+            2,
+            3
+        ], x => x + 1).then(([ two, three, four ]) => {
+            if (two !== 2) {
+                throw new Error(`Expected 2, got ${two}`);
+            }
+            if (three !== 3) {
+                throw new Error(`Expected 3, got ${three}`);
+            }
+            if (four !== 4) {
+                throw new Error(`Expected 4, got ${four}`);
+            }
+        }));
+    });
+
+    it('should work with a set of values and a promise returning function in promise.map', () => {
+
+        return ZalgoPromise.map([
+            1,
+            2,
+            3
+        ], x => ZalgoPromise.resolve(x + 1)).then(([ two, three, four ]) => {
+            if (two !== 2) {
+                throw new Error(`Expected 2, got ${two}`);
+            }
+            if (three !== 3) {
+                throw new Error(`Expected 3, got ${three}`);
+            }
+            if (four !== 4) {
+                throw new Error(`Expected 4, got ${four}`);
+            }
+        }).toPromise();
+    });
 });
