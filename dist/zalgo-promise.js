@@ -269,6 +269,27 @@
                         return promise;
                     }
                 }, {
+                    key: "map",
+                    value: function(promises, method) {
+                        var promise = new ZalgoPromise(), count = promises.length, results = [];
+                        if (!count) {
+                            promise.resolve(results);
+                            return promise;
+                        }
+                        for (var i = 0; i < promises.length; i++) !function(i) {
+                            ZalgoPromise.try(function() {
+                                return method(promises[i]);
+                            }).then(function(result) {
+                                results[i] = result;
+                                count -= 1;
+                                0 === count && promise.resolve(results);
+                            }, function(err) {
+                                promise.reject(err);
+                            });
+                        }(i);
+                        return promise;
+                    }
+                }, {
                     key: "onPossiblyUnhandledException",
                     value: function(handler) {
                         return (0, _exceptions.onPossiblyUnhandledException)(handler);
@@ -308,7 +329,6 @@
                 return ZalgoPromise;
             }();
             exports.ZalgoPromise = ZalgoPromise;
-            new ZalgoPromise().resolve(void 0);
         },
         "./src/utils.js": function(module, exports, __webpack_require__) {
             "use strict";
