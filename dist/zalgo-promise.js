@@ -325,6 +325,11 @@
                             return results;
                         });
                     }
+                }, {
+                    key: "isPromise",
+                    value: function(value) {
+                        return !!(value && value instanceof ZalgoPromise) || (0, _utils.isPromise)(value);
+                    }
                 } ]);
                 return ZalgoPromise;
             }();
@@ -335,13 +340,14 @@
             function isPromise(item) {
                 try {
                     if (!item) return !1;
+                    if (window.Promise && item instanceof window.Promise) return !0;
                     if (window.Window && item instanceof window.Window) return !1;
                     if (window.constructor && item instanceof window.constructor) return !1;
                     if (toString) {
                         var name = toString.call(item);
                         if ("[object Window]" === name || "[object global]" === name || "[object DOMWindow]" === name) return !1;
                     }
-                    if (item && item.then instanceof Function) return !0;
+                    if (item.then instanceof Function) return !0;
                 } catch (err) {
                     return !1;
                 }
