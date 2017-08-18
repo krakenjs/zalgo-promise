@@ -345,4 +345,13 @@ export class ZalgoPromise<R : mixed> {
             return results;
         });
     }
+
+    static isPromise(value : mixed) : boolean {
+
+        if (value && value instanceof ZalgoPromise) {
+            return true;
+        }
+
+        return isPromise(value);
+    }
 }

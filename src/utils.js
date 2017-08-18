@@ -7,6 +7,10 @@ export function isPromise(item) {
             return false;
         }
 
+        if (window.Promise && item instanceof window.Promise) {
+            return true;
+        }
+
         if (window.Window && item instanceof window.Window) {
             return false;
         }
@@ -23,7 +27,7 @@ export function isPromise(item) {
             }
         }
 
-        if (item && item.then instanceof Function) {
+        if (item.then instanceof Function) {
             return true;
         }
     } catch (err) {
