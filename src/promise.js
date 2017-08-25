@@ -231,6 +231,28 @@ export class ZalgoPromise<R : mixed> {
         });
     }
 
+    timeout(time : number, err : ?Error) : ZalgoPromise<R> {
+
+        if (this.resolved || this.rejected) {
+            return this;
+        }
+
+        let timeout = setTimeout(() => {
+
+            if (this.resolved || this.rejected) {
+                return;
+            }
+
+            this.reject(err || new Error(`Promise timed out after ${time}ms`));
+
+        }, time);
+
+        return this.then(result => {
+            clearTimeout(timeout);
+            return result;
+        });
+    }
+
     toPromise() : Promise<R> {
         if (!window.Promise) {
             throw new Error(`Could not find window.Promise`);
