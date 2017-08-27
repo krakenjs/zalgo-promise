@@ -3,6 +3,8 @@ zalgo-promise
 
 A promise library that does not automatically resolve promises asynchronously, unless you do so manually.
 
+https://medium.com/@bluepnume/intentionally-unleashing-zalgo-with-promises-ab3f63ead2fd
+
 ### Quick Start
 
 `npm install --save zalgo-promise`
