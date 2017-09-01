@@ -189,7 +189,7 @@
                                     if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
                                         result.resolved ? promise.resolve(result.value) : promise.reject(result.error);
                                         result.errorHandled = !0;
-                                    } else (0, _utils.isPromise)(result) ? result.then(function(res) {
+                                    } else (0, _utils.isPromise)(result) ? result instanceof ZalgoPromise && (result.resolved || result.rejected) ? result.resolved ? promise.resolve(result.value) : promise.reject(result.error) : result.then(function(res) {
                                         promise.resolve(res);
                                     }, function(err) {
                                         promise.reject(err);
@@ -255,7 +255,9 @@
                 } ], [ {
                     key: "resolve",
                     value: function(value) {
-                        return value instanceof ZalgoPromise || (0, _utils.isPromise)(value) ? value : new ZalgoPromise().resolve(value);
+                        return value instanceof ZalgoPromise ? value : (0, _utils.isPromise)(value) ? new ZalgoPromise(function(resolve, reject) {
+                            return value.then(resolve, reject);
+                        }) : new ZalgoPromise().resolve(value);
                     }
                 }, {
                     key: "reject",
