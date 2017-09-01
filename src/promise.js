@@ -262,9 +262,13 @@ export class ZalgoPromise<R : mixed> {
 
     static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {
 
-        if (value instanceof ZalgoPromise || isPromise(value)) {
-            // $FlowFixMe
+        if (value instanceof ZalgoPromise) {
             return value;
+        }
+
+        if (isPromise(value)) {
+            // $FlowFixMe
+            return new ZalgoPromise((resolve, reject) => value.then(resolve, reject));
         }
 
         return new ZalgoPromise().resolve(value);
