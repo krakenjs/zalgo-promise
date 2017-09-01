@@ -174,9 +174,18 @@ export class ZalgoPromise<R : mixed> {
 
             } else if (isPromise(result)) {
 
-                // $FlowFixMe
-                result.then(res => { promise.resolve(res); },
-                            err => { promise.reject(err);  });
+                if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
+                    if (result.resolved) {
+                        promise.resolve(result.value);
+                    } else {
+                        promise.reject(result.error);
+                    }
+
+                } else {
+                    // $FlowFixMe
+                    result.then(res => { promise.resolve(res); },
+                                err => { promise.reject(err);  });
+                }
 
             } else {
 
