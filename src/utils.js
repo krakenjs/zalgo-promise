@@ -27,7 +27,7 @@ export function isPromise(item) {
             }
         }
 
-        if (item.then instanceof Function) {
+        if (typeof item.then === 'function') {
             return true;
         }
     } catch (err) {
