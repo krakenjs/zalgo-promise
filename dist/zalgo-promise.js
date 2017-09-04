@@ -362,7 +362,7 @@
                         var name = toString.call(item);
                         if ("[object Window]" === name || "[object global]" === name || "[object DOMWindow]" === name) return !1;
                     }
-                    if (item.then instanceof Function) return !0;
+                    if ("function" == typeof item.then) return !0;
                 } catch (err) {
                     return !1;
                 }
