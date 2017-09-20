@@ -3,6 +3,11 @@
 import { isPromise } from './utils';
 import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
 
+let global = window.__zalgopromise__ = window.__zalgopromise__ || {
+    flushPromises: [],
+    activeCount: 0
+};
+
 export class ZalgoPromise<R : mixed> {
 
     resolved : boolean
@@ -131,6 +136,7 @@ export class ZalgoPromise<R : mixed> {
         }
 
         this.dispatching = true;
+        global.activeCount += 1;
 
         for (let i = 0; i < handlers.length; i++) {
 
@@ -195,6 +201,11 @@ export class ZalgoPromise<R : mixed> {
 
         handlers.length = 0;
         this.dispatching = false;
+        global.activeCount -= 1;
+
+        if (global.activeCount === 0) {
+            ZalgoPromise.flushQueue();
+        }
     }
 
     then<X : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | X), onError : void | (error : mixed) => (ZalgoPromise<X> | X)) : ZalgoPromise<X> {
@@ -388,5 +399,25 @@ export class ZalgoPromise<R : mixed> {
         }
 
         return isPromise(value);
+    }
+
+    static flush() {
+        let promise = new ZalgoPromise();
+        global.flushPromises.push(promise);
+
+        if (global.activeCount === 0) {
+            ZalgoPromise.flushQueue();
+        }
+
+        return promise;
+    }
+
+    static flushQueue() {
+        let promisesToFlush = global.flushPromises;
+        global.flushPromises = [];
+
+        for (let promise of promisesToFlush) {
+            promise.resolve();
+        }
     }
 }
