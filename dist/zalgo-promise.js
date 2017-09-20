@@ -96,7 +96,10 @@
                     staticProps && defineProperties(Constructor, staticProps);
                     return Constructor;
                 };
-            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), ZalgoPromise = function() {
+            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), global = window.__zalgopromise__ = window.__zalgopromise__ || {
+                flushPromises: [],
+                activeCount: 0
+            }, ZalgoPromise = function() {
                 function ZalgoPromise(handler) {
                     var _this = this;
                     _classCallCheck(this, ZalgoPromise);
@@ -166,6 +169,7 @@
                         var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                         if (!dispatching && (resolved || rejected)) {
                             this.dispatching = !0;
+                            global.activeCount += 1;
                             for (var i = 0; i < handlers.length; i++) {
                                 (function(i) {
                                     var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
@@ -198,6 +202,8 @@
                             }
                             handlers.length = 0;
                             this.dispatching = !1;
+                            global.activeCount -= 1;
+                            0 === global.activeCount && ZalgoPromise.flushQueue();
                         }
                     }
                 }, {
@@ -344,6 +350,32 @@
                     key: "isPromise",
                     value: function(value) {
                         return !!(value && value instanceof ZalgoPromise) || (0, _utils.isPromise)(value);
+                    }
+                }, {
+                    key: "flush",
+                    value: function() {
+                        var promise = new ZalgoPromise();
+                        global.flushPromises.push(promise);
+                        0 === global.activeCount && ZalgoPromise.flushQueue();
+                        return promise;
+                    }
+                }, {
+                    key: "flushQueue",
+                    value: function() {
+                        var promisesToFlush = global.flushPromises;
+                        global.flushPromises = [];
+                        for (var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
+                            var _ref;
+                            if (_isArray) {
+                                if (_i >= _iterator.length) break;
+                                _ref = _iterator[_i++];
+                            } else {
+                                _i = _iterator.next();
+                                if (_i.done) break;
+                                _ref = _i.value;
+                            }
+                            _ref.resolve();
+                        }
                     }
                 } ]);
                 return ZalgoPromise;
