@@ -278,15 +278,30 @@
                             promise.resolve(results);
                             return promise;
                         }
-                        for (var i = 0; i < promises.length; i++) !function(i) {
-                            ZalgoPromise.resolve(promises[i]).then(function(result) {
-                                results[i] = result;
-                                count -= 1;
-                                0 === count && promise.resolve(results);
-                            }, function(err) {
-                                promise.reject(err);
-                            });
-                        }(i);
+                        for (var i = 0; i < promises.length; i++) {
+                            (function(i) {
+                                var prom = promises[i];
+                                if (prom instanceof ZalgoPromise) {
+                                    if (prom.resolved) {
+                                        results[i] = prom.value;
+                                        count -= 1;
+                                        return "continue";
+                                    }
+                                } else if (!(0, _utils.isPromise)(prom)) {
+                                    results[i] = prom;
+                                    count -= 1;
+                                    return "continue";
+                                }
+                                ZalgoPromise.resolve(prom).then(function(result) {
+                                    results[i] = result;
+                                    count -= 1;
+                                    0 === count && promise.resolve(results);
+                                }, function(err) {
+                                    promise.reject(err);
+                                });
+                            })(i);
+                        }
+                        0 === count && promise.resolve(results);
                         return promise;
                     }
                 }, {
