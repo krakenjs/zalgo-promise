@@ -326,7 +326,21 @@ export class ZalgoPromise<R : mixed> implements ZalgoPromiseType {
         }
 
         for (let i = 0; i < promises.length; i++) {
-            ZalgoPromise.resolve(promises[i]).then(result => {
+            let prom = promises[i];
+
+            if (prom instanceof ZalgoPromise) {
+                if (prom.resolved) {
+                    results[i] = prom.value;
+                    count -= 1;
+                    continue;
+                }
+            } else if (!isPromise(prom)) {
+                results[i] = prom;
+                count -= 1;
+                continue;
+            }
+
+            ZalgoPromise.resolve(prom).then(result => {
                 results[i] = result;
                 count -= 1;
                 if (count === 0) {
@@ -335,6 +349,10 @@ export class ZalgoPromise<R : mixed> implements ZalgoPromiseType {
             }, err => {
                 promise.reject(err);
             });
+        }
+
+        if (count === 0) {
+            promise.resolve(results);
         }
 
         return promise;
