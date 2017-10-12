@@ -8,23 +8,7 @@ let global = window.__zalgopromise__ = window.__zalgopromise__ || {
     activeCount: 0
 };
 
-type PromType<T> = ZalgoPromise<T>;
-type ValPromType<T> = ZalgoPromise<T> | T;
-
-interface ZalgoPromiseType {
-    static all : (promises : []) => PromType<[]>,
-    static all : <A1>(promises : [ ValPromType<A1> ]) => PromType<[ A1 ]>,
-    static all : <A1, A2>(promises : [ ValPromType<A1>, ValPromType<A2> ]) => PromType<[ A1, A2 ]>,
-    static all : <A1, A2, A3>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3> ]) => PromType<[ A1, A2, A3 ]>,
-    static all : <A1, A2, A3, A4>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4> ]) => PromType<[ A1, A2, A3, A4 ]>,
-    static all : <A1, A2, A3, A4, A5>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4>, ValPromType<A5> ]) => PromType<[ A1, A2, A3, A4, A5 ]>,
-    static all : <A1, A2, A3, A4, A5, A6>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4>, ValPromType<A5>, ValPromType<A6> ]) => PromType<[ A1, A2, A3, A4, A5, A6 ]>,
-    static all : <A1, A2, A3, A4, A5, A6, A7>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4>, ValPromType<A5>, ValPromType<A6>, ValPromType<A7> ]) => PromType<[ A1, A2, A3, A4, A5, A6, A7 ]>,
-    static all : <A1, A2, A3, A4, A5, A6, A7, A8>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4>, ValPromType<A5>, ValPromType<A6>, ValPromType<A7>, ValPromType<A8> ]) => PromType<[ A1, A2, A3, A4, A5, A6, A7, A8 ]>,
-    static all : <A1, A2, A3, A4, A5, A6, A7, A8, A9>(promises : [ ValPromType<A1>, ValPromType<A2>, ValPromType<A3>, ValPromType<A4>, ValPromType<A5>, ValPromType<A6>, ValPromType<A7>, ValPromType<A8>, ValPromType<A9> ]) => PromType<[ A1, A2, A3, A4, A5, A6, A7, A8, A9 ]>
-}
-
-export class ZalgoPromise<R : mixed> implements ZalgoPromiseType {
+export class ZalgoPromise<R : mixed> {
 
     resolved : boolean
     rejected : boolean
@@ -314,7 +298,7 @@ export class ZalgoPromise<R : mixed> implements ZalgoPromiseType {
         return new ZalgoPromise().reject(error);
     }
 
-    static all(promises) {
+    static all<X: Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> {
 
         let promise = new ZalgoPromise();
         let count = promises.length;
