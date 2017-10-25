@@ -305,25 +305,21 @@
                         return promise;
                     }
                 }, {
-                    key: "map",
-                    value: function(promises, method) {
-                        var promise = new ZalgoPromise(), count = promises.length, results = [];
-                        if (!count) {
-                            promise.resolve(results);
-                            return promise;
-                        }
-                        for (var i = 0; i < promises.length; i++) !function(i) {
-                            ZalgoPromise.try(function() {
-                                return method(promises[i]);
-                            }).then(function(result) {
-                                results[i] = result;
-                                count -= 1;
-                                0 === count && promise.resolve(results);
-                            }, function(err) {
-                                promise.reject(err);
+                    key: "hash",
+                    value: function(promises) {
+                        var result = {};
+                        return ZalgoPromise.all(Object.keys(promises).map(function(key) {
+                            return ZalgoPromise.resolve(promises[key]).then(function(value) {
+                                result[key] = value;
                             });
-                        }(i);
-                        return promise;
+                        })).then(function() {
+                            return result;
+                        });
+                    }
+                }, {
+                    key: "map",
+                    value: function(items, method) {
+                        return ZalgoPromise.all(items.map(method));
                     }
                 }, {
                     key: "onPossiblyUnhandledException",
@@ -346,19 +342,6 @@
                     value: function(_delay) {
                         return new ZalgoPromise(function(resolve) {
                             setTimeout(resolve, _delay);
-                        });
-                    }
-                }, {
-                    key: "hash",
-                    value: function(obj) {
-                        var results = {}, promises = [];
-                        for (var key in obj) !function(key) {
-                            obj.hasOwnProperty(key) && promises.push(ZalgoPromise.resolve(obj[key]).then(function(result) {
-                                results[key] = result;
-                            }));
-                        }(key);
-                        return ZalgoPromise.all(promises).then(function() {
-                            return results;
                         });
                     }
                 }, {
