@@ -342,41 +342,33 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    static map<Y : mixed, Z : mixed>(promises : Array<Y>, method : (item : Y) => (ZalgoPromise<Z> | Z)) : ZalgoPromise<Array<Z>> {
-
-        let promise : ZalgoPromise<Array<Z>> = new ZalgoPromise();
-        let count = promises.length;
-        let results : Array<Z> = [];
-
-        if (!count) {
-            promise.resolve(results);
-            return promise;
-        }
-
-        for (let i = 0; i < promises.length; i++) {
-            ZalgoPromise.try(() => method(promises[i])).then(result => {
-                results[i] = result;
-                count -= 1;
-                if (count === 0) {
-                    promise.resolve(results);
-                }
-            }, err => {
-                promise.reject(err);
+    static hash<A, O : { [string] : (A | ZalgoPromise<A>) }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> {
+        let result = {};
+        
+        return ZalgoPromise.all(Object.keys(promises).map(key => {
+            return ZalgoPromise.resolve(promises[key]).then(value => {
+                result[key] = value;
             });
-        }
+        })).then(() => {
+            return result;
+        });
+    }
 
-        return promise;
+    static map<T, X>(items : Array<T>, method : (T) => (ZalgoPromise<X> | X)) : ZalgoPromise<Array<X>> {
+        // $FlowFixMe
+        return ZalgoPromise.all(items.map(method));
     }
 
     static onPossiblyUnhandledException(handler : (err : mixed) => mixed) : { cancel : () => void } {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try<X : mixed>(method : () => (ZalgoPromise<X> | X), context : ?mixed, args : ?Array<mixed>) : ZalgoPromise<X> {
+    static try<X : mixed, C : mixed, A : Array<mixed>>(method : (...args : A) => (ZalgoPromise<X> | X), context : ?C, args : ?A) : ZalgoPromise<X> {
 
         let result;
-
+        
         try {
+            // $FlowFixMe
             result = method.apply(context, args || []);
         } catch (err) {
             return ZalgoPromise.reject(err);
@@ -388,24 +380,6 @@ export class ZalgoPromise<R : mixed> {
     static delay(delay : number) : ZalgoPromise<void> {
         return new ZalgoPromise(resolve => {
             setTimeout(resolve, delay);
-        });
-    }
-
-    static hash<X : mixed>(obj : { [string] : X | ZalgoPromise<X> }) : ZalgoPromise<{ [string] : X }> {
-
-        let results = {};
-        let promises = [];
-
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                promises.push(ZalgoPromise.resolve(obj[key]).then(result => {
-                    results[key] = result;
-                }));
-            }
-        }
-
-        return ZalgoPromise.all(promises).then(() => {
-            return results;
         });
     }
 
