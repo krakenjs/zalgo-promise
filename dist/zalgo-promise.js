@@ -72,6 +72,20 @@
             module.exports = __webpack_require__("./src/promise.js").ZalgoPromise;
             module.exports.ZalgoPromise = __webpack_require__("./src/promise.js").ZalgoPromise;
         },
+        "./src/global.js": function(module, exports, __webpack_require__) {
+            "use strict";
+            function getGlobal() {
+                window.__zalgopromise__ || (window.__zalgopromise__ = {
+                    flushPromises: [],
+                    activeCount: 0
+                });
+                return window.__zalgopromise__;
+            }
+            Object.defineProperty(exports, "__esModule", {
+                value: !0
+            });
+            exports.getGlobal = getGlobal;
+        },
         "./src/promise.js": function(module, exports, __webpack_require__) {
             "use strict";
             function _classCallCheck(instance, Constructor) {
@@ -96,10 +110,7 @@
                     staticProps && defineProperties(Constructor, staticProps);
                     return Constructor;
                 };
-            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), global = window.__zalgopromise__ = window.__zalgopromise__ || {
-                flushPromises: [],
-                activeCount: 0
-            }, ZalgoPromise = function() {
+            }(), _utils = __webpack_require__("./src/utils.js"), _exceptions = __webpack_require__("./src/exceptions.js"), _global = __webpack_require__("./src/global.js"), ZalgoPromise = function() {
                 function ZalgoPromise(handler) {
                     var _this = this;
                     _classCallCheck(this, ZalgoPromise);
@@ -169,7 +180,7 @@
                         var _this3 = this, dispatching = this.dispatching, resolved = this.resolved, rejected = this.rejected, handlers = this.handlers;
                         if (!dispatching && (resolved || rejected)) {
                             this.dispatching = !0;
-                            global.activeCount += 1;
+                            (0, _global.getGlobal)().activeCount += 1;
                             for (var i = 0; i < handlers.length; i++) {
                                 (function(i) {
                                     var _handlers$i = handlers[i], onSuccess = _handlers$i.onSuccess, onError = _handlers$i.onError, promise = _handlers$i.promise, result = void 0;
@@ -202,8 +213,8 @@
                             }
                             handlers.length = 0;
                             this.dispatching = !1;
-                            global.activeCount -= 1;
-                            0 === global.activeCount && ZalgoPromise.flushQueue();
+                            (0, _global.getGlobal)().activeCount -= 1;
+                            0 === (0, _global.getGlobal)().activeCount && ZalgoPromise.flushQueue();
                         }
                     }
                 }, {
@@ -353,15 +364,15 @@
                     key: "flush",
                     value: function() {
                         var promise = new ZalgoPromise();
-                        global.flushPromises.push(promise);
-                        0 === global.activeCount && ZalgoPromise.flushQueue();
+                        (0, _global.getGlobal)().flushPromises.push(promise);
+                        0 === (0, _global.getGlobal)().activeCount && ZalgoPromise.flushQueue();
                         return promise;
                     }
                 }, {
                     key: "flushQueue",
                     value: function() {
-                        var promisesToFlush = global.flushPromises;
-                        global.flushPromises = [];
+                        var promisesToFlush = (0, _global.getGlobal)().flushPromises;
+                        (0, _global.getGlobal)().flushPromises = [];
                         for (var _iterator = promisesToFlush, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ;) {
                             var _ref;
                             if (_isArray) {
