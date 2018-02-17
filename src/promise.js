@@ -2,11 +2,7 @@
 
 import { isPromise } from './utils';
 import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
-
-let global = window.__zalgopromise__ = window.__zalgopromise__ || {
-    flushPromises: [],
-    activeCount: 0
-};
+import { getGlobal } from './global';
 
 export class ZalgoPromise<R : mixed> {
 
@@ -136,7 +132,7 @@ export class ZalgoPromise<R : mixed> {
         }
 
         this.dispatching = true;
-        global.activeCount += 1;
+        getGlobal().activeCount += 1;
 
         for (let i = 0; i < handlers.length; i++) {
 
@@ -201,9 +197,9 @@ export class ZalgoPromise<R : mixed> {
 
         handlers.length = 0;
         this.dispatching = false;
-        global.activeCount -= 1;
+        getGlobal().activeCount -= 1;
 
-        if (global.activeCount === 0) {
+        if (getGlobal().activeCount === 0) {
             ZalgoPromise.flushQueue();
         }
     }
@@ -394,9 +390,9 @@ export class ZalgoPromise<R : mixed> {
 
     static flush() : ZalgoPromise<void> {
         let promise = new ZalgoPromise();
-        global.flushPromises.push(promise);
+        getGlobal().flushPromises.push(promise);
 
-        if (global.activeCount === 0) {
+        if (getGlobal().activeCount === 0) {
             ZalgoPromise.flushQueue();
         }
 
@@ -404,8 +400,8 @@ export class ZalgoPromise<R : mixed> {
     }
 
     static flushQueue() {
-        let promisesToFlush = global.flushPromises;
-        global.flushPromises = [];
+        let promisesToFlush = getGlobal().flushPromises;
+        getGlobal().flushPromises = [];
 
         for (let promise of promisesToFlush) {
             promise.resolve();
