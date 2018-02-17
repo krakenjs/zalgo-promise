@@ -1,30 +1,29 @@
 
-let possiblyUnhandledPromiseHandlers = [];
-let dispatchedErrors = [];
+import { getGlobal } from './global';
 
 export function dispatchPossiblyUnhandledError(err) {
 
-    if (dispatchedErrors.indexOf(err) !== -1) {
+    if (getGlobal().dispatchedErrors.indexOf(err) !== -1) {
         return;
     }
 
-    dispatchedErrors.push(err);
+    getGlobal().dispatchedErrors.push(err);
 
     setTimeout(() => {
         throw err;
     }, 1);
 
-    for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-        possiblyUnhandledPromiseHandlers[j](err);
+    for (let j = 0; j < getGlobal().possiblyUnhandledPromiseHandlers.length; j++) {
+        getGlobal().possiblyUnhandledPromiseHandlers[j](err);
     }
 }
 
 export function onPossiblyUnhandledException(handler) {
-    possiblyUnhandledPromiseHandlers.push(handler);
+    getGlobal().possiblyUnhandledPromiseHandlers.push(handler);
 
     return {
         cancel() {
-            possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+            getGlobal().possiblyUnhandledPromiseHandlers.splice(getGlobal().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
         }
     };
 }

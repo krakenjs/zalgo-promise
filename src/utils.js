@@ -1,6 +1,4 @@
 
-let toString = ({}).toString;
-
 export function isPromise(item) {
     try {
         if (!item) {
@@ -18,6 +16,8 @@ export function isPromise(item) {
         if (window.constructor && item instanceof window.constructor) {
             return false;
         }
+
+        let toString = ({}).toString;
 
         if (toString) {
             let name = toString.call(item);
