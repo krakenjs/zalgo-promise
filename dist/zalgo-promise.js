@@ -44,19 +44,20 @@
         "./src/exceptions.js": function(module, exports, __webpack_require__) {
             "use strict";
             function dispatchPossiblyUnhandledError(err) {
-                if (-1 === dispatchedErrors.indexOf(err)) {
-                    dispatchedErrors.push(err);
+                if (-1 === (0, _global.getGlobal)().dispatchedErrors.indexOf(err)) {
+                    (0, _global.getGlobal)().dispatchedErrors.push(err);
                     setTimeout(function() {
                         throw err;
                     }, 1);
-                    for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) possiblyUnhandledPromiseHandlers[j](err);
+                    for (var j = 0; j < (0, _global.getGlobal)().possiblyUnhandledPromiseHandlers.length; j++) (0, 
+                    _global.getGlobal)().possiblyUnhandledPromiseHandlers[j](err);
                 }
             }
             function onPossiblyUnhandledException(handler) {
-                possiblyUnhandledPromiseHandlers.push(handler);
+                (0, _global.getGlobal)().possiblyUnhandledPromiseHandlers.push(handler);
                 return {
                     cancel: function() {
-                        possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+                        (0, _global.getGlobal)().possiblyUnhandledPromiseHandlers.splice((0, _global.getGlobal)().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
                     }
                 };
             }
@@ -65,7 +66,7 @@
             });
             exports.dispatchPossiblyUnhandledError = dispatchPossiblyUnhandledError;
             exports.onPossiblyUnhandledException = onPossiblyUnhandledException;
-            var possiblyUnhandledPromiseHandlers = [], dispatchedErrors = [];
+            var _global = __webpack_require__("./src/global.js");
         },
         "./src/export.js": function(module, exports, __webpack_require__) {
             "use strict";
@@ -77,7 +78,9 @@
             function getGlobal() {
                 window.__zalgopromise__ || (window.__zalgopromise__ = {
                     flushPromises: [],
-                    activeCount: 0
+                    activeCount: 0,
+                    possiblyUnhandledPromiseHandlers: [],
+                    dispatchedErrors: []
                 });
                 return window.__zalgopromise__;
             }
@@ -399,8 +402,9 @@
                     if (window.Promise && item instanceof window.Promise) return !0;
                     if (window.Window && item instanceof window.Window) return !1;
                     if (window.constructor && item instanceof window.constructor) return !1;
-                    if (toString) {
-                        var name = toString.call(item);
+                    var _toString = {}.toString;
+                    if (_toString) {
+                        var name = _toString.call(item);
                         if ("[object Window]" === name || "[object global]" === name || "[object DOMWindow]" === name) return !1;
                     }
                     if ("function" == typeof item.then) return !0;
@@ -413,7 +417,6 @@
                 value: !0
             });
             exports.isPromise = isPromise;
-            var toString = {}.toString;
         }
     });
 });
