@@ -269,11 +269,14 @@ export class ZalgoPromise<R : mixed> {
         });
     }
 
+    // $FlowFixMe
     toPromise() : Promise<R> {
-        if (!window.Promise) {
-            throw new Error(`Could not find window.Promise`);
+        // $FlowFixMe
+        if (typeof Promise === 'undefined') {
+            throw new Error(`Could not find Promise`);
         }
-        return window.Promise.resolve(this);
+        // $FlowFixMe
+        return Promise.resolve(this);
     }
 
     static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {

@@ -11,8 +11,18 @@ type ZalgoGlobalType = {
 
 export function getGlobal() : ZalgoGlobalType {
 
-    if (!window.__zalgopromise__) {
-        window.__zalgopromise__ = {
+    let glob;
+
+    if (typeof window !== 'undefined') {
+        glob = window;
+    } else if (typeof global !== 'undefined') {
+        glob = global;
+    } else {
+        throw new Error(`Can not find global`);
+    }
+
+    if (!glob.__zalgopromise__) {
+        glob.__zalgopromise__ = {
             flushPromises: [],
             activeCount: 0,
             possiblyUnhandledPromiseHandlers: [],
@@ -20,5 +30,5 @@ export function getGlobal() : ZalgoGlobalType {
         };
     }
 
-    return window.__zalgopromise__;
+    return glob.__zalgopromise__;
 }

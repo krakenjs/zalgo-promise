@@ -5,15 +5,15 @@ export function isPromise(item) {
             return false;
         }
 
-        if (window.Promise && item instanceof window.Promise) {
+        if (typeof Promise !== 'undefined' && item instanceof Promise) {
             return true;
         }
 
-        if (window.Window && item instanceof window.Window) {
+        if (typeof window !== 'undefined' && window.Window && item instanceof window.Window) {
             return false;
         }
 
-        if (window.constructor && item instanceof window.constructor) {
+        if (typeof window !== 'undefined' && window.constructor && item instanceof window.constructor) {
             return false;
         }
 
