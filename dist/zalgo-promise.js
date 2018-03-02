@@ -41,6 +41,23 @@
         __webpack_require__.p = "";
         return __webpack_require__(__webpack_require__.s = "./src/export.js");
     }({
+        "./node_modules/webpack/buildin/global.js": function(module, exports, __webpack_require__) {
+            "use strict";
+            var g, _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(obj) {
+                return typeof obj;
+            } : function(obj) {
+                return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+            };
+            g = function() {
+                return this;
+            }();
+            try {
+                g = g || Function("return this")() || (0, eval)("this");
+            } catch (e) {
+                "object" === ("undefined" == typeof window ? "undefined" : _typeof(window)) && (g = window);
+            }
+            module.exports = g;
+        },
         "./src/exceptions.js": function(module, exports, __webpack_require__) {
             "use strict";
             function dispatchPossiblyUnhandledError(err) {
@@ -75,19 +92,26 @@
         },
         "./src/global.js": function(module, exports, __webpack_require__) {
             "use strict";
-            function getGlobal() {
-                window.__zalgopromise__ || (window.__zalgopromise__ = {
-                    flushPromises: [],
-                    activeCount: 0,
-                    possiblyUnhandledPromiseHandlers: [],
-                    dispatchedErrors: []
+            (function(global) {
+                function getGlobal() {
+                    var glob = void 0;
+                    if ("undefined" != typeof window) glob = window; else {
+                        if (void 0 === global) throw new Error("Can not find global");
+                        glob = global;
+                    }
+                    glob.__zalgopromise__ || (glob.__zalgopromise__ = {
+                        flushPromises: [],
+                        activeCount: 0,
+                        possiblyUnhandledPromiseHandlers: [],
+                        dispatchedErrors: []
+                    });
+                    return glob.__zalgopromise__;
+                }
+                Object.defineProperty(exports, "__esModule", {
+                    value: !0
                 });
-                return window.__zalgopromise__;
-            }
-            Object.defineProperty(exports, "__esModule", {
-                value: !0
-            });
-            exports.getGlobal = getGlobal;
+                exports.getGlobal = getGlobal;
+            }).call(exports, __webpack_require__("./node_modules/webpack/buildin/global.js"));
         },
         "./src/promise.js": function(module, exports, __webpack_require__) {
             "use strict";
@@ -269,8 +293,8 @@
                 }, {
                     key: "toPromise",
                     value: function() {
-                        if (!window.Promise) throw new Error("Could not find window.Promise");
-                        return window.Promise.resolve(this);
+                        if ("undefined" == typeof Promise) throw new Error("Could not find Promise");
+                        return Promise.resolve(this);
                     }
                 } ], [ {
                     key: "resolve",
@@ -399,9 +423,9 @@
             function isPromise(item) {
                 try {
                     if (!item) return !1;
-                    if (window.Promise && item instanceof window.Promise) return !0;
-                    if (window.Window && item instanceof window.Window) return !1;
-                    if (window.constructor && item instanceof window.constructor) return !1;
+                    if ("undefined" != typeof Promise && item instanceof Promise) return !0;
+                    if ("undefined" != typeof window && window.Window && item instanceof window.Window) return !1;
+                    if ("undefined" != typeof window && window.constructor && item instanceof window.constructor) return !1;
                     var _toString = {}.toString;
                     if (_toString) {
                         var name = _toString.call(item);
