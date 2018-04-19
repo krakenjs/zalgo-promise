@@ -1,6 +1,6 @@
 /* @flow */
 
-import { ZalgoPromise } from 'src/promise';
+import { ZalgoPromise } from '../../src';
 
 describe('resolve cases', () => {
 
@@ -10,7 +10,7 @@ describe('resolve cases', () => {
 
         return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -25,11 +25,11 @@ describe('resolve cases', () => {
         }).then(([ result1, result2 ]) => {
 
             if (result1 !== value1) {
-                throw new Error(`Expected ${result1} to be ${value1}`);
+                throw new Error(`Expected ${ result1 } to be ${ value1 }`);
             }
 
             if (result2 !== value2) {
-                throw new Error(`Expected ${result2} to be ${value2}`);
+                throw new Error(`Expected ${ result2 } to be ${ value2 }`);
             }
         }).toPromise();
     });
@@ -40,7 +40,7 @@ describe('resolve cases', () => {
 
         return (new ZalgoPromise()).resolve(value).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -51,7 +51,7 @@ describe('resolve cases', () => {
 
         return new ZalgoPromise(resolve => resolve(value)).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -64,7 +64,7 @@ describe('resolve cases', () => {
             setTimeout(() => resolve(value), 50);
         }).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -75,7 +75,7 @@ describe('resolve cases', () => {
 
         return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -84,7 +84,7 @@ describe('resolve cases', () => {
 
         let hasResolved = false;
 
-        ZalgoPromise.resolve().then(result => {
+        ZalgoPromise.resolve().then(() => { // eslint-disable-line promise/catch-or-return
             hasResolved = true;
         });
 
@@ -102,7 +102,7 @@ describe('resolve cases', () => {
 
         return promise.then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -113,7 +113,7 @@ describe('resolve cases', () => {
 
         return ZalgoPromise.resolve(ZalgoPromise.resolve(value)).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -123,11 +123,11 @@ describe('resolve cases', () => {
         let value = 'foobar';
         let value2 = 'fizzbuzz';
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             return ZalgoPromise.resolve(value2);
         }).then(result => {
             if (result !== value2) {
-                throw new Error(`Expected ${result} to be ${value2}`);
+                throw new Error(`Expected ${ result } to be ${ value2 }`);
             }
         }).toPromise();
     });
@@ -137,13 +137,13 @@ describe('resolve cases', () => {
         let value = 'foobar';
         let value2 = 'fizzbuzz';
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             return new ZalgoPromise(resolve => {
                 setTimeout(() => resolve(value2), 50);
             });
         }).then(result => {
             if (result !== value2) {
-                throw new Error(`Expected ${result} to be ${value2}`);
+                throw new Error(`Expected ${ result } to be ${ value2 }`);
             }
         }).toPromise();
     });
@@ -154,13 +154,13 @@ describe('resolve cases', () => {
         let caughtErr;
 
         try {
-            new ZalgoPromise(resolve => resolve(ZalgoPromise.resolve(value))); // eslint-disable-line
+            new ZalgoPromise(resolve => resolve(ZalgoPromise.resolve(value))); // eslint-disable-line no-new
         } catch (err) {
             caughtErr = err;
         }
 
         if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
+            throw new TypeError(`Expected error to be thrown`);
         }
     });
 
@@ -173,7 +173,7 @@ describe('resolve cases', () => {
             finallyCalled = true;
         }).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
             if (!finallyCalled) {
                 throw new Error(`Expected finally to be called`);
@@ -203,19 +203,19 @@ describe('resolve cases', () => {
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             }),
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             })
         ]).then(() => {
 
             if (thenCount !== 2) {
-                throw new Error(`Expected then to have been called 2 times, got ${thenCount} calls`);
+                throw new Error(`Expected then to have been called 2 times, got ${ thenCount } calls`);
             }
         }).toPromise();
     });
@@ -233,19 +233,19 @@ describe('resolve cases', () => {
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             }),
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             })
         ]).then(() => {
 
             if (thenCount !== 2) {
-                throw new Error(`Expected then to have been called 2 times, got ${thenCount} calls`);
+                throw new Error(`Expected then to have been called 2 times, got ${ thenCount } calls`);
             }
         }).toPromise();
     });
@@ -262,17 +262,17 @@ describe('resolve cases', () => {
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             }),
-            promise.then(result => {
+            promise.then(() => {
                 thenCount += 1;
                 throw new Error('oh no!');
             }),
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             })
         ]).catch(() => {
@@ -280,7 +280,7 @@ describe('resolve cases', () => {
             errorHandlerCalled = true;
 
             if (thenCount !== 3) {
-                throw new Error(`Expected then to have been called 3 times, got ${thenCount} calls`);
+                throw new Error(`Expected then to have been called 3 times, got ${ thenCount } calls`);
             }
 
         }).then(() => {
@@ -306,17 +306,17 @@ describe('resolve cases', () => {
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             }),
-            promise.then(result => {
+            promise.then(() => {
                 thenCount += 1;
                 throw new Error('oh no!');
             }),
             promise.then(result => {
                 thenCount += 1;
                 if (result !== value) {
-                    throw new Error(`Expected ${result} to be ${value}`);
+                    throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             })
         ]).catch(() => {
@@ -324,7 +324,7 @@ describe('resolve cases', () => {
             errorHandlerCalled = true;
 
             if (thenCount !== 2) {
-                throw new Error(`Expected then to have been called 2 times, got ${thenCount} calls`);
+                throw new Error(`Expected then to have been called 2 times, got ${ thenCount } calls`);
             }
 
         }).then(() => {
@@ -344,7 +344,7 @@ describe('resolve cases', () => {
         return promise.then(() => promise).then(result => {
 
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
 
         }).toPromise();

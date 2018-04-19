@@ -1,6 +1,6 @@
 /* @flow */
 
-import { ZalgoPromise } from 'src/promise';
+import { ZalgoPromise } from '../../src';
 
 describe('window cases', () => {
 
@@ -14,7 +14,7 @@ describe('window cases', () => {
         // $FlowFixMe
         Object.defineProperty(window, 'then', {
             configurable: true,
-            get() {
+            get:          () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
@@ -22,7 +22,7 @@ describe('window cases', () => {
             }
         });
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             return window;
         }).then(result => {
             delete window.then;
@@ -51,7 +51,7 @@ describe('window cases', () => {
         // $FlowFixMe
         Object.defineProperty(win, 'then', {
             configurable: true,
-            get() {
+            get:          () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
@@ -59,7 +59,7 @@ describe('window cases', () => {
             }
         });
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             return win;
         }).then(result => {
             delete window.constructor;
@@ -89,7 +89,7 @@ describe('window cases', () => {
             }
         });
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             return win;
         }).then(result => {
             if (result !== win) {

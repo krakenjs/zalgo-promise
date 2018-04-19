@@ -1,7 +1,8 @@
+/* @flow */
 
 import { getGlobal } from './global';
 
-export function dispatchPossiblyUnhandledError(err) {
+export function dispatchPossiblyUnhandledError(err : mixed) {
 
     if (getGlobal().dispatchedErrors.indexOf(err) !== -1) {
         return;
@@ -18,7 +19,7 @@ export function dispatchPossiblyUnhandledError(err) {
     }
 }
 
-export function onPossiblyUnhandledException(handler) {
+export function onPossiblyUnhandledException(handler : (mixed) => void) : { cancel : () => void } {
     getGlobal().possiblyUnhandledPromiseHandlers.push(handler);
 
     return {

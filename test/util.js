@@ -1,7 +1,8 @@
 /* @flow */
 
-window.console.karma = function() {
+window.console.karma = (...args) => {
     let karma = window.karma || (window.top && window.top.karma) || (window.opener && window.opener.karma);
-    karma.log('debug', arguments);
-    console.log.apply(console, arguments);
+    karma.log('debug', args);
+    // eslint-disable-next-line no-console
+    console.log(...args);
 };

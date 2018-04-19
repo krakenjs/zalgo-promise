@@ -15,7 +15,7 @@ fi;
 rm -rf node_modules
 npm install
 
-gulp build;
+npm build;
 
 git add dist;
 git commit -m "Dist" || echo "Nothing to distribute";

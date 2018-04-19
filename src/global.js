@@ -18,7 +18,7 @@ export function getGlobal() : ZalgoGlobalType {
     } else if (typeof global !== 'undefined') {
         glob = global;
     } else {
-        throw new Error(`Can not find global`);
+        throw new TypeError(`Can not find global`);
     }
 
     let zalgoGlobal = glob.__zalgopromise__ = glob.__zalgopromise__ || {};

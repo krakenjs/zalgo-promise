@@ -1,6 +1,6 @@
 /* @flow */
 
-import { ZalgoPromise } from 'src/promise';
+import { ZalgoPromise } from '../../src';
 
 describe('promise method cases', () => {
 
@@ -12,13 +12,13 @@ describe('promise method cases', () => {
             ZalgoPromise.resolve(3)
         ]).then(([ one, two, three ]) => {
             if (one !== 1) {
-                throw new Error(`Expected 1, got ${one}`);
+                throw new Error(`Expected 1, got ${ one }`);
             }
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
         }));
     });
@@ -31,13 +31,13 @@ describe('promise method cases', () => {
             3
         ]).then(([ one, two, three ]) => {
             if (one !== 1) {
-                throw new Error(`Expected 1, got ${one}`);
+                throw new Error(`Expected 1, got ${ one }`);
             }
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
         }).toPromise();
     });
@@ -54,10 +54,10 @@ describe('promise method cases', () => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -75,10 +75,10 @@ describe('promise method cases', () => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -102,18 +102,18 @@ describe('promise method cases', () => {
     it('should work with a set of resolved promises in promise.hash', () => {
 
         return ZalgoPromise.hash({
-            one: ZalgoPromise.resolve(1),
-            two: ZalgoPromise.resolve(2),
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.resolve(2),
             three: ZalgoPromise.resolve(3)
         }).then(({ one, two, three }) => {
             if (one !== 1) {
-                throw new Error(`Expected 1, got ${one}`);
+                throw new Error(`Expected 1, got ${ one }`);
             }
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
         }).toPromise();
     });
@@ -121,18 +121,18 @@ describe('promise method cases', () => {
     it('should work with a set of resolved values or promises in promise.hash', () => {
 
         return ZalgoPromise.hash({
-            one: 1,
-            two: ZalgoPromise.resolve(2),
+            one:   1,
+            two:   ZalgoPromise.resolve(2),
             three: 3
         }).then(({ one, two, three }) => {
             if (one !== 1) {
-                throw new Error(`Expected 1, got ${one}`);
+                throw new Error(`Expected 1, got ${ one }`);
             }
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
         }).toPromise();
     });
@@ -142,17 +142,17 @@ describe('promise method cases', () => {
         let error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.hash({
-            one: ZalgoPromise.resolve(1),
-            two: ZalgoPromise.reject(new Error(error)),
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.reject(new Error(error)),
             three: ZalgoPromise.resolve(3)
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -163,21 +163,20 @@ describe('promise method cases', () => {
         let error2 = 'SERIOUS_ERROR2';
 
         return ZalgoPromise.hash({
-            one: ZalgoPromise.resolve(1),
-            two: ZalgoPromise.reject(new Error(error)),
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.reject(new Error(error)),
             three: ZalgoPromise.reject(new Error(error2))
         }).then(() => {
             throw new Error(`Expected then to not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
-
 
 
     it('should work with a set of values in promise.map', () => {
@@ -188,13 +187,13 @@ describe('promise method cases', () => {
             3
         ], x => x + 1).then(([ two, three, four ]) => {
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
             if (four !== 4) {
-                throw new Error(`Expected 4, got ${four}`);
+                throw new Error(`Expected 4, got ${ four }`);
             }
         }));
     });
@@ -207,13 +206,13 @@ describe('promise method cases', () => {
             3
         ], x => ZalgoPromise.resolve(x + 1)).then(([ two, three, four ]) => {
             if (two !== 2) {
-                throw new Error(`Expected 2, got ${two}`);
+                throw new Error(`Expected 2, got ${ two }`);
             }
             if (three !== 3) {
-                throw new Error(`Expected 3, got ${three}`);
+                throw new Error(`Expected 3, got ${ three }`);
             }
             if (four !== 4) {
-                throw new Error(`Expected 4, got ${four}`);
+                throw new Error(`Expected 4, got ${ four }`);
             }
         }).toPromise();
     });
@@ -226,7 +225,7 @@ describe('promise method cases', () => {
             return value;
         }).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });
@@ -241,7 +240,7 @@ describe('promise method cases', () => {
             }
         }).then(result => {
             if (result && result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });
@@ -254,7 +253,7 @@ describe('promise method cases', () => {
             return ZalgoPromise.resolve(value);
         }).then(result => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });
@@ -269,7 +268,7 @@ describe('promise method cases', () => {
             }
         }).then(result => {
             if (result && result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });
@@ -286,7 +285,7 @@ describe('promise method cases', () => {
             }
         }).then(result => {
             if (result && result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });
@@ -307,7 +306,7 @@ describe('promise method cases', () => {
             }
         }).then(result => {
             if (result && result !== value) {
-                throw new Error(`Expected ${result} to equal ${value}`);
+                throw new Error(`Expected ${ result } to equal ${ value }`);
             }
         }).toPromise();
     });

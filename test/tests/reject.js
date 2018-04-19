@@ -1,6 +1,7 @@
 /* @flow */
+/* eslint max-lines: 0 */
 
-import { ZalgoPromise } from 'src/promise';
+import { ZalgoPromise } from '../../src';
 
 describe('reject cases', () => {
 
@@ -8,14 +9,14 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.reject(new Error(error)).then(result => {
+        return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -24,14 +25,14 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.reject(new Error(error)).then(result => {
+        return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }, err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -40,11 +41,11 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return (new ZalgoPromise()).reject(new Error(error)).then(result => {
+        return (new ZalgoPromise()).reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -53,11 +54,11 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return new ZalgoPromise((resolve, reject) => reject(new Error(error))).then(result => {
+        return new ZalgoPromise((resolve, reject) => reject(new Error(error))).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -68,11 +69,11 @@ describe('reject cases', () => {
 
         return new ZalgoPromise((resolve, reject) => {
             setTimeout(() => reject(new Error(error)), 50);
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -81,11 +82,13 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return new ZalgoPromise(() => { throw new Error(error); }).then(result => {
+        return new ZalgoPromise(() => {
+            throw new Error(error);
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -94,16 +97,16 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.reject(new Error(error)).then(result => {
+        return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error('This should never be called');
-        }).then(result => {
+        }).then(() => {
             throw new Error('This should never be called either');
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -113,19 +116,19 @@ describe('reject cases', () => {
         let value = 'foobar';
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.reject(new Error(error)).then(result => {
+        return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
             return value;
-        }).then(result => {
+        }).then((result) => {
             if (result !== value) {
-                throw new Error(`Expected ${result} to be ${value}`);
+                throw new Error(`Expected ${ result } to be ${ value }`);
             }
         }).toPromise();
     });
@@ -134,7 +137,7 @@ describe('reject cases', () => {
 
         let hasRejected = false;
 
-        ZalgoPromise.reject(new Error('Some error')).then(result => {
+        ZalgoPromise.reject(new Error('Some error')).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(() => {
             hasRejected = true;
@@ -152,14 +155,14 @@ describe('reject cases', () => {
         promise.reject(new Error('fizzbuzz'));
         promise.resolve(new Error('$$%^&*'));
 
-        return promise.then(result => {
+        return promise.then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -181,7 +184,7 @@ describe('reject cases', () => {
         }
 
         if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
+            throw new TypeError(`Expected error to be thrown`);
         }
     });
 
@@ -192,14 +195,14 @@ describe('reject cases', () => {
 
         return ZalgoPromise.resolve(value).then(() => {
             return ZalgoPromise.reject(new Error(error));
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -213,14 +216,14 @@ describe('reject cases', () => {
             return new ZalgoPromise((resolve, reject) => {
                 setTimeout(() => reject(new Error(error)), 50);
             });
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -230,16 +233,16 @@ describe('reject cases', () => {
         let value = 'foobar';
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             throw new Error(error);
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -250,64 +253,64 @@ describe('reject cases', () => {
         let error = 'SERIOUS_ERROR';
         let error2 = 'TERRIBLE_ERROR';
 
-        return ZalgoPromise.resolve(value).then(result => {
+        return ZalgoPromise.resolve(value).then(() => {
             throw new Error(error);
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(() => {
             throw new Error(error2);
-        }).then(result => {
+        }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected err to be Error type, got ${typeof err}`);
+                throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
             if (err.message !== error2) {
-                throw new Error(`Expected ${err.message} to be ${error2}`);
+                throw new Error(`Expected ${ err.message } to be ${ error2 }`);
             }
         }).toPromise();
     });
 
     it('should turn an undefined rejection into an actual error', () => {
 
-        return ZalgoPromise.reject(undefined).then(result => {
+        return ZalgoPromise.reject(undefined).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected Error object to be thrown`);
+                throw new TypeError(`Expected Error object to be thrown`);
             }
         }).toPromise();
     });
 
     it('should turn a null rejection into an actual error', () => {
 
-        return ZalgoPromise.reject(null).then(result => {
+        return ZalgoPromise.reject(null).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected Error object to be thrown`);
+                throw new TypeError(`Expected Error object to be thrown`);
             }
         }).toPromise();
     });
 
     it('should turn a null string rejection into an actual error', () => {
 
-        return ZalgoPromise.reject('').then(result => {
+        return ZalgoPromise.reject('').then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected Error object to be thrown`);
+                throw new TypeError(`Expected Error object to be thrown`);
             }
         }).toPromise();
     });
 
     it('should turn an false rejection into an actual error', () => {
 
-        return ZalgoPromise.reject(false).then(result => {
+        return ZalgoPromise.reject(false).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (!(err instanceof Error)) {
-                throw new Error(`Expected Error object to be thrown`);
+                throw new TypeError(`Expected Error object to be thrown`);
             }
         }).toPromise();
     });
@@ -316,11 +319,11 @@ describe('reject cases', () => {
 
         let error = 'SERIOUS_ERROR';
 
-        return ZalgoPromise.reject(error).then(result => {
+        return ZalgoPromise.reject(error).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err !== error) {
-                throw new Error(`Expected ${Object.prototype.toString.call(err)} to be ${error}`);
+                throw new Error(`Expected ${ Object.prototype.toString.call(err) } to be ${ error }`);
             }
         }).toPromise();
     });
@@ -332,13 +335,13 @@ describe('reject cases', () => {
 
         try {
             // $FlowFixMe
-            promise.then(123);
+            promise.then(123); // eslint-disable-line promise/catch-or-return
         } catch (err) {
             caughtErr = err;
         }
 
         if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
+            throw new TypeError(`Expected error to be thrown`);
         }
     });
 
@@ -349,13 +352,13 @@ describe('reject cases', () => {
 
         try {
             // $FlowFixMe
-            promise.then(null, 123);
+            promise.then(null, 123); // eslint-disable-line promise/catch-or-return
         } catch (err) {
             caughtErr = err;
         }
 
         if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
+            throw new TypeError(`Expected error to be thrown`);
         }
     });
 
@@ -372,7 +375,7 @@ describe('reject cases', () => {
         }
 
         if (!(caughtErr instanceof Error)) {
-            throw new Error(`Expected error to be thrown`);
+            throw new TypeError(`Expected error to be thrown`);
         }
     });
 
@@ -425,13 +428,13 @@ describe('reject cases', () => {
         let error = 'SERIOUS_ERROR';
         let finallyCalled = false;
 
-        return ZalgoPromise.reject(new Error(error)).then(result => {
+        return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).finally(() => {
             finallyCalled = true;
         }).catch(err => {
             if (err instanceof Error && err.message !== error) {
-                throw new Error(`Expected ${err.message} to be ${error}`);
+                throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
             if (!finallyCalled) {
                 throw new Error(`Expected finally to be called`);
@@ -459,7 +462,7 @@ describe('reject cases', () => {
         setTimeout(() => {
             listener.cancel();
             if (handlerCalled !== 1) {
-                return done(new Error(`Expected handler to be called 1 time, got ${handlerCalled}`));
+                return done(new Error(`Expected handler to be called 1 time, got ${ handlerCalled }`));
             }
             return done();
         }, 50);

@@ -1,6 +1,6 @@
 /* @flow */
 
-export * from './resolve';
-export * from './reject';
-export * from './window';
-export * from './methods';
+import './resolve';
+import './reject';
+import './window';
+import './methods';

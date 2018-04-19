@@ -95,7 +95,7 @@ export class ZalgoPromise<R : mixed> {
 
         if (!error) {
             let err = (error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error));
-            error = new Error(`Expected reject to be called with Error, got ${err}`);
+            error = new Error(`Expected reject to be called with Error, got ${ err }`);
         }
 
         this.rejected = true;
@@ -119,6 +119,7 @@ export class ZalgoPromise<R : mixed> {
         this.reject(error);
     }
 
+    // eslint-disable-next-line complexity
     dispatch() {
 
         let { dispatching, resolved, rejected, handlers } = this;
@@ -185,8 +186,11 @@ export class ZalgoPromise<R : mixed> {
 
                 } else {
                     // $FlowFixMe
-                    result.then(res => { promise.resolve(res); },
-                                err => { promise.reject(err);  });
+                    result.then(res => { // eslint-disable-line promise/catch-or-return
+                        promise.resolve(res);
+                    }, err => {
+                        promise.reject(err);
+                    });
                 }
 
             } else {
@@ -259,7 +263,7 @@ export class ZalgoPromise<R : mixed> {
                 return;
             }
 
-            this.reject(err || new Error(`Promise timed out after ${time}ms`));
+            this.reject(err || new Error(`Promise timed out after ${ time }ms`));
 
         }, time);
 
@@ -273,7 +277,7 @@ export class ZalgoPromise<R : mixed> {
     toPromise() : Promise<R> {
         // $FlowFixMe
         if (typeof Promise === 'undefined') {
-            throw new Error(`Could not find Promise`);
+            throw new TypeError(`Could not find Promise`);
         }
         // $FlowFixMe
         return Promise.resolve(this);
@@ -323,7 +327,7 @@ export class ZalgoPromise<R : mixed> {
                 continue;
             }
 
-            ZalgoPromise.resolve(prom).then(result => {
+            ZalgoPromise.resolve(prom).then(result => { // eslint-disable-line promise/catch-or-return
                 results[i] = result;
                 count -= 1;
                 if (count === 0) {
@@ -341,7 +345,7 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    static hash<A, O : { [string] : (A | ZalgoPromise<A>) }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> {
+    static hash<O : { [string] : * }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> {
         let result = {};
         
         return ZalgoPromise.all(Object.keys(promises).map(key => {
@@ -358,7 +362,7 @@ export class ZalgoPromise<R : mixed> {
         return ZalgoPromise.all(items.map(method));
     }
 
-    static onPossiblyUnhandledException(handler : (err : mixed) => mixed) : { cancel : () => void } {
+    static onPossiblyUnhandledException(handler : (err : mixed) => void) : { cancel : () => void } {
         return onPossiblyUnhandledException(handler);
     }
 

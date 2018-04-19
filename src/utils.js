@@ -1,5 +1,6 @@
+/* @flow */
 
-export function isPromise(item) {
+export function isPromise(item : mixed) : boolean {
     try {
         if (!item) {
             return false;
