@@ -297,7 +297,7 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().reject(error);
     }
 
-    static all<X: Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> {
+    static all<X : [*] | [*, *] | [*, *, *] | [*, *, *, *] | [*, *, *, *, *] | [*, *, *, *, *, *] | [*, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *, *] | Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> {
 
         let promise = new ZalgoPromise();
         let count = promises.length;

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "gulp test",
+    "flow": "flow",
     "postinstall": "node postinstall.js"
   },
   "repository": {
@@ -45,7 +46,7 @@
     "chai": "^4.0.1",
     "eslint": "^3",
     "eslint-plugin-flowtype": "^2.30.0",
-    "flow-bin": "0.56.0",
+    "flow-bin": "^0",
     "flow-runtime": "^0.12.0",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
