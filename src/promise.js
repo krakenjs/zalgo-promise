@@ -208,7 +208,7 @@ export class ZalgoPromise<R : mixed> {
         }
     }
 
-    then<X : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | X), onError : void | (error : mixed) => (ZalgoPromise<X> | X)) : ZalgoPromise<X> {
+    then<X : mixed, Y : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | Y), onError : void | (error : mixed) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
 
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
@@ -218,7 +218,7 @@ export class ZalgoPromise<R : mixed> {
             throw new Error('Promise.then expected a function for error handler');
         }
 
-        let promise : ZalgoPromise<X> = new ZalgoPromise();
+        let promise : ZalgoPromise<X | Y> = new ZalgoPromise();
 
         this.handlers.push({
             promise,
@@ -233,7 +233,7 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    catch<X : mixed>(onError : (error : mixed) => X | ZalgoPromise<X>) : ZalgoPromise<X> {
+    catch<X : mixed, Y : mixed>(onError : (error : mixed) => ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
         return this.then(undefined, onError);
     }
 
@@ -366,7 +366,7 @@ export class ZalgoPromise<R : mixed> {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try<X : mixed, C : mixed, A : Array<mixed>>(method : (...args : A) => (ZalgoPromise<X> | X), context : ?C, args : ?A) : ZalgoPromise<X> {
+    static try<X : mixed, Y : mixed, C : mixed, A : Array<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
 
         let result;
         
