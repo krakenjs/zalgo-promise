@@ -84,7 +84,7 @@ describe('resolve cases', () => {
 
         let hasResolved = false;
 
-        ZalgoPromise.resolve().then(() => { // eslint-disable-line promise/catch-or-return
+        ZalgoPromise.resolve().then(() => {
             hasResolved = true;
         });
 

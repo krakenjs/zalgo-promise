@@ -335,7 +335,7 @@ describe('reject cases', () => {
 
         try {
             // $FlowFixMe
-            promise.then(123); // eslint-disable-line promise/catch-or-return
+            promise.then(123);
         } catch (err) {
             caughtErr = err;
         }
@@ -352,7 +352,7 @@ describe('reject cases', () => {
 
         try {
             // $FlowFixMe
-            promise.then(null, 123); // eslint-disable-line promise/catch-or-return
+            promise.then(null, 123);
         } catch (err) {
             caughtErr = err;
         }

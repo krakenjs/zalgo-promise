@@ -186,7 +186,7 @@ export class ZalgoPromise<R : mixed> {
 
                 } else {
                     // $FlowFixMe
-                    result.then(res => { // eslint-disable-line promise/catch-or-return
+                    result.then(res => {
                         promise.resolve(res);
                     }, err => {
                         promise.reject(err);
@@ -306,7 +306,7 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().reject(error);
     }
 
-    static all<X : [*] | [*, *] | [*, *, *] | [*, *, *, *] | [*, *, *, *, *] | [*, *, *, *, *, *] | [*, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *, *] | Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> {
+    static all<X : [*] | [*, *] | [*, *, *] | [*, *, *, *] | [*, *, *, *, *] | [*, *, *, *, *, *] | [*, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *, *] | Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
 
         let promise = new ZalgoPromise();
         let count = promises.length;
@@ -332,7 +332,7 @@ export class ZalgoPromise<R : mixed> {
                 continue;
             }
 
-            ZalgoPromise.resolve(prom).then(result => { // eslint-disable-line promise/catch-or-return
+            ZalgoPromise.resolve(prom).then(result => {
                 results[i] = result;
                 count -= 1;
                 if (count === 0) {
@@ -350,7 +350,7 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    static hash<O : { [string] : * }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> {
+    static hash<O : { [string] : * }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
         let result = {};
         
         return ZalgoPromise.all(Object.keys(promises).map(key => {
