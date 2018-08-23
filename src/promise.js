@@ -237,14 +237,19 @@ export class ZalgoPromise<R : mixed> {
         return this.then(undefined, onError);
     }
 
-    finally(handler : () => mixed) : ZalgoPromise<R> {
+    finally(onFinally : () => mixed) : ZalgoPromise<R> {
+
+        if (onFinally && typeof onFinally !== 'function' && !onFinally.call) {
+            throw new Error('Promise.finally expected a function');
+        }
+
         return this.then((result) => {
-            return ZalgoPromise.try(handler)
+            return ZalgoPromise.try(onFinally)
                 .then(() => {
                     return result;
                 });
         }, (err) => {
-            return ZalgoPromise.try(handler)
+            return ZalgoPromise.try(onFinally)
                 .then(() => {
                     throw err;
                 });
