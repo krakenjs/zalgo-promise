@@ -373,6 +373,10 @@ export class ZalgoPromise<R : mixed> {
 
     static try<X : mixed, Y : mixed, C : mixed, A : Array<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
 
+        if (method && typeof method !== 'function' && !method.call) {
+            throw new Error('Promise.try expected a function');
+        }
+
         let result;
         
         try {
