@@ -5,7 +5,7 @@ import type { ZalgoPromise } from './promise';
 type ZalgoGlobalType = {
     flushPromises : Array<ZalgoPromise<mixed>>,
     activeCount : number,
-    possiblyUnhandledPromiseHandlers : Array<(mixed) => void>,
+    possiblyUnhandledPromiseHandlers : Array<<T>(mixed, ZalgoPromise<T>) => void>, // eslint-disable-line no-undef
     dispatchedErrors : Array<mixed>
 };
 

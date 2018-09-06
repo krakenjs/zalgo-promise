@@ -17,6 +17,7 @@ export class ZalgoPromise<R : mixed> {
         onError : void | (error : mixed) => mixed
     }>
     dispatching : boolean
+    stack : string
 
     constructor(handler : ?(resolve : (result : R) => void, reject : (error : mixed) => void) => void) {
 
@@ -66,6 +67,14 @@ export class ZalgoPromise<R : mixed> {
                 this.reject(error);
             }
         }
+
+        if (__DEBUG__) {
+            try {
+                throw new Error(`ZalgoPromise`);
+            } catch (err) {
+                this.stack = err.stack;
+            }
+        }
     }
 
     resolve(result : R) : ZalgoPromise<R> {
@@ -104,7 +113,7 @@ export class ZalgoPromise<R : mixed> {
         if (!this.errorHandled) {
             setTimeout(() => {
                 if (!this.errorHandled) {
-                    dispatchPossiblyUnhandledError(error);
+                    dispatchPossiblyUnhandledError(error, this);
                 }
             }, 1);
         }

@@ -1,8 +1,9 @@
 /* @flow */
 
 import { getGlobal } from './global';
+import type { ZalgoPromise } from './promise';
 
-export function dispatchPossiblyUnhandledError(err : mixed) {
+export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPromise<T>) {
 
     if (getGlobal().dispatchedErrors.indexOf(err) !== -1) {
         return;
@@ -11,11 +12,15 @@ export function dispatchPossiblyUnhandledError(err : mixed) {
     getGlobal().dispatchedErrors.push(err);
 
     setTimeout(() => {
+        if (__DEBUG__) {
+            throw new Error(`${ err.stack }\n\nFrom promise:\n\n${ promise.stack }`);
+        }
+
         throw err;
     }, 1);
 
     for (let j = 0; j < getGlobal().possiblyUnhandledPromiseHandlers.length; j++) {
-        getGlobal().possiblyUnhandledPromiseHandlers[j](err);
+        getGlobal().possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
 
