@@ -285,7 +285,7 @@ export class ZalgoPromise<R : mixed> {
             throw new TypeError(`Could not find Promise`);
         }
         // $FlowFixMe
-        return Promise.resolve(this);
+        return Promise.resolve(this); // eslint-disable-line compat/compat
     }
 
     static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {

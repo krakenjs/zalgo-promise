@@ -6,7 +6,7 @@ describe('promise method cases', () => {
 
     it('should work with a set of resolved promises in promise.all', () => {
 
-        return Promise.resolve(ZalgoPromise.all([
+        return ZalgoPromise.all([
             ZalgoPromise.resolve(1),
             ZalgoPromise.resolve(2),
             ZalgoPromise.resolve(3)
@@ -20,7 +20,7 @@ describe('promise method cases', () => {
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${ three }`);
             }
-        }));
+        }).toPromise();
     });
 
     it('should work with a set of resolved values or promises in promise.all', () => {
@@ -181,7 +181,7 @@ describe('promise method cases', () => {
 
     it('should work with a set of values in promise.map', () => {
 
-        return Promise.resolve(ZalgoPromise.map([
+        return ZalgoPromise.map([
             1,
             2,
             3
@@ -195,7 +195,7 @@ describe('promise method cases', () => {
             if (four !== 4) {
                 throw new Error(`Expected 4, got ${ four }`);
             }
-        }));
+        }).toPromise();
     });
 
     it('should work with a set of values and a promise returning function in promise.map', () => {
