@@ -13,7 +13,8 @@ export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPr
 
     setTimeout(() => {
         if (__DEBUG__) {
-            throw new Error(`${ err.stack }\n\nFrom promise:\n\n${ promise.stack }`);
+            // $FlowFixMe
+            throw new Error(`${ err.stack || err.toString() }\n\nFrom promise:\n\n${ promise.stack }`);
         }
 
         throw err;
