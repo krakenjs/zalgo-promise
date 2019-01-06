@@ -315,6 +315,10 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().reject(error);
     }
 
+    static asyncReject(error : mixed) : ZalgoPromise<R> {
+        return new ZalgoPromise().asyncReject(error);
+    }
+
     static all<X : [*] | [*, *] | [*, *, *] | [*, *, *, *] | [*, *, *, *, *] | [*, *, *, *, *, *] | [*, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *, *] | Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
 
         let promise = new ZalgoPromise();
