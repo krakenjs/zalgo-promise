@@ -231,6 +231,9 @@
                 ZalgoPromise.reject = function(error) {
                     return new ZalgoPromise().reject(error);
                 };
+                ZalgoPromise.asyncReject = function(error) {
+                    return new ZalgoPromise().asyncReject(error);
+                };
                 ZalgoPromise.all = function(promises) {
                     var promise = new ZalgoPromise(), count = promises.length, results = [];
                     if (!count) {
@@ -320,5 +323,4 @@
         }
     });
 });
-//# sourceMappingURL=zalgo-promise.js.map
 //# sourceMappingURL=zalgo-promise.js.map

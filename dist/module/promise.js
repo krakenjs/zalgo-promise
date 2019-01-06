@@ -318,6 +318,10 @@ var ZalgoPromise = function () {
         return new ZalgoPromise().reject(error);
     };
 
+    ZalgoPromise.asyncReject = function asyncReject(error) {
+        return new ZalgoPromise().asyncReject(error);
+    };
+
     ZalgoPromise.all = function all(promises) {
         // eslint-disable-line no-undef
 
