@@ -123,9 +123,10 @@ export class ZalgoPromise<R : mixed> {
         return this;
     }
 
-    asyncReject(error : mixed) {
+    asyncReject(error : mixed) : ZalgoPromise<R> {
         this.errorHandled = true;
         this.reject(error);
+        return this;
     }
 
     // eslint-disable-next-line complexity
