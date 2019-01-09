@@ -115,6 +115,7 @@ var ZalgoPromise = function () {
     ZalgoPromise.prototype.asyncReject = function asyncReject(error) {
         this.errorHandled = true;
         this.reject(error);
+        return this;
     };
 
     // eslint-disable-next-line complexity

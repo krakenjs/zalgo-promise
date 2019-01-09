@@ -39,7 +39,7 @@ declare export class ZalgoPromise<R> {
   resolved: boolean;
   stack: string;
   value: R;
-  asyncReject(error: mixed): any;
+  asyncReject(error: mixed): ZalgoPromise<R>;
   catch<X, Y>(onError: (error: mixed) => ZalgoPromise<X> | Y): ZalgoPromise<X | Y>;
   constructor(handler: ?(resolve: (result: R) => void, reject: (error: mixed) => void) => void): any;
   dispatch(): any;
