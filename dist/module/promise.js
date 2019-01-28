@@ -2,7 +2,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 import { isPromise as _isPromise } from './utils';
 import { onPossiblyUnhandledException as _onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
-import { getGlobal } from './global';
+import { startActive, endActive, awaitActive } from './flush';
 
 var ZalgoPromise = function () {
     function ZalgoPromise(handler) {
@@ -24,6 +24,8 @@ var ZalgoPromise = function () {
             var rejected = false;
             var isAsync = false;
 
+            startActive();
+
             try {
                 handler(function (res) {
                     if (isAsync) {
@@ -41,9 +43,12 @@ var ZalgoPromise = function () {
                     }
                 });
             } catch (err) {
+                endActive();
                 this.reject(err);
                 return;
             }
+
+            endActive();
 
             isAsync = true;
 
@@ -118,9 +123,6 @@ var ZalgoPromise = function () {
         return this;
     };
 
-    // eslint-disable-next-line complexity
-
-
     ZalgoPromise.prototype.dispatch = function dispatch() {
         var _this3 = this;
 
@@ -139,7 +141,7 @@ var ZalgoPromise = function () {
         }
 
         this.dispatching = true;
-        getGlobal().activeCount += 1;
+        startActive();
 
         var _loop = function _loop(i) {
             var _handlers$i = handlers[i],
@@ -212,11 +214,7 @@ var ZalgoPromise = function () {
 
         handlers.length = 0;
         this.dispatching = false;
-        getGlobal().activeCount -= 1;
-
-        if (getGlobal().activeCount === 0) {
-            ZalgoPromise.flushQueue();
-        }
+        endActive();
     };
 
     ZalgoPromise.prototype.then = function then(onSuccess, onError) {
@@ -404,12 +402,17 @@ var ZalgoPromise = function () {
 
         var result = void 0;
 
+        startActive();
+
         try {
             // $FlowFixMe
             result = method.apply(context, args || []);
         } catch (err) {
+            endActive();
             return ZalgoPromise.reject(err);
         }
+
+        endActive();
 
         return ZalgoPromise.resolve(result);
     };
@@ -430,24 +433,7 @@ var ZalgoPromise = function () {
     };
 
     ZalgoPromise.flush = function flush() {
-        var promise = new ZalgoPromise();
-        getGlobal().flushPromises.push(promise);
-
-        if (getGlobal().activeCount === 0) {
-            ZalgoPromise.flushQueue();
-        }
-
-        return promise;
-    };
-
-    ZalgoPromise.flushQueue = function flushQueue() {
-        var promisesToFlush = getGlobal().flushPromises;
-        getGlobal().flushPromises = [];
-
-        for (var _i2 = 0, _length2 = promisesToFlush == null ? 0 : promisesToFlush.length; _i2 < _length2; _i2++) {
-            var _promise = promisesToFlush[_i2];
-            _promise.resolve();
-        }
+        return awaitActive(ZalgoPromise);
     };
 
     return ZalgoPromise;

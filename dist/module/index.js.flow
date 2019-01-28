@@ -22,7 +22,6 @@ declare export class ZalgoPromise<R> {
   static asyncReject(error: mixed): ZalgoPromise<R>;
   static delay(delay: number): ZalgoPromise<void>;
   static flush(): ZalgoPromise<void>;
-  static flushQueue(): any;
   static hash<O: {[_: string]: mixed /* UNEXPECTED TYPE: ExistsT */}>(promises: O): ZalgoPromise<mixed /* UNEXPECTED TYPE: EvalT */>;
   static isPromise(value: mixed): boolean;
   static map<T, X>(items: Array<T>, method: (_: T) => ZalgoPromise<X> | X): ZalgoPromise<Array<X>>;

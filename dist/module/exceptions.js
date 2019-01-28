@@ -1,13 +1,16 @@
-import { getGlobal } from './global';
 
+
+var dispatchedErrors = [];
+
+var possiblyUnhandledPromiseHandlers = [];
 
 export function dispatchPossiblyUnhandledError(err, promise) {
 
-    if (getGlobal().dispatchedErrors.indexOf(err) !== -1) {
+    if (dispatchedErrors.indexOf(err) !== -1) {
         return;
     }
 
-    getGlobal().dispatchedErrors.push(err);
+    dispatchedErrors.push(err);
 
     setTimeout(function () {
         if (__DEBUG__) {
@@ -18,17 +21,18 @@ export function dispatchPossiblyUnhandledError(err, promise) {
         throw err;
     }, 1);
 
-    for (var j = 0; j < getGlobal().possiblyUnhandledPromiseHandlers.length; j++) {
-        getGlobal().possiblyUnhandledPromiseHandlers[j](err, promise);
+    for (var j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
+        // $FlowFixMe
+        possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
 
 export function onPossiblyUnhandledException(handler) {
-    getGlobal().possiblyUnhandledPromiseHandlers.push(handler);
+    possiblyUnhandledPromiseHandlers.push(handler);
 
     return {
         cancel: function cancel() {
-            getGlobal().possiblyUnhandledPromiseHandlers.splice(getGlobal().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+            possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
         }
     };
 }
