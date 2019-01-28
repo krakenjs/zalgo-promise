@@ -2,7 +2,7 @@
 
 import { isPromise } from './utils';
 import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
-import { getGlobal } from './global';
+import { startActive, endActive, awaitActive } from './flush';
 
 export class ZalgoPromise<R : mixed> {
 
@@ -35,6 +35,8 @@ export class ZalgoPromise<R : mixed> {
             let rejected = false;
             let isAsync = false;
 
+            startActive();
+
             try {
                 handler(res => {
                     if (isAsync) {
@@ -54,9 +56,12 @@ export class ZalgoPromise<R : mixed> {
                 });
 
             } catch (err) {
+                endActive();
                 this.reject(err);
                 return;
             }
+
+            endActive();
 
             isAsync = true;
 
@@ -128,8 +133,7 @@ export class ZalgoPromise<R : mixed> {
         this.reject(error);
         return this;
     }
-
-    // eslint-disable-next-line complexity
+    
     dispatch() {
 
         let { dispatching, resolved, rejected, handlers } = this;
@@ -143,7 +147,7 @@ export class ZalgoPromise<R : mixed> {
         }
 
         this.dispatching = true;
-        getGlobal().activeCount += 1;
+        startActive();
 
         for (let i = 0; i < handlers.length; i++) {
 
@@ -211,11 +215,7 @@ export class ZalgoPromise<R : mixed> {
 
         handlers.length = 0;
         this.dispatching = false;
-        getGlobal().activeCount -= 1;
-
-        if (getGlobal().activeCount === 0) {
-            ZalgoPromise.flushQueue();
-        }
+        endActive();
     }
 
     then<X : mixed, Y : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | Y), onError : void | (error : mixed) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
@@ -392,13 +392,18 @@ export class ZalgoPromise<R : mixed> {
         }
 
         let result;
+
+        startActive();
         
         try {
             // $FlowFixMe
             result = method.apply(context, args || []);
         } catch (err) {
+            endActive();
             return ZalgoPromise.reject(err);
         }
+
+        endActive();
 
         return ZalgoPromise.resolve(result);
     }
@@ -419,22 +424,6 @@ export class ZalgoPromise<R : mixed> {
     }
 
     static flush() : ZalgoPromise<void> {
-        let promise = new ZalgoPromise();
-        getGlobal().flushPromises.push(promise);
-
-        if (getGlobal().activeCount === 0) {
-            ZalgoPromise.flushQueue();
-        }
-
-        return promise;
-    }
-
-    static flushQueue() {
-        let promisesToFlush = getGlobal().flushPromises;
-        getGlobal().flushPromises = [];
-
-        for (let promise of promisesToFlush) {
-            promise.resolve();
-        }
+        return awaitActive(ZalgoPromise);
     }
 }
