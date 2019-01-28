@@ -1,15 +1,17 @@
 /* @flow */
 
-import { getGlobal } from './global';
 import type { ZalgoPromise } from './promise';
+
+const dispatchedErrors = [];
+const possiblyUnhandledPromiseHandlers = [];
 
 export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPromise<T>) {
 
-    if (getGlobal().dispatchedErrors.indexOf(err) !== -1) {
+    if (dispatchedErrors.indexOf(err) !== -1) {
         return;
     }
 
-    getGlobal().dispatchedErrors.push(err);
+    dispatchedErrors.push(err);
 
     setTimeout(() => {
         if (__DEBUG__) {
@@ -20,17 +22,18 @@ export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPr
         throw err;
     }, 1);
 
-    for (let j = 0; j < getGlobal().possiblyUnhandledPromiseHandlers.length; j++) {
-        getGlobal().possiblyUnhandledPromiseHandlers[j](err, promise);
+    for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
+        // $FlowFixMe
+        possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
 
-export function onPossiblyUnhandledException(handler : (mixed) => void) : { cancel : () => void } {
-    getGlobal().possiblyUnhandledPromiseHandlers.push(handler);
+export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<*>) => void) : { cancel : () => void } {
+    possiblyUnhandledPromiseHandlers.push(handler);
 
     return {
         cancel() {
-            getGlobal().possiblyUnhandledPromiseHandlers.splice(getGlobal().possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
+            possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
         }
     };
 }

@@ -22,7 +22,7 @@ export function endActive() {
     flushActive();
 }
 
-export function awaitActive(Zalgo : ZalgoPromise) : ZalgoPromise<void> {
+export function awaitActive(Zalgo : Class<ZalgoPromise<*>>) : ZalgoPromise<void> { // eslint-disable-line no-undef
     let promise = flushPromise = flushPromise || new Zalgo();
     flushActive();
     return promise;
