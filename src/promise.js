@@ -365,7 +365,7 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    static hash<O : { [string] : * }>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+    static hash<O : Object>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
         let result = {};
         
         return ZalgoPromise.all(Object.keys(promises).map(key => {
