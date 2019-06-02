@@ -97,6 +97,7 @@ var ZalgoPromise = function () {
         }
 
         if (!error) {
+            // $FlowFixMe
             var _err = error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error);
             error = new Error('Expected reject to be called with Error, got ' + _err);
         }
