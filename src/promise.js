@@ -108,6 +108,7 @@ export class ZalgoPromise<R : mixed> {
         }
 
         if (!error) {
+            // $FlowFixMe
             let err = (error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error));
             error = new Error(`Expected reject to be called with Error, got ${ err }`);
         }
@@ -320,7 +321,7 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().asyncReject(error);
     }
 
-    static all<X : [*] | [*, *] | [*, *, *] | [*, *, *, *] | [*, *, *, *, *] | [*, *, *, *, *, *] | [*, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *] | [*, *, *, *, *, *, *, *, *] | Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+    static all<X : Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
 
         let promise = new ZalgoPromise();
         let count = promises.length;
