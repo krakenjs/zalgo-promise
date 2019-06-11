@@ -3,7 +3,7 @@
 import type { ZalgoPromise } from './promise';
 
 const dispatchedErrors = [];
-const possiblyUnhandledPromiseHandlers = [];
+const possiblyUnhandledPromiseHandlers : Array<(mixed, promise? : ZalgoPromise<mixed>) => void> = [];
 
 export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPromise<T>) {
 
@@ -28,7 +28,7 @@ export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPr
     }
 }
 
-export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<*>) => void) : { cancel : () => void } {
+export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<mixed>) => void) : { cancel : () => void } {
     possiblyUnhandledPromiseHandlers.push(handler);
 
     return {
