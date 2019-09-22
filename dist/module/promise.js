@@ -142,6 +142,14 @@ var ZalgoPromise = function () {
         this.dispatching = true;
         startActive();
 
+        var chain = function chain(firstPromise, secondPromise) {
+            return firstPromise.then(function (res) {
+                secondPromise.resolve(res);
+            }, function (err) {
+                secondPromise.reject(err);
+            });
+        };
+
         for (var i = 0; i < handlers.length; i++) {
             var _handlers$i = handlers[i],
                 _onSuccess = _handlers$i.onSuccess,
@@ -193,7 +201,7 @@ var ZalgoPromise = function () {
                     }
                 } else {
                     // $FlowFixMe
-                    _result2.then(_promise.resolve.bind(_promise), _promise.reject.bind(_promise));
+                    chain(_result2, _promise);
                 }
             } else {
 
@@ -322,36 +330,34 @@ var ZalgoPromise = function () {
             return promise;
         }
 
-        var _loop = function _loop(i) {
+        var chain = function chain(i, firstPromise, secondPromise) {
+            return firstPromise.then(function (res) {
+                results[i] = res;
+                count -= 1;
+                if (count === 0) {
+                    promise.resolve(results);
+                }
+            }, function (err) {
+                secondPromise.reject(err);
+            });
+        };
+
+        for (var i = 0; i < promises.length; i++) {
             var prom = promises[i];
 
             if (prom instanceof ZalgoPromise) {
                 if (prom.resolved) {
                     results[i] = prom.value;
                     count -= 1;
-                    return 'continue';
+                    continue;
                 }
             } else if (!_isPromise(prom)) {
                 results[i] = prom;
                 count -= 1;
-                return 'continue';
+                continue;
             }
 
-            ZalgoPromise.resolve(prom).then(function (result) {
-                results[i] = result;
-                count -= 1;
-                if (count === 0) {
-                    promise.resolve(results);
-                }
-            }, function (err) {
-                promise.reject(err);
-            });
-        };
-
-        for (var i = 0; i < promises.length; i++) {
-            var _ret = _loop(i);
-
-            if (_ret === 'continue') continue;
+            chain(i, ZalgoPromise.resolve(prom), promise);
         }
 
         if (count === 0) {

@@ -152,7 +152,13 @@
                     if (!dispatching && (resolved || rejected)) {
                         this.dispatching = !0;
                         startActive();
-                        for (var i = 0; i < handlers.length; i++) {
+                        for (var chain = function(firstPromise, secondPromise) {
+                            return firstPromise.then(function(res) {
+                                secondPromise.resolve(res);
+                            }, function(err) {
+                                secondPromise.reject(err);
+                            });
+                        }, i = 0; i < handlers.length; i++) {
                             var _handlers$i = handlers[i], _onSuccess = _handlers$i.onSuccess, _onError = _handlers$i.onError, _promise = _handlers$i.promise, _result2 = void 0;
                             if (resolved) try {
                                 _result2 = _onSuccess ? _onSuccess(this.value) : this.value;
@@ -174,7 +180,7 @@
                             if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
                                 _result2.resolved ? _promise.resolve(_result2.value) : _promise.reject(_result2.error);
                                 _result2.errorHandled = !0;
-                            } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? _promise.resolve(_result2.value) : _promise.reject(_result2.error) : _result2.then(_promise.resolve.bind(_promise), _promise.reject.bind(_promise)) : _promise.resolve(_result2);
+                            } else utils_isPromise(_result2) ? _result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected) ? _result2.resolved ? _promise.resolve(_result2.value) : _promise.reject(_result2.error) : chain(_result2, _promise) : _promise.resolve(_result2);
                         }
                         handlers.length = 0;
                         this.dispatching = !1;
@@ -241,26 +247,28 @@
                         promise.resolve(results);
                         return promise;
                     }
-                    for (var _loop = function(i) {
+                    for (var chain = function(i, firstPromise, secondPromise) {
+                        return firstPromise.then(function(res) {
+                            results[i] = res;
+                            0 == (count -= 1) && promise.resolve(results);
+                        }, function(err) {
+                            secondPromise.reject(err);
+                        });
+                    }, i = 0; i < promises.length; i++) {
                         var prom = promises[i];
                         if (prom instanceof ZalgoPromise) {
                             if (prom.resolved) {
                                 results[i] = prom.value;
                                 count -= 1;
-                                return "continue";
+                                continue;
                             }
                         } else if (!utils_isPromise(prom)) {
                             results[i] = prom;
                             count -= 1;
-                            return "continue";
+                            continue;
                         }
-                        ZalgoPromise.resolve(prom).then(function(result) {
-                            results[i] = result;
-                            0 == (count -= 1) && promise.resolve(results);
-                        }, function(err) {
-                            promise.reject(err);
-                        });
-                    }, i = 0; i < promises.length; i++) _loop(i);
+                        chain(i, ZalgoPromise.resolve(prom), promise);
+                    }
                     0 === count && promise.resolve(results);
                     return promise;
                 };
