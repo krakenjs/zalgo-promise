@@ -150,6 +150,14 @@ export class ZalgoPromise<R : mixed> {
         this.dispatching = true;
         startActive();
 
+        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
+            return firstPromise.then(res => {
+                secondPromise.resolve(res);
+            }, err => {
+                secondPromise.reject(err);
+            });
+        };
+
         for (let i = 0; i < handlers.length; i++) {
 
             let { onSuccess, onError, promise } = handlers[i];
@@ -201,7 +209,7 @@ export class ZalgoPromise<R : mixed> {
 
                 } else {
                     // $FlowFixMe
-                    result.then(promise.resolve.bind(promise), promise.reject.bind(promise));
+                    chain(result, promise);
                 }
 
             } else {
@@ -328,6 +336,18 @@ export class ZalgoPromise<R : mixed> {
             return promise;
         }
 
+        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
+            return firstPromise.then(res => {
+                results[i] = res;
+                count -= 1;
+                if (count === 0) {
+                    promise.resolve(results);
+                }
+            }, err => {
+                secondPromise.reject(err);
+            });
+        };
+
         for (let i = 0; i < promises.length; i++) {
             let prom = promises[i];
 
@@ -343,15 +363,7 @@ export class ZalgoPromise<R : mixed> {
                 continue;
             }
 
-            ZalgoPromise.resolve(prom).then(result => {
-                results[i] = result;
-                count -= 1;
-                if (count === 0) {
-                    promise.resolve(results);
-                }
-            }, err => {
-                promise.reject(err);
-            });
+            chain(i, ZalgoPromise.resolve(prom), promise);
         }
 
         if (count === 0) {
