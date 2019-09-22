@@ -125,8 +125,6 @@ var ZalgoPromise = function () {
     };
 
     ZalgoPromise.prototype.dispatch = function dispatch() {
-        var _this3 = this;
-
         var dispatching = this.dispatching,
             resolved = this.resolved,
             rejected = this.rejected,
@@ -144,73 +142,63 @@ var ZalgoPromise = function () {
         this.dispatching = true;
         startActive();
 
-        var _loop = function _loop(i) {
+        for (var i = 0; i < handlers.length; i++) {
             var _handlers$i = handlers[i],
-                onSuccess = _handlers$i.onSuccess,
-                onError = _handlers$i.onError,
-                promise = _handlers$i.promise;
+                _onSuccess = _handlers$i.onSuccess,
+                _onError = _handlers$i.onError,
+                _promise = _handlers$i.promise;
 
 
-            var result = void 0;
+            var _result2 = void 0;
 
             if (resolved) {
 
                 try {
-                    result = onSuccess ? onSuccess(_this3.value) : _this3.value;
+                    _result2 = _onSuccess ? _onSuccess(this.value) : this.value;
                 } catch (err) {
-                    promise.reject(err);
-                    return 'continue';
+                    _promise.reject(err);
+                    continue;
                 }
             } else if (rejected) {
 
-                if (!onError) {
-                    promise.reject(_this3.error);
-                    return 'continue';
+                if (!_onError) {
+                    _promise.reject(this.error);
+                    continue;
                 }
 
                 try {
-                    result = onError(_this3.error);
+                    _result2 = _onError(this.error);
                 } catch (err) {
-                    promise.reject(err);
-                    return 'continue';
+                    _promise.reject(err);
+                    continue;
                 }
             }
 
-            if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
+            if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
 
-                if (result.resolved) {
-                    promise.resolve(result.value);
+                if (_result2.resolved) {
+                    _promise.resolve(_result2.value);
                 } else {
-                    promise.reject(result.error);
+                    _promise.reject(_result2.error);
                 }
 
-                result.errorHandled = true;
-            } else if (_isPromise(result)) {
+                _result2.errorHandled = true;
+            } else if (_isPromise(_result2)) {
 
-                if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-                    if (result.resolved) {
-                        promise.resolve(result.value);
+                if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
+                    if (_result2.resolved) {
+                        _promise.resolve(_result2.value);
                     } else {
-                        promise.reject(result.error);
+                        _promise.reject(_result2.error);
                     }
                 } else {
                     // $FlowFixMe
-                    result.then(function (res) {
-                        promise.resolve(res);
-                    }, function (err) {
-                        promise.reject(err);
-                    });
+                    _result2.then(_promise.resolve.bind(_promise), _promise.reject.bind(_promise));
                 }
             } else {
 
-                promise.resolve(result);
+                _promise.resolve(_result2);
             }
-        };
-
-        for (var i = 0; i < handlers.length; i++) {
-            var _ret = _loop(i);
-
-            if (_ret === 'continue') continue;
         }
 
         handlers.length = 0;
@@ -265,7 +253,7 @@ var ZalgoPromise = function () {
     };
 
     ZalgoPromise.prototype.timeout = function timeout(time, err) {
-        var _this4 = this;
+        var _this3 = this;
 
         if (this.resolved || this.rejected) {
             return this;
@@ -273,11 +261,11 @@ var ZalgoPromise = function () {
 
         var timeout = setTimeout(function () {
 
-            if (_this4.resolved || _this4.rejected) {
+            if (_this3.resolved || _this3.rejected) {
                 return;
             }
 
-            _this4.reject(err || new Error('Promise timed out after ' + time + 'ms'));
+            _this3.reject(err || new Error('Promise timed out after ' + time + 'ms'));
         }, time);
 
         return this.then(function (result) {
@@ -334,7 +322,7 @@ var ZalgoPromise = function () {
             return promise;
         }
 
-        var _loop2 = function _loop2(i) {
+        var _loop = function _loop(i) {
             var prom = promises[i];
 
             if (prom instanceof ZalgoPromise) {
@@ -361,9 +349,9 @@ var ZalgoPromise = function () {
         };
 
         for (var i = 0; i < promises.length; i++) {
-            var _ret2 = _loop2(i);
+            var _ret = _loop(i);
 
-            if (_ret2 === 'continue') continue;
+            if (_ret === 'continue') continue;
         }
 
         if (count === 0) {
