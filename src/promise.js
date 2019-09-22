@@ -201,11 +201,7 @@ export class ZalgoPromise<R : mixed> {
 
                 } else {
                     // $FlowFixMe
-                    result.then(res => {
-                        promise.resolve(res);
-                    }, err => {
-                        promise.reject(err);
-                    });
+                    result.then(promise.resolve.bind(promise), promise.reject.bind(promise));
                 }
 
             } else {
