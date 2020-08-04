@@ -370,12 +370,27 @@ var ZalgoPromise = function () {
     ZalgoPromise.hash = function hash(promises) {
         // eslint-disable-line no-undef
         var result = {};
+        var awaitPromises = [];
 
-        return ZalgoPromise.all(Object.keys(promises).map(function (key) {
-            return ZalgoPromise.resolve(promises[key]).then(function (value) {
-                result[key] = value;
-            });
-        })).then(function () {
+        var _loop = function _loop(key) {
+            if (promises.hasOwnProperty(key)) {
+                var value = promises[key];
+
+                if (_isPromise(value)) {
+                    awaitPromises.push(value.then(function (res) {
+                        result[key] = res;
+                    }));
+                } else {
+                    result[key] = value;
+                }
+            }
+        };
+
+        for (var key in promises) {
+            _loop(key);
+        }
+
+        return ZalgoPromise.all(awaitPromises).then(function () {
             return result;
         });
     };

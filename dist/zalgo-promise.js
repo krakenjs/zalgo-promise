@@ -273,12 +273,16 @@
                     return promise;
                 };
                 ZalgoPromise.hash = function(promises) {
-                    var result = {};
-                    return ZalgoPromise.all(Object.keys(promises).map(function(key) {
-                        return ZalgoPromise.resolve(promises[key]).then(function(value) {
-                            result[key] = value;
-                        });
-                    })).then(function() {
+                    var result = {}, awaitPromises = [], _loop = function(key) {
+                        if (promises.hasOwnProperty(key)) {
+                            var value = promises[key];
+                            utils_isPromise(value) ? awaitPromises.push(value.then(function(res) {
+                                result[key] = res;
+                            })) : result[key] = value;
+                        }
+                    };
+                    for (var key in promises) _loop(key);
+                    return ZalgoPromise.all(awaitPromises).then(function() {
                         return result;
                     });
                 };
