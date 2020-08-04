@@ -375,14 +375,23 @@ export class ZalgoPromise<R : mixed> {
 
     static hash<O : Object>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
         let result = {};
+        let awaitPromises = [];
+
+        for (const key in promises) {
+            if (promises.hasOwnProperty(key)) {
+                let value = promises[key];
+
+                if (isPromise(value)) {
+                    awaitPromises.push(value.then(res => {
+                        result[key] = res;
+                    }));
+                } else {
+                    result[key] = value;
+                }
+            }
+        }
         
-        return ZalgoPromise.all(Object.keys(promises).map(key => {
-            return ZalgoPromise.resolve(promises[key]).then(value => {
-                result[key] = value;
-            });
-        })).then(() => {
-            return result;
-        });
+        return ZalgoPromise.all(awaitPromises).then(() => result);
     }
 
     static map<T, X>(items : Array<T>, method : (T) => (ZalgoPromise<X> | X)) : ZalgoPromise<Array<X>> {
