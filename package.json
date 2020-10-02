@@ -1,6 +1,6 @@
 {
   "name": "zalgo-promise",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "description": "Javascript module template.",
   "main": "index.js",
   "scripts": {
