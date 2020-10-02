@@ -6,7 +6,7 @@ describe('window cases', () => {
 
     it('should not access or call then if passed a window object', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         let windowThenAccessed = false;
         let windowThenCalled = false;
@@ -40,13 +40,13 @@ describe('window cases', () => {
 
     it('should not access or call then if passed an instance of window.constructor', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         let windowThenAccessed = false;
         let windowThenCalled = false;
 
         window.constructor = class {};
-        let win = new window.constructor();
+        const win = new window.constructor();
 
         // $FlowFixMe
         Object.defineProperty(win, 'then', {
@@ -77,9 +77,9 @@ describe('window cases', () => {
 
     it('should not access or call then if passed a window object where accessing then throws an error', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
-        let win = {};
+        const win = {};
 
         // $FlowFixMe
         Object.defineProperty(win, 'then', {

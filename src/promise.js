@@ -11,11 +11,12 @@ export class ZalgoPromise<R : mixed> {
     errorHandled : boolean
     value : R
     error : mixed
-    handlers : Array<{
+    // eslint-disable-next-line flowtype/no-mutable-array
+    handlers : Array<{|
         promise : ZalgoPromise<*>,
         onSuccess : void | (result : R) => mixed,
         onError : void | (error : mixed) => mixed
-    }>
+    |}>
     dispatching : boolean
     stack : string
 
@@ -109,7 +110,7 @@ export class ZalgoPromise<R : mixed> {
 
         if (!error) {
             // $FlowFixMe
-            let err = (error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error));
+            const err = (error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error));
             error = new Error(`Expected reject to be called with Error, got ${ err }`);
         }
 
@@ -137,7 +138,7 @@ export class ZalgoPromise<R : mixed> {
     
     dispatch() {
 
-        let { dispatching, resolved, rejected, handlers } = this;
+        const { dispatching, resolved, rejected, handlers } = this;
 
         if (dispatching) {
             return;
@@ -160,7 +161,7 @@ export class ZalgoPromise<R : mixed> {
 
         for (let i = 0; i < handlers.length; i++) {
 
-            let { onSuccess, onError, promise } = handlers[i];
+            const { onSuccess, onError, promise } = handlers[i];
 
             let result;
 
@@ -233,7 +234,7 @@ export class ZalgoPromise<R : mixed> {
             throw new Error('Promise.then expected a function for error handler');
         }
 
-        let promise : ZalgoPromise<X | Y> = new ZalgoPromise();
+        const promise : ZalgoPromise<X | Y> = new ZalgoPromise();
 
         this.handlers.push({
             promise,
@@ -277,7 +278,7 @@ export class ZalgoPromise<R : mixed> {
             return this;
         }
 
-        let timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
 
             if (this.resolved || this.rejected) {
                 return;
@@ -325,11 +326,11 @@ export class ZalgoPromise<R : mixed> {
         return new ZalgoPromise().asyncReject(error);
     }
 
-    static all<X : Array<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+    static all<X : $ReadOnlyArray<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
 
-        let promise = new ZalgoPromise();
+        const promise = new ZalgoPromise();
         let count = promises.length;
-        let results = [];
+        const results = [];
 
         if (!count) {
             promise.resolve(results);
@@ -349,7 +350,7 @@ export class ZalgoPromise<R : mixed> {
         };
 
         for (let i = 0; i < promises.length; i++) {
-            let prom = promises[i];
+            const prom = promises[i];
 
             if (prom instanceof ZalgoPromise) {
                 if (prom.resolved) {
@@ -374,12 +375,12 @@ export class ZalgoPromise<R : mixed> {
     }
 
     static hash<O : Object>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
-        let result = {};
-        let awaitPromises = [];
+        const result = {};
+        const awaitPromises = [];
 
         for (const key in promises) {
             if (promises.hasOwnProperty(key)) {
-                let value = promises[key];
+                const value = promises[key];
 
                 if (isPromise(value)) {
                     awaitPromises.push(value.then(res => {
@@ -394,16 +395,16 @@ export class ZalgoPromise<R : mixed> {
         return ZalgoPromise.all(awaitPromises).then(() => result);
     }
 
-    static map<T, X>(items : Array<T>, method : (T) => (ZalgoPromise<X> | X)) : ZalgoPromise<Array<X>> {
+    static map<T, X>(items : $ReadOnlyArray<T>, method : (T) => (ZalgoPromise<X> | X)) : ZalgoPromise<$ReadOnlyArray<X>> {
         // $FlowFixMe
         return ZalgoPromise.all(items.map(method));
     }
 
-    static onPossiblyUnhandledException(handler : (err : mixed) => void) : { cancel : () => void } {
+    static onPossiblyUnhandledException(handler : (err : mixed) => void) : {| cancel : () => void |} {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try<X : mixed, Y : mixed, C : mixed, A : Array<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
+    static try<X : mixed, Y : mixed, C : mixed, A : $ReadOnlyArray<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
 
         if (method && typeof method !== 'function' && !method.call) {
             throw new Error('Promise.try expected a function');

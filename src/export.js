@@ -1,5 +1,6 @@
 /* @flow */
 
+// $FlowFixMe
 module.exports = require('./promise').ZalgoPromise; // eslint-disable-line import/no-commonjs
 
 // $FlowFixMe

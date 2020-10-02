@@ -1,17 +1,18 @@
 /* @flow */
-/* eslint import/no-nodejs-modules: off */
+/* eslint import/no-nodejs-modules: off, import/no-default-export: off */
 
+import type { WebpackConfig } from 'grumbler-scripts/config/types';
 import { getWebpackConfig } from 'grumbler-scripts/config/webpack.config';
 
-export let FILE_NAME = 'zalgo-promise';
-export let MODULE_NAME = 'ZalgoPromise';
+export const FILE_NAME = 'zalgo-promise';
+export const MODULE_NAME = 'ZalgoPromise';
 
-export let WEBPACK_CONFIG = getWebpackConfig({
+export const WEBPACK_CONFIG : WebpackConfig = getWebpackConfig({
     filename:   `${ FILE_NAME }.js`,
     modulename: MODULE_NAME
 });
 
-export let WEBPACK_CONFIG_MIN = getWebpackConfig({
+export const WEBPACK_CONFIG_MIN : WebpackConfig = getWebpackConfig({
     filename:   `${ FILE_NAME }.min.js`,
     modulename: MODULE_NAME,
     minify:     true,
@@ -20,8 +21,7 @@ export let WEBPACK_CONFIG_MIN = getWebpackConfig({
     }
 });
 
-export let WEBPACK_CONFIG_TEST = getWebpackConfig({
-    filename:   `${ FILE_NAME }.js`,
+export const WEBPACK_CONFIG_TEST : WebpackConfig = getWebpackConfig({
     modulename: MODULE_NAME,
     options:    {
         devtool: 'inline-source-map'

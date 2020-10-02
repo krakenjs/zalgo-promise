@@ -7,7 +7,7 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and catch the error', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
@@ -23,7 +23,7 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and catch the error in then', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
@@ -39,12 +39,14 @@ describe('reject cases', () => {
 
     it('should create a rejected existing promise and catch the error', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return (new ZalgoPromise()).reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            // $FlowFixMe
             if (err.message !== error) {
+                // $FlowFixMe
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -52,12 +54,14 @@ describe('reject cases', () => {
 
     it('should create a rejected promise with the constructor and catch the error', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return new ZalgoPromise((resolve, reject) => reject(new Error(error))).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            // $FlowFixMe
             if (err.message !== error) {
+                // $FlowFixMe
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -65,14 +69,16 @@ describe('reject cases', () => {
 
     it('should create a rejected promise asynchronously with the constructor and catch the error', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return new ZalgoPromise((resolve, reject) => {
             setTimeout(() => reject(new Error(error)), 50);
         }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            // $FlowFixMe
             if (err.message !== error) {
+                // $FlowFixMe
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -80,14 +86,16 @@ describe('reject cases', () => {
 
     it('should create a rejected promise by throwing in the constructor and catch the error', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return new ZalgoPromise(() => {
             throw new Error(error);
         }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
+            // $FlowFixMe
             if (err.message !== error) {
+                // $FlowFixMe
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -95,7 +103,7 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and not call any subsequent thens', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error('This should never be called');
@@ -113,8 +121,8 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and handle the error then call then', () => {
 
-        let value = 'foobar';
-        let error = 'SERIOUS_ERROR';
+        const value = 'foobar';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
@@ -150,8 +158,8 @@ describe('reject cases', () => {
 
     it('should only be able to reject a promise once', () => {
 
-        let error = 'SERIOUS_ERROR';
-        let promise = ZalgoPromise.reject(new Error(error));
+        const error = 'SERIOUS_ERROR';
+        const promise = ZalgoPromise.reject(new Error(error));
         promise.reject(new Error('fizzbuzz'));
         promise.resolve(new Error('$$%^&*'));
 
@@ -169,10 +177,10 @@ describe('reject cases', () => {
 
     it('should fail when trying to create a rejected promise with an existing promise', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
         let caughtErr;
 
-        let promise = ZalgoPromise.reject(new Error(error));
+        const promise = ZalgoPromise.reject(new Error(error));
         promise.catch(() => {
             // pass
         });
@@ -190,8 +198,8 @@ describe('reject cases', () => {
 
     it('should allow rejecting the promise by returning a rejected promise in then', () => {
 
-        let value = 'foobar';
-        let error = 'SERIOUS_ERROR';
+        const value = 'foobar';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.resolve(value).then(() => {
             return ZalgoPromise.reject(new Error(error));
@@ -209,8 +217,8 @@ describe('reject cases', () => {
 
     it('should allow rejecting the promise by returning an async rejected promise in then', () => {
 
-        let value = 'foobar';
-        let error = 'SERIOUS_ERROR';
+        const value = 'foobar';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.resolve(value).then(() => {
             return new ZalgoPromise((resolve, reject) => {
@@ -230,8 +238,8 @@ describe('reject cases', () => {
 
     it('should reject when an error is thrown in a then', () => {
 
-        let value = 'foobar';
-        let error = 'SERIOUS_ERROR';
+        const value = 'foobar';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.resolve(value).then(() => {
             throw new Error(error);
@@ -249,9 +257,9 @@ describe('reject cases', () => {
 
     it('should reject with the latest error when an error is thrown in a then', () => {
 
-        let value = 'foobar';
-        let error = 'SERIOUS_ERROR';
-        let error2 = 'TERRIBLE_ERROR';
+        const value = 'foobar';
+        const error = 'SERIOUS_ERROR';
+        const error2 = 'TERRIBLE_ERROR';
 
         return ZalgoPromise.resolve(value).then(() => {
             throw new Error(error);
@@ -317,7 +325,7 @@ describe('reject cases', () => {
 
     it('should keep a string rejection as a string', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.reject(error).then(() => {
             throw new Error(`Success handler should not be called`);
@@ -330,7 +338,7 @@ describe('reject cases', () => {
 
     it('should fail when trying to pass a non-function into then as a success handler', () => {
 
-        let promise = ZalgoPromise.resolve('foobar');
+        const promise = ZalgoPromise.resolve('foobar');
         let caughtErr;
 
         try {
@@ -347,7 +355,7 @@ describe('reject cases', () => {
 
     it('should fail when trying to pass a non-function into then as an error handler', () => {
 
-        let promise = ZalgoPromise.resolve('foobar');
+        const promise = ZalgoPromise.resolve('foobar');
         let caughtErr;
 
         try {
@@ -364,7 +372,7 @@ describe('reject cases', () => {
 
     it('should fail when trying to pass a non-function into catch as an error handler', () => {
 
-        let promise = ZalgoPromise.resolve('foobar');
+        const promise = ZalgoPromise.resolve('foobar');
         let caughtErr;
 
         try {
@@ -381,11 +389,11 @@ describe('reject cases', () => {
 
     it('should call unhandled promise method when promise is rejected without having a handler', (done) => {
 
-        window.onerror = () => {
+        window.addEventListener('error', () => {
             // pass
-        };
+        });
 
-        let listener = ZalgoPromise.onPossiblyUnhandledException(err => {
+        const listener = ZalgoPromise.onPossiblyUnhandledException(err => {
             listener.cancel();
             if (!(err instanceof Error)) {
                 return done(new Error(`Expected error to be thrown`));
@@ -398,13 +406,13 @@ describe('reject cases', () => {
 
     it('should not call unhandled promise method when promise is async-rejected without having a handler', (done) => {
 
-        window.onerror = () => {
+        window.addEventListener('error', () => {
             // pass
-        };
+        });
 
         let onPossiblyUnhandledExceptionCalled = false;
 
-        let listener = ZalgoPromise.onPossiblyUnhandledException(() => {
+        const listener = ZalgoPromise.onPossiblyUnhandledException(() => {
             onPossiblyUnhandledExceptionCalled = true;
         });
 
@@ -421,11 +429,11 @@ describe('reject cases', () => {
 
     it('should create a rejected promise and call finally even if the error is not caught', () => {
 
-        window.onerror = () => {
+        window.addEventListener('error', () => {
             // pass
-        };
+        });
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
         let finallyCalled = false;
 
         return ZalgoPromise.reject(new Error(error)).then(() => {
@@ -444,16 +452,21 @@ describe('reject cases', () => {
 
     it('should call unhandled promise method only once for a given error', (done) => {
 
+        window.addEventListener('error', () => {
+            // pass
+        });
+
+        const error = new Error('foobar');
+        let handlerCalled = 0;
+
+        const listener = ZalgoPromise.onPossiblyUnhandledException(() => {
+            handlerCalled += 1;
+        });
+
+        // eslint-disable-next-line unicorn/prefer-add-event-listener
         window.onerror = () => {
             // pass
         };
-
-        let error = new Error('foobar');
-        let handlerCalled = 0;
-
-        let listener = ZalgoPromise.onPossiblyUnhandledException(() => {
-            handlerCalled += 1;
-        });
 
         ZalgoPromise.reject(error);
         ZalgoPromise.reject(error);
@@ -470,17 +483,17 @@ describe('reject cases', () => {
 
     it('should not call unhandled promise method when promise is rejected after a handler is subsequently added', (done) => {
 
-        window.onerror = () => {
+        window.addEventListener('error', () => {
             // pass
-        };
+        });
 
         let onPossiblyUnhandledExceptionCalled = false;
 
-        let listener = ZalgoPromise.onPossiblyUnhandledException(() => {
+        const listener = ZalgoPromise.onPossiblyUnhandledException(() => {
             onPossiblyUnhandledExceptionCalled = true;
         });
 
-        let promise = new ZalgoPromise();
+        const promise = new ZalgoPromise();
 
         setTimeout(() => {
 

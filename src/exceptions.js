@@ -28,7 +28,7 @@ export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPr
     }
 }
 
-export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<mixed>) => void) : { cancel : () => void } {
+export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<mixed>) => void) : {| cancel : () => void |} {
     possiblyUnhandledPromiseHandlers.push(handler);
 
     return {

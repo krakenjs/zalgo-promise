@@ -44,7 +44,7 @@ describe('promise method cases', () => {
 
     it('should reject with any rejected promise from promise.all', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.all([
             ZalgoPromise.resolve(1),
@@ -64,8 +64,8 @@ describe('promise method cases', () => {
 
     it('should reject with the first rejected promise from promise.all', () => {
 
-        let error = 'SERIOUS_ERROR';
-        let error2 = 'SERIOUS_ERROR2';
+        const error = 'SERIOUS_ERROR';
+        const error2 = 'SERIOUS_ERROR2';
 
         return ZalgoPromise.all([
             ZalgoPromise.resolve(1),
@@ -87,7 +87,7 @@ describe('promise method cases', () => {
 
         let timeoutCalled = false;
 
-        let timeout = setTimeout(() => {
+        const timeout = setTimeout(() => {
             timeoutCalled = true;
         }, 100);
 
@@ -139,7 +139,7 @@ describe('promise method cases', () => {
 
     it('should reject with any rejected promise from promise.hash', () => {
 
-        let error = 'SERIOUS_ERROR';
+        const error = 'SERIOUS_ERROR';
 
         return ZalgoPromise.hash({
             one:   ZalgoPromise.resolve(1),
@@ -159,8 +159,8 @@ describe('promise method cases', () => {
 
     it('should reject with the first rejected promise from promise.hash', () => {
 
-        let error = 'SERIOUS_ERROR';
-        let error2 = 'SERIOUS_ERROR2';
+        const error = 'SERIOUS_ERROR';
+        const error2 = 'SERIOUS_ERROR2';
 
         return ZalgoPromise.hash({
             one:   ZalgoPromise.resolve(1),
@@ -219,7 +219,7 @@ describe('promise method cases', () => {
 
     it('should work with a simple method passed to promise.try', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.try(() => {
             return value;
@@ -232,7 +232,7 @@ describe('promise method cases', () => {
 
     it('should work with a conditional method passed to promise.try', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.try(() => {
             if (value === 'foobar') {
@@ -247,7 +247,7 @@ describe('promise method cases', () => {
 
     it('should work with a promise returning method passed to promise.try', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.try(() => {
             return ZalgoPromise.resolve(value);
@@ -260,7 +260,7 @@ describe('promise method cases', () => {
 
     it('should work with a conditional promise returning method passed to promise.try', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.try(() => {
             if (value === 'foobar') {
@@ -275,7 +275,7 @@ describe('promise method cases', () => {
 
     it('should work with a conditional promise returning method passed to promise.try, with an inner promise.try', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.try(() => {
             if (value === 'foobar') {
@@ -292,7 +292,7 @@ describe('promise method cases', () => {
 
     it('should work with a conditional promise returning method passed to promise.try, calling an external function', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         function getValue() : ZalgoPromise<string> {
             return ZalgoPromise.try(() => {

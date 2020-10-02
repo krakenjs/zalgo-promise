@@ -6,7 +6,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and get the value', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
@@ -17,8 +17,8 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise with a compound value and get the value', () => {
 
-        let value1 = 'foobar';
-        let value2 = 'fizzbuzz';
+        const value1 = 'foobar';
+        const value2 = 'fizzbuzz';
 
         return ZalgoPromise.resolve(value1).then(result1 => {
             return [ result1, value2 ];
@@ -36,7 +36,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved existing promise and get the value', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return (new ZalgoPromise()).resolve(value).then(result => {
             if (result !== value) {
@@ -47,7 +47,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise with the constructor and get the value', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return new ZalgoPromise(resolve => resolve(value)).then(result => {
             if (result !== value) {
@@ -58,7 +58,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise asynchronously with the constructor and get the value', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return new ZalgoPromise(resolve => {
             setTimeout(() => resolve(value), 50);
@@ -71,7 +71,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and get the value', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.resolve(value).then(result => {
             if (result !== value) {
@@ -95,8 +95,8 @@ describe('resolve cases', () => {
 
     it('should only be able to resolve a promise once', () => {
 
-        let value = 'foobar';
-        let promise = ZalgoPromise.resolve(value);
+        const value = 'foobar';
+        const promise = ZalgoPromise.resolve(value);
         promise.resolve('fizzbuzz');
         promise.resolve('$$%^&*');
 
@@ -109,7 +109,7 @@ describe('resolve cases', () => {
 
     it('should resolve with an existing promise', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
 
         return ZalgoPromise.resolve(ZalgoPromise.resolve(value)).then(result => {
             if (result !== value) {
@@ -120,8 +120,8 @@ describe('resolve cases', () => {
 
     it('should allow returning a promise in then', () => {
 
-        let value = 'foobar';
-        let value2 = 'fizzbuzz';
+        const value = 'foobar';
+        const value2 = 'fizzbuzz';
 
         return ZalgoPromise.resolve(value).then(() => {
             return ZalgoPromise.resolve(value2);
@@ -134,8 +134,8 @@ describe('resolve cases', () => {
 
     it('should allow returning an asynchronous promise in then', () => {
 
-        let value = 'foobar';
-        let value2 = 'fizzbuzz';
+        const value = 'foobar';
+        const value2 = 'fizzbuzz';
 
         return ZalgoPromise.resolve(value).then(() => {
             return new ZalgoPromise(resolve => {
@@ -150,7 +150,7 @@ describe('resolve cases', () => {
 
     it('should fail when trying to resolve an existing promise with a promise', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
         let caughtErr;
 
         try {
@@ -166,7 +166,7 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and call finally', () => {
 
-        let value = 'foobar';
+        const value = 'foobar';
         let finallyCalled = false;
 
         return ZalgoPromise.resolve(value).finally(() => {
@@ -183,7 +183,7 @@ describe('resolve cases', () => {
 
     it('should be able to attach a then handler in the then handler for a promise', () => {
 
-        let promise = ZalgoPromise.resolve();
+        const promise = ZalgoPromise.resolve();
 
         return promise.then(() => {
             return promise.then(() => {
@@ -194,8 +194,8 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and register multiple then handlers', () => {
 
-        let value = 'foobar';
-        let promise = ZalgoPromise.resolve(value);
+        const value = 'foobar';
+        const promise = ZalgoPromise.resolve(value);
 
         let thenCount = 0;
 
@@ -222,8 +222,8 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and register multiple then handlers, resolved asynchronously', () => {
 
-        let value = 'foobar';
-        let promise = new ZalgoPromise(resolve => {
+        const value = 'foobar';
+        const promise = new ZalgoPromise(resolve => {
             setTimeout(() => resolve(value), 1);
         });
 
@@ -252,8 +252,8 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and register multiple then handlers with one failure', () => {
 
-        let value = 'foobar';
-        let promise = ZalgoPromise.resolve(value);
+        const value = 'foobar';
+        const promise = ZalgoPromise.resolve(value);
 
         let thenCount = 0;
         let errorHandlerCalled = false;
@@ -294,8 +294,8 @@ describe('resolve cases', () => {
 
     it('should create a resolved promise and register multiple then handlers with one failure, resolved asynchronously', () => {
 
-        let value = 'foobar';
-        let promise = new ZalgoPromise(resolve => {
+        const value = 'foobar';
+        const promise = new ZalgoPromise(resolve => {
             setTimeout(() => resolve(value), 1);
         });
 
@@ -338,8 +338,8 @@ describe('resolve cases', () => {
 
     it('should work when trying to return a promise in its own then method', () => {
 
-        let value = 'foobar';
-        let promise = ZalgoPromise.resolve(value);
+        const value = 'foobar';
+        const promise = ZalgoPromise.resolve(value);
 
         return promise.then(() => promise).then(result => {
 

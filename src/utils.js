@@ -18,10 +18,10 @@ export function isPromise(item : mixed) : boolean {
             return false;
         }
 
-        let toString = ({}).toString;
+        const toString = ({}).toString;
 
         if (toString) {
-            let name = toString.call(item);
+            const name = toString.call(item);
 
             if (name === '[object Window]' || name === '[object global]' || name === '[object DOMWindow]') {
                 return false;
