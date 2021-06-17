@@ -1,6 +1,17 @@
 zalgo-promise
 -------------
 
+[![build status][build-badge]][build]
+[![code coverage][coverage-badge]][coverage]
+[![npm version][version-badge]][package]
+
+[build-badge]: https://img.shields.io/github/workflow/status/krakenjs/zalgo-promise/build?logo=github&style=flat-square
+[build]: https://github.com/krakenjs/zalgo-promise/actions?query=workflow%3Abuild
+[coverage-badge]: https://img.shields.io/codecov/c/github/krakenjs/zalgo-promise.svg?style=flat-square
+[coverage]: https://codecov.io/github/krakenjs/zalgo-promise/
+[version-badge]: https://img.shields.io/npm/v/zalgo-promise.svg?style=flat-square
+[package]: https://www.npmjs.com/package/zalgo-promise
+
 A promise library that does not automatically resolve promises asynchronously, unless you do so manually.
 
 https://medium.com/@bluepnume/intentionally-unleashing-zalgo-with-promises-ab3f63ead2fd
