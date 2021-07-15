@@ -190,14 +190,15 @@ export class ZalgoPromise<R : mixed> {
             }
 
             if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
+                const promiseResult : ZalgoPromise<*> = result;
 
-                if (result.resolved) {
-                    promise.resolve(result.value);
+                if (promiseResult.resolved) {
+                    promise.resolve(promiseResult.value);
                 } else {
-                    promise.reject(result.error);
+                    promise.reject(promiseResult.error);
                 }
 
-                result.errorHandled = true;
+                promiseResult.errorHandled = true;
 
             } else if (isPromise(result)) {
 
@@ -224,7 +225,7 @@ export class ZalgoPromise<R : mixed> {
         endActive();
     }
 
-    then<X : mixed, Y : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | Y), onError : void | (error : mixed) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+    then<X, Y>(onSuccess : void | (result : R) => (ZalgoPromise<X> | Y), onError : void | (error : mixed) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
 
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
@@ -234,7 +235,7 @@ export class ZalgoPromise<R : mixed> {
             throw new Error('Promise.then expected a function for error handler');
         }
 
-        const promise : ZalgoPromise<X | Y> = new ZalgoPromise();
+        const promise = new ZalgoPromise();
 
         this.handlers.push({
             promise,
@@ -249,8 +250,10 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    catch<X : mixed, Y : mixed>(onError : (error : mixed) => ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
-        return this.then(undefined, onError);
+    catch<X, Y>(onError : (error : mixed) => ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
+        // $FlowFixMe incompatible-call
+        const resultPromise : ZalgoPromise<X | Y> = this.then(undefined, onError);
+        return resultPromise;
     }
 
     finally(onFinally : () => mixed) : ZalgoPromise<R> {
@@ -304,10 +307,12 @@ export class ZalgoPromise<R : mixed> {
         return Promise.resolve(this); // eslint-disable-line compat/compat
     }
 
-    static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {
+    static resolve<X, Y>(value : ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
 
         if (value instanceof ZalgoPromise) {
-            return value;
+            // $FlowFixMe incompatible-type-arg
+            const result : ZalgoPromise<X | Y> = value;
+            return result;
         }
 
         if (isPromise(value)) {
@@ -330,7 +335,8 @@ export class ZalgoPromise<R : mixed> {
 
         const promise = new ZalgoPromise();
         let count = promises.length;
-        const results = [];
+        // eslint-disable-next-line no-undef
+        const results = ([] : $TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>).slice();
 
         if (!count) {
             promise.resolve(results);
@@ -404,18 +410,17 @@ export class ZalgoPromise<R : mixed> {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try<X : mixed, Y : mixed, C : mixed, A : $ReadOnlyArray<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
+    static try<X, Y, C : mixed, A : $ReadOnlyArray<mixed>>(method : (...args : $ReadOnlyArray<mixed>) => (ZalgoPromise<X> | Y), context? : C, args? : A) : ZalgoPromise<X | Y> {
 
         if (method && typeof method !== 'function' && !method.call) {
             throw new Error('Promise.try expected a function');
         }
 
-        let result;
+        let result : ZalgoPromise<X> | Y;
 
         startActive();
         
         try {
-            // $FlowFixMe
             result = method.apply(context, args || []);
         } catch (err) {
             endActive();
@@ -424,7 +429,10 @@ export class ZalgoPromise<R : mixed> {
 
         endActive();
 
-        return ZalgoPromise.resolve(result);
+        // $FlowFixMe incompatible-call
+        const resultPromise = ZalgoPromise.resolve(result);
+
+        return resultPromise;
     }
 
     static delay(delay : number) : ZalgoPromise<void> {

@@ -331,6 +331,7 @@ describe('reject cases', () => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err !== error) {
+                // $FlowFixMe method-unbinding
                 throw new Error(`Expected ${ Object.prototype.toString.call(err) } to be ${ error }`);
             }
         }).toPromise();
