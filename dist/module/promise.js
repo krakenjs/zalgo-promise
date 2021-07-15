@@ -182,13 +182,15 @@ export var ZalgoPromise = /*#__PURE__*/function () {
       }
 
       if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
-        if (_result2.resolved) {
-          promise.resolve(_result2.value);
+        var promiseResult = _result2;
+
+        if (promiseResult.resolved) {
+          promise.resolve(promiseResult.value);
         } else {
-          promise.reject(_result2.error);
+          promise.reject(promiseResult.error);
         }
 
-        _result2.errorHandled = true;
+        promiseResult.errorHandled = true;
       } else if (_isPromise(_result2)) {
         if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
           if (_result2.resolved) {
@@ -231,7 +233,9 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   _proto.catch = function _catch(onError) {
-    return this.then(undefined, onError);
+    // $FlowFixMe incompatible-call
+    var resultPromise = this.then(undefined, onError);
+    return resultPromise;
   };
 
   _proto.finally = function _finally(onFinally) {
@@ -283,7 +287,9 @@ export var ZalgoPromise = /*#__PURE__*/function () {
 
   ZalgoPromise.resolve = function resolve(value) {
     if (value instanceof ZalgoPromise) {
-      return value;
+      // $FlowFixMe incompatible-type-arg
+      var _result3 = value;
+      return _result3;
     }
 
     if (_isPromise(value)) {
@@ -307,8 +313,9 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   ZalgoPromise.all = function all(promises) {
     // eslint-disable-line no-undef
     var promise = new ZalgoPromise();
-    var count = promises.length;
-    var results = [];
+    var count = promises.length; // eslint-disable-next-line no-undef
+
+    var results = [].slice();
 
     if (!count) {
       promise.resolve(results);
@@ -399,15 +406,16 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     startActive();
 
     try {
-      // $FlowFixMe
       result = method.apply(context, args || []);
     } catch (err) {
       endActive();
       return ZalgoPromise.reject(err);
     }
 
-    endActive();
-    return ZalgoPromise.resolve(result);
+    endActive(); // $FlowFixMe incompatible-call
+
+    var resultPromise = ZalgoPromise.resolve(result);
+    return resultPromise;
   };
 
   ZalgoPromise.delay = function delay(_delay) {
