@@ -17,7 +17,7 @@ export function endActive() {
   flushActive();
 }
 export function awaitActive(Zalgo) {
-  // eslint-disable-line no-undef
+  // @ts-ignore
   var promise = flushPromise = flushPromise || new Zalgo();
   flushActive();
   return promise;

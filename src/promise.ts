@@ -1,61 +1,62 @@
-/* @flow */
-
 import { isPromise } from './utils';
-import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
+import {
+    onPossiblyUnhandledException,
+    dispatchPossiblyUnhandledError
+} from './exceptions';
 import { startActive, endActive, awaitActive } from './flush';
 
-export class ZalgoPromise<R : mixed> {
+export class ZalgoPromise<R extends unknown> {
+    resolved: boolean;
+    rejected: boolean;
+    errorHandled: boolean;
+    value?: R;
+    error: unknown;
+    handlers: Array<{
+        promise: ZalgoPromise<any>;
+        onSuccess: void | ((result: R) => unknown);
+        onError: void | ((error: unknown) => unknown);
+    }>;
+    dispatching?: boolean;
+    stack?: string;
 
-    resolved : boolean
-    rejected : boolean
-    errorHandled : boolean
-    value : R
-    error : mixed
-    // eslint-disable-next-line flowtype/no-mutable-array
-    handlers : Array<{|
-        promise : ZalgoPromise<*>,
-        onSuccess : void | (result : R) => mixed,
-        onError : void | (error : mixed) => mixed
-    |}>
-    dispatching : boolean
-    stack : string
-
-    constructor(handler : ?(resolve : (result : R) => void, reject : (error : mixed) => void) => void) {
-
+    constructor(
+        handler?: (
+            resolve: (result: R) => void,
+            reject: (error: unknown) => void
+        ) => void
+    ) {
         this.resolved = false;
         this.rejected = false;
         this.errorHandled = false;
-
         this.handlers = [];
 
         if (handler) {
-
             let result;
             let error;
             let resolved = false;
             let rejected = false;
             let isAsync = false;
-
             startActive();
 
             try {
-                handler(res => {
-                    if (isAsync) {
-                        this.resolve(res);
-                    } else {
-                        resolved = true;
-                        result = res;
+                handler(
+                    res => {
+                        if (isAsync) {
+                            this.resolve(res);
+                        } else {
+                            resolved = true;
+                            result = res;
+                        }
+                    },
+                    err => {
+                        if (isAsync) {
+                            this.reject(err);
+                        } else {
+                            rejected = true;
+                            error = err;
+                        }
                     }
-
-                }, err => {
-                    if (isAsync) {
-                        this.reject(err);
-                    } else {
-                        rejected = true;
-                        error = err;
-                    }
-                });
-
+                );
             } catch (err) {
                 endActive();
                 this.reject(err);
@@ -63,17 +64,17 @@ export class ZalgoPromise<R : mixed> {
             }
 
             endActive();
-
             isAsync = true;
 
             if (resolved) {
-                // $FlowFixMe
+                // @ts-ignore - potentially undefined
                 this.resolve(result);
             } else if (rejected) {
                 this.reject(error);
             }
         }
 
+        // @ts-ignore
         if (__DEBUG__) {
             try {
                 throw new Error(`ZalgoPromise`);
@@ -83,7 +84,7 @@ export class ZalgoPromise<R : mixed> {
         }
     }
 
-    resolve(result : R) : ZalgoPromise<R> {
+    resolve(result: R): ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -95,11 +96,10 @@ export class ZalgoPromise<R : mixed> {
         this.resolved = true;
         this.value = result;
         this.dispatch();
-
         return this;
     }
 
-    reject(error : mixed) : ZalgoPromise<R> {
+    reject(error: unknown): ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -109,8 +109,12 @@ export class ZalgoPromise<R : mixed> {
         }
 
         if (!error) {
-            // $FlowFixMe
-            const err = (error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error));
+            const err =
+                // @ts-ignore
+                error && typeof error.toString === 'function'
+                    ? // @ts-ignore
+                    error.toString()
+                    : Object.prototype.toString.call(error);
             error = new Error(`Expected reject to be called with Error, got ${ err }`);
         }
 
@@ -120,24 +124,23 @@ export class ZalgoPromise<R : mixed> {
         if (!this.errorHandled) {
             setTimeout(() => {
                 if (!this.errorHandled) {
+                    // @ts-ignore
                     dispatchPossiblyUnhandledError(error, this);
                 }
             }, 1);
         }
 
         this.dispatch();
-
         return this;
     }
 
-    asyncReject(error : mixed) : ZalgoPromise<R> {
+    asyncReject(error: unknown): ZalgoPromise<R> {
         this.errorHandled = true;
         this.reject(error);
         return this;
     }
-    
-    dispatch() {
 
+    dispatch(): void {
         const { dispatching, resolved, rejected, handlers } = this;
 
         if (dispatching) {
@@ -151,31 +154,33 @@ export class ZalgoPromise<R : mixed> {
         this.dispatching = true;
         startActive();
 
-        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
-            return firstPromise.then(res => {
-                secondPromise.resolve(res);
-            }, err => {
-                secondPromise.reject(err);
-            });
+        const chain = <T>(
+            firstPromise: ZalgoPromise<T>,
+            secondPromise: ZalgoPromise<T>
+        ) => {
+            return firstPromise.then(
+                res => {
+                    secondPromise.resolve(res);
+                },
+                err => {
+                    secondPromise.reject(err);
+                }
+            );
         };
 
         for (let i = 0; i < handlers.length; i++) {
-
             const { onSuccess, onError, promise } = handlers[i];
-
             let result;
 
             if (resolved) {
-
                 try {
+                    // @ts-ignore
                     result = onSuccess ? onSuccess(this.value) : this.value;
                 } catch (err) {
                     promise.reject(err);
                     continue;
                 }
-
             } else if (rejected) {
-
                 if (!onError) {
                     promise.reject(this.error);
                     continue;
@@ -189,8 +194,10 @@ export class ZalgoPromise<R : mixed> {
                 }
             }
 
-            if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-
+            if (
+                result instanceof ZalgoPromise &&
+                (result.resolved || result.rejected)
+            ) {
                 if (result.resolved) {
                     promise.resolve(result.value);
                 } else {
@@ -198,23 +205,21 @@ export class ZalgoPromise<R : mixed> {
                 }
 
                 result.errorHandled = true;
-
             } else if (isPromise(result)) {
-
-                if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
+                if (
+                    result instanceof ZalgoPromise &&
+                    (result.resolved || result.rejected)
+                ) {
                     if (result.resolved) {
                         promise.resolve(result.value);
                     } else {
                         promise.reject(result.error);
                     }
-
                 } else {
-                    // $FlowFixMe
+                    // @ts-ignore
                     chain(result, promise);
                 }
-
             } else {
-
                 promise.resolve(result);
             }
         }
@@ -224,129 +229,140 @@ export class ZalgoPromise<R : mixed> {
         endActive();
     }
 
-    then<X : mixed, Y : mixed>(onSuccess : void | (result : R) => (ZalgoPromise<X> | Y), onError : void | (error : mixed) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
-
+    then<X extends unknown, Y extends unknown>(
+        onSuccess: void | ((result: R) => ZalgoPromise<X> | Y),
+        onError: void | ((error: unknown) => ZalgoPromise<X> | Y)
+    ): ZalgoPromise<X | Y> {
+        // @ts-ignore
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error('Promise.then expected a function for success handler');
         }
 
+        // @ts-ignore
         if (onError && typeof onError !== 'function' && !onError.call) {
             throw new Error('Promise.then expected a function for error handler');
         }
 
-        const promise : ZalgoPromise<X | Y> = new ZalgoPromise();
-
+        // @ts-ignore
+        const promise: ZalgoPromise<X | Y> = new ZalgoPromise();
         this.handlers.push({
             promise,
             onSuccess,
             onError
         });
-
         this.errorHandled = true;
-
         this.dispatch();
-
         return promise;
     }
 
-    catch<X : mixed, Y : mixed>(onError : (error : mixed) => ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
+    catch<X extends unknown, Y extends unknown>(
+        onError: (error: unknown) => ZalgoPromise<X> | Y
+    ): ZalgoPromise<X | Y> {
         return this.then(undefined, onError);
     }
 
-    finally(onFinally : () => mixed) : ZalgoPromise<R> {
-
+    finally(onFinally: () => unknown): ZalgoPromise<R> {
+        // @ts-ignore
         if (onFinally && typeof onFinally !== 'function' && !onFinally.call) {
             throw new Error('Promise.finally expected a function');
         }
 
-        return this.then((result) => {
-            return ZalgoPromise.try(onFinally)
-                .then(() => {
+        // @ts-ignore - doesn't match ZalgoPromise<R>
+        return this.then(
+            result => {
+                return ZalgoPromise.try(onFinally).then(() => {
                     return result;
                 });
-        }, (err) => {
-            return ZalgoPromise.try(onFinally)
-                .then(() => {
+            },
+            err => {
+                return ZalgoPromise.try(onFinally).then(() => {
                     throw err;
                 });
-        });
+            }
+        );
     }
 
-    timeout(time : number, err : ?Error) : ZalgoPromise<R> {
-
+    timeout(time: number, err: Error | null | undefined): ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
 
         const timeout = setTimeout(() => {
-
             if (this.resolved || this.rejected) {
                 return;
             }
 
             this.reject(err || new Error(`Promise timed out after ${ time }ms`));
-
         }, time);
-
         return this.then(result => {
             clearTimeout(timeout);
             return result;
         });
     }
 
-    // $FlowFixMe
-    toPromise() : Promise<R> {
-        // $FlowFixMe
+    toPromise(): Promise<R> {
         if (typeof Promise === 'undefined') {
             throw new TypeError(`Could not find Promise`);
         }
-        // $FlowFixMe
+
+        // @ts-ignore
         return Promise.resolve(this); // eslint-disable-line compat/compat
     }
 
-    static resolve<X : mixed>(value : X | ZalgoPromise<X>) : ZalgoPromise<X> {
-
+    static resolve<X extends unknown>(
+        value: X | ZalgoPromise<X>
+    ): ZalgoPromise<X> {
         if (value instanceof ZalgoPromise) {
             return value;
         }
 
         if (isPromise(value)) {
-            // $FlowFixMe
+            // @ts-ignore is it a promise or a value who knows
             return new ZalgoPromise((resolve, reject) => value.then(resolve, reject));
         }
 
+        // @ts-ignore is it a promise or a value who knows
         return new ZalgoPromise().resolve(value);
     }
 
-    static reject(error : mixed) : ZalgoPromise<R> {
+    static reject(error: unknown): ZalgoPromise<unknown> {
         return new ZalgoPromise().reject(error);
     }
 
-    static asyncReject(error : mixed) : ZalgoPromise<R> {
+    static asyncReject(error: unknown): ZalgoPromise<unknown> {
         return new ZalgoPromise().asyncReject(error);
     }
 
-    static all<X : $ReadOnlyArray<mixed>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
-
+    static all<X extends ReadonlyArray<unknown>>(
+        promises: X
+    ): ZalgoPromise<unknown> {
         const promise = new ZalgoPromise();
         let count = promises.length;
-        const results = [];
+        const results: Array<unknown> = [];
 
         if (!count) {
             promise.resolve(results);
             return promise;
         }
 
-        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
-            return firstPromise.then(res => {
-                results[i] = res;
-                count -= 1;
-                if (count === 0) {
-                    promise.resolve(results);
+        const chain = <T>(
+            i: number,
+            firstPromise: ZalgoPromise<T>,
+            secondPromise: ZalgoPromise<T>
+        ) => {
+            return firstPromise.then(
+                res => {
+                    results[i] = res;
+                    count -= 1;
+
+                    if (count === 0) {
+                        promise.resolve(results);
+                    }
+                },
+                err => {
+                    secondPromise.reject(err);
                 }
-            }, err => {
-                secondPromise.reject(err);
-            });
+            );
         };
 
         for (let i = 0; i < promises.length; i++) {
@@ -374,7 +390,7 @@ export class ZalgoPromise<R : mixed> {
         return promise;
     }
 
-    static hash<O : Object>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+    static hash<O extends Record<string, any>>(promises: O): ZalgoPromise<any> {
         const result = {};
         const awaitPromises = [];
 
@@ -383,58 +399,78 @@ export class ZalgoPromise<R : mixed> {
                 const value = promises[key];
 
                 if (isPromise(value)) {
-                    awaitPromises.push(value.then(res => {
-                        result[key] = res;
-                    }));
+                    awaitPromises.push(
+                        // @ts-ignore
+                        value.then(res => {
+                            // @ts-ignore
+                            result[key] = res;
+                        })
+                    );
                 } else {
+                    // @ts-ignore
                     result[key] = value;
                 }
             }
         }
-        
+
         return ZalgoPromise.all(awaitPromises).then(() => result);
     }
 
-    static map<T, X>(items : $ReadOnlyArray<T>, method : (T) => (ZalgoPromise<X> | X)) : ZalgoPromise<$ReadOnlyArray<X>> {
-        // $FlowFixMe
+    static map<T, X>(
+        items: ReadonlyArray<T>,
+        method: (arg0: T) => ZalgoPromise<X> | X
+    ): ZalgoPromise<ReadonlyArray<X>> {
+        // @ts-ignore
         return ZalgoPromise.all(items.map(method));
     }
 
-    static onPossiblyUnhandledException(handler : (err : mixed) => void) : {| cancel : () => void |} {
+    static onPossiblyUnhandledException(
+        handler: (err: unknown) => void
+    ): {
+        cancel: () => void;
+    } {
         return onPossiblyUnhandledException(handler);
     }
 
-    static try<X : mixed, Y : mixed, C : mixed, A : $ReadOnlyArray<mixed>>(method : (...args : A) => (ZalgoPromise<X> | Y), context : ?C, args : ?A) : ZalgoPromise<X | Y> {
-
+    static try<
+    X extends unknown,
+    Y extends unknown,
+    C extends unknown,
+    A extends ReadonlyArray<unknown>
+>(
+        method: (...args: A) => ZalgoPromise<X> | Y,
+        context?: C,
+        args?: A
+    ): ZalgoPromise<X | Y> {
+    // @ts-ignore
         if (method && typeof method !== 'function' && !method.call) {
             throw new Error('Promise.try expected a function');
         }
 
         let result;
-
         startActive();
-        
+
         try {
-            // $FlowFixMe
+        // @ts-ignore
             result = method.apply(context, args || []);
         } catch (err) {
             endActive();
+            // @ts-ignore
             return ZalgoPromise.reject(err);
         }
 
         endActive();
-
+        // @ts-ignore
         return ZalgoPromise.resolve(result);
     }
 
-    static delay(delay : number) : ZalgoPromise<void> {
+    static delay(delay: number): ZalgoPromise<void> {
         return new ZalgoPromise(resolve => {
             setTimeout(resolve, delay);
         });
     }
 
-    static isPromise(value : mixed) : boolean {
-
+    static isPromise(value: unknown): boolean {
         if (value && value instanceof ZalgoPromise) {
             return true;
         }
@@ -442,7 +478,8 @@ export class ZalgoPromise<R : mixed> {
         return isPromise(value);
     }
 
-    static flush() : ZalgoPromise<void> {
+    static flush(): ZalgoPromise<void> {
+    // @ts-ignore
         return awaitActive(ZalgoPromise);
     }
 }

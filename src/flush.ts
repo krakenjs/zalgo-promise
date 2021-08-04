@@ -1,9 +1,7 @@
-/* @flow */
-
 import type { ZalgoPromise } from './promise';
 
 let activeCount = 0;
-let flushPromise;
+let flushPromise: ZalgoPromise<void> | null;
 
 function flushActive() {
     if (!activeCount && flushPromise) {
@@ -13,17 +11,18 @@ function flushActive() {
     }
 }
 
-export function startActive() {
+export function startActive(): void {
     activeCount += 1;
 }
-
-export function endActive() {
+export function endActive(): void {
     activeCount -= 1;
     flushActive();
 }
-
-export function awaitActive(Zalgo : Class<ZalgoPromise<*>>) : ZalgoPromise<void> { // eslint-disable-line no-undef
-    const promise = flushPromise = flushPromise || new Zalgo();
+export function awaitActive(
+    Zalgo: ZalgoPromise<any>
+): ZalgoPromise<void> {
+    // @ts-ignore
+    const promise = (flushPromise = flushPromise || new Zalgo());
     flushActive();
     return promise;
 }

@@ -4,21 +4,19 @@
   "description": "Javascript module template.",
   "main": "index.js",
   "scripts": {
-    "setup": "npm install && npm run flow-typed",
-    "lint": "eslint src/ test/ *.js",
-    "flow-typed": "flow-typed install",
-    "flow": "flow",
-    "karma": "cross-env NODE_ENV=test babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/karma start",
-    "babel": "babel src/ --out-dir dist/module",
+    "lint": "eslint --ext ts,tsx,js,jsx src/ test/",
+    "tsc": "tsc",
+    "karma": "cross-env NODE_ENV=test babel-node --trace-deprecation --presets '@babel/preset-env' ./node_modules/.bin/karma start",
+    "babel": "babel src/ --out-dir dist/module --extensions .ts,.tsx",
     "webpack": "babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/webpack --display-optimization-bailout --progress",
-    "test": "npm run lint && npm run flow-typed && npm run flow && npm run karma",
+    "test": "npm run lint && npm run tsc && npm run karma",
     "build": "npm run test && npm run babel && npm run webpack",
     "release": "./publish.sh",
     "release:patch": "./publish.sh patch",
     "release:minor": "./publish.sh minor",
     "release:major": "./publish.sh major",
     "clean": "rimraf dist coverage",
-    "reinstall": "rimraf flow-typed && rimraf node_modules && npm install && flow-typed install",
+    "reinstall": "rimraf node_modules && npm install",
     "debug": "cross-env NODE_ENV=debug"
   },
   "repository": {
@@ -40,9 +38,13 @@
   ],
   "readmeFilename": "README.md",
   "devDependencies": {
-    "flow-bin": "^0.135.0",
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "flowgen": "^1.14.1",
     "grumbler-scripts": "^3",
-    "mocha": "^4"
-  },
-  "dependencies": {}
+    "mocha": "^4",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
 }
