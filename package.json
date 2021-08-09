@@ -3,6 +3,7 @@
   "version": "1.0.46",
   "description": "Javascript module template.",
   "main": "index.js",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
     "lint": "eslint --ext ts,tsx,js,jsx src/ test/",
     "tsc": "tsc",
