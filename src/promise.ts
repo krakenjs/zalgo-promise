@@ -84,7 +84,7 @@ export class ZalgoPromise<R extends unknown> {
         }
     }
 
-    resolve(result: R): ZalgoPromise<R> {
+    resolve(result?: R): ZalgoPromise<R> {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -310,7 +310,7 @@ export class ZalgoPromise<R extends unknown> {
     }
 
     static resolve<X extends unknown>(
-        value: X | ZalgoPromise<X>
+        value?: X | ZalgoPromise<X>
     ): ZalgoPromise<X> {
         if (value instanceof ZalgoPromise) {
             return value;

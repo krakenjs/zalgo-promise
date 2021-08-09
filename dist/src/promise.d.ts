@@ -12,7 +12,7 @@ export declare class ZalgoPromise<R extends unknown> {
     dispatching?: boolean;
     stack?: string;
     constructor(handler?: (resolve: (result: R) => void, reject: (error: unknown) => void) => void);
-    resolve(result: R): ZalgoPromise<R>;
+    resolve(result?: R): ZalgoPromise<R>;
     reject(error: unknown): ZalgoPromise<R>;
     asyncReject(error: unknown): ZalgoPromise<R>;
     dispatch(): void;
@@ -21,7 +21,7 @@ export declare class ZalgoPromise<R extends unknown> {
     finally(onFinally: () => unknown): ZalgoPromise<R>;
     timeout(time: number, err: Error | null | undefined): ZalgoPromise<R>;
     toPromise(): Promise<R>;
-    static resolve<X extends unknown>(value: X | ZalgoPromise<X>): ZalgoPromise<X>;
+    static resolve<X extends unknown>(value?: X | ZalgoPromise<X>): ZalgoPromise<X>;
     static reject(error: unknown): ZalgoPromise<unknown>;
     static asyncReject(error: unknown): ZalgoPromise<unknown>;
     static all<X extends ReadonlyArray<unknown>>(promises: X): ZalgoPromise<unknown>;
