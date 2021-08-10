@@ -1,4 +1,3 @@
-/* @flow */
 /* eslint import/no-nodejs-modules: off, import/no-default-export: off */
 
 import type { WebpackConfig } from 'grumbler-scripts/config/types';
