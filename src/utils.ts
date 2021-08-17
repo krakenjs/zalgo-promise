@@ -38,7 +38,7 @@ export function isPromise(item: unknown): boolean {
             }
         }
 
-        if (typeof (item as {'then': any }).then === 'function') {
+        if (typeof (item as { then: any }).then === 'function') {
             return true;
         }
     } catch (err) {

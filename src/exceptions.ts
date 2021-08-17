@@ -8,7 +8,6 @@ export function dispatchPossiblyUnhandledError<T>(
     err: Error,
     promise: ZalgoPromise<T>
 ): void {
-
     // @ts-ignore
     if (dispatchedErrors.indexOf(err) !== -1) {
         return;
@@ -38,7 +37,7 @@ export function dispatchPossiblyUnhandledError<T>(
 export function onPossiblyUnhandledException(
     handler: (arg0: unknown, promise?: ZalgoPromise<unknown>) => void
 ): {
-    cancel: () => void
+    cancel: () => void;
 } {
     possiblyUnhandledPromiseHandlers.push(handler);
     return {

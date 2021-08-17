@@ -293,9 +293,10 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     }
 
     if (_isPromise(value)) {
-      // @ts-ignore is it a promise or a value who knows
       return new ZalgoPromise(function (resolve, reject) {
-        return value.then(resolve, reject);
+        return (// @ts-ignore is it a promise or a value who knows
+          value.then(resolve, reject)
+        );
       });
     } // @ts-ignore is it a promise or a value who knows
 

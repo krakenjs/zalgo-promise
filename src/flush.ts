@@ -18,9 +18,7 @@ export function endActive(): void {
     activeCount -= 1;
     flushActive();
 }
-export function awaitActive(
-    Zalgo: ZalgoPromise<any>
-): ZalgoPromise<void> {
+export function awaitActive(Zalgo: ZalgoPromise<any>): ZalgoPromise<void> {
     // @ts-ignore
     const promise = (flushPromise = flushPromise || new Zalgo());
     flushActive();

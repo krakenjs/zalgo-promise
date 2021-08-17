@@ -7,32 +7,35 @@ describe('window cases', () => {
         let windowThenCalled = false;
         // $FlowFixMe
         Object.defineProperty(window, 'then', {
-            configurable: true,
-            get:          () => {
+            configurable:true,
+            get:         () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
                 };
             }
         });
-        return ZalgoPromise.resolve(value).then(() => {
-            return window;
-        }).then(result => {
-            // @ts-ignore
-            delete window.then;
+        return ZalgoPromise.resolve(value)
+            .then(() => {
+                return window;
+            })
+            .then((result) => {
+                // @ts-ignore
+                delete window.then;
 
-            if (result !== window) {
-                throw new Error(`Expected result to be window`);
-            }
+                if (result !== window) {
+                    throw new Error(`Expected result to be window`);
+                }
 
-            if (windowThenCalled) {
-                throw new Error(`Expected window.then to not be called`);
-            }
+                if (windowThenCalled) {
+                    throw new Error(`Expected window.then to not be called`);
+                }
 
-            if (windowThenAccessed) {
-                throw new Error(`Expected window.then to not be accessed`);
-            }
-        }).toPromise();
+                if (windowThenAccessed) {
+                    throw new Error(`Expected window.then to not be accessed`);
+                }
+            })
+            .toPromise();
     });
     it('should not access or call then if passed an instance of window.constructor', () => {
         const value = 'foobar';
@@ -43,32 +46,35 @@ describe('window cases', () => {
         const win = new window.constructor();
         // $FlowFixMe
         Object.defineProperty(win, 'then', {
-            configurable: true,
-            get:          () => {
+            configurable:true,
+            get:         () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
                 };
             }
         });
-        return ZalgoPromise.resolve(value).then(() => {
-            return win;
-        }).then(result => {
-            // @ts-ignore
-            delete window.constructor;
+        return ZalgoPromise.resolve(value)
+            .then(() => {
+                return win;
+            })
+            .then((result) => {
+                // @ts-ignore
+                delete window.constructor;
 
-            if (result !== win) {
-                throw new Error(`Expected result to be window`);
-            }
+                if (result !== win) {
+                    throw new Error(`Expected result to be window`);
+                }
 
-            if (windowThenCalled) {
-                throw new Error(`Expected window.then to not be called`);
-            }
+                if (windowThenCalled) {
+                    throw new Error(`Expected window.then to not be called`);
+                }
 
-            if (windowThenAccessed) {
-                throw new Error(`Expected window.then to not be accessed`);
-            }
-        }).toPromise();
+                if (windowThenAccessed) {
+                    throw new Error(`Expected window.then to not be accessed`);
+                }
+            })
+            .toPromise();
     });
     it('should not access or call then if passed a window object where accessing then throws an error', () => {
         const value = 'foobar';
@@ -80,14 +86,16 @@ describe('window cases', () => {
             get() {
                 throw new Error(`Can not access .then`);
             }
-
         });
-        return ZalgoPromise.resolve(value).then(() => {
-            return win;
-        }).then(result => {
-            if (result !== win) {
-                throw new Error(`Expected result to be window`);
-            }
-        }).toPromise();
+        return ZalgoPromise.resolve(value)
+            .then(() => {
+                return win;
+            })
+            .then((result) => {
+                if (result !== win) {
+                    throw new Error(`Expected result to be window`);
+                }
+            })
+            .toPromise();
     });
 });

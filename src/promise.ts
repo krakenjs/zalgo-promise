@@ -40,7 +40,7 @@ export class ZalgoPromise<R extends unknown> {
 
             try {
                 handler(
-                    res => {
+                    (res) => {
                         if (isAsync) {
                             this.resolve(res);
                         } else {
@@ -48,7 +48,7 @@ export class ZalgoPromise<R extends unknown> {
                             result = res;
                         }
                     },
-                    err => {
+                    (err) => {
                         if (isAsync) {
                             this.reject(err);
                         } else {
@@ -115,7 +115,9 @@ export class ZalgoPromise<R extends unknown> {
                     ? // @ts-ignore
                     error.toString()
                     : Object.prototype.toString.call(error);
-            error = new Error(`Expected reject to be called with Error, got ${ err }`);
+            error = new Error(
+                `Expected reject to be called with Error, got ${ err }`
+            );
         }
 
         this.rejected = true;
@@ -159,10 +161,10 @@ export class ZalgoPromise<R extends unknown> {
             secondPromise: ZalgoPromise<T>
         ) => {
             return firstPromise.then(
-                res => {
+                (res) => {
                     secondPromise.resolve(res);
                 },
-                err => {
+                (err) => {
                     secondPromise.reject(err);
                 }
             );
@@ -235,12 +237,16 @@ export class ZalgoPromise<R extends unknown> {
     ): ZalgoPromise<X | Y> {
         // @ts-ignore
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
-            throw new Error('Promise.then expected a function for success handler');
+            throw new Error(
+                'Promise.then expected a function for success handler'
+            );
         }
 
         // @ts-ignore
         if (onError && typeof onError !== 'function' && !onError.call) {
-            throw new Error('Promise.then expected a function for error handler');
+            throw new Error(
+                'Promise.then expected a function for error handler'
+            );
         }
 
         // @ts-ignore
@@ -269,12 +275,12 @@ export class ZalgoPromise<R extends unknown> {
 
         // @ts-ignore - doesn't match ZalgoPromise<R>
         return this.then(
-            result => {
+            (result) => {
                 return ZalgoPromise.try(onFinally).then(() => {
                     return result;
                 });
             },
-            err => {
+            (err) => {
                 return ZalgoPromise.try(onFinally).then(() => {
                     throw err;
                 });
@@ -294,7 +300,7 @@ export class ZalgoPromise<R extends unknown> {
 
             this.reject(err || new Error(`Promise timed out after ${ time }ms`));
         }, time);
-        return this.then(result => {
+        return this.then((result) => {
             clearTimeout(timeout);
             return result;
         });
@@ -317,8 +323,9 @@ export class ZalgoPromise<R extends unknown> {
         }
 
         if (isPromise(value)) {
-            // @ts-ignore is it a promise or a value who knows
-            return new ZalgoPromise((resolve, reject) => value.then(resolve, reject));
+            return new ZalgoPromise((resolve, reject) =>
+                // @ts-ignore is it a promise or a value who knows
+                value.then(resolve, reject));
         }
 
         // @ts-ignore is it a promise or a value who knows
@@ -351,7 +358,7 @@ export class ZalgoPromise<R extends unknown> {
             secondPromise: ZalgoPromise<T>
         ) => {
             return firstPromise.then(
-                res => {
+                (res) => {
                     results[i] = res;
                     count -= 1;
 
@@ -359,7 +366,7 @@ export class ZalgoPromise<R extends unknown> {
                         promise.resolve(results);
                     }
                 },
-                err => {
+                (err) => {
                     secondPromise.reject(err);
                 }
             );
@@ -401,7 +408,7 @@ export class ZalgoPromise<R extends unknown> {
                 if (isPromise(value)) {
                     awaitPromises.push(
                         // @ts-ignore
-                        value.then(res => {
+                        value.then((res) => {
                             // @ts-ignore
                             result[key] = res;
                         })
@@ -424,25 +431,23 @@ export class ZalgoPromise<R extends unknown> {
         return ZalgoPromise.all(items.map(method));
     }
 
-    static onPossiblyUnhandledException(
-        handler: (err: unknown) => void
-    ): {
+    static onPossiblyUnhandledException(handler: (err: unknown) => void): {
         cancel: () => void;
     } {
         return onPossiblyUnhandledException(handler);
     }
 
     static try<
-    X extends unknown,
-    Y extends unknown,
-    C extends unknown,
-    A extends ReadonlyArray<unknown>
->(
+        X extends unknown,
+        Y extends unknown,
+        C extends unknown,
+        A extends ReadonlyArray<unknown>
+    >(
         method: (...args: A) => ZalgoPromise<X> | Y,
         context?: C,
         args?: A
     ): ZalgoPromise<X | Y> {
-    // @ts-ignore
+        // @ts-ignore
         if (method && typeof method !== 'function' && !method.call) {
             throw new Error('Promise.try expected a function');
         }
@@ -451,7 +456,7 @@ export class ZalgoPromise<R extends unknown> {
         startActive();
 
         try {
-        // @ts-ignore
+            // @ts-ignore
             result = method.apply(context, args || []);
         } catch (err) {
             endActive();
@@ -465,7 +470,7 @@ export class ZalgoPromise<R extends unknown> {
     }
 
     static delay(delay: number): ZalgoPromise<void> {
-        return new ZalgoPromise(resolve => {
+        return new ZalgoPromise((resolve) => {
             setTimeout(resolve, delay);
         });
     }
@@ -479,7 +484,7 @@ export class ZalgoPromise<R extends unknown> {
     }
 
     static flush(): ZalgoPromise<void> {
-    // @ts-ignore
+        // @ts-ignore
         return awaitActive(ZalgoPromise);
     }
 }
