@@ -285,6 +285,11 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     return Promise.resolve(this); // eslint-disable-line compat/compat
   };
 
+  _proto.lazy = function lazy() {
+    this.errorHandled = true;
+    return this;
+  };
+
   ZalgoPromise.resolve = function resolve(value) {
     if (value instanceof ZalgoPromise) {
       // $FlowFixMe incompatible-type-arg
