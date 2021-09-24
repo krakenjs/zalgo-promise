@@ -307,6 +307,11 @@ export class ZalgoPromise<R : mixed> {
         return Promise.resolve(this); // eslint-disable-line compat/compat
     }
 
+    lazy() : ZalgoPromise<R> {
+        this.errorHandled = true;
+        return this;
+    }
+
     static resolve<X, Y>(value : ZalgoPromise<X> | Y) : ZalgoPromise<X | Y> {
 
         if (value instanceof ZalgoPromise) {

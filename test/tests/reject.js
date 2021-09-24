@@ -512,4 +512,26 @@ describe('reject cases', () => {
             }, 100);
         }, 100);
     });
+
+    it('should not call unhandled promise method when lazy promise is rejected without having a handler', () => {
+
+        window.addEventListener('error', () => {
+            // pass
+        });
+        
+        let error;
+
+        const listener = ZalgoPromise.onPossiblyUnhandledException(err => {
+            error = err;
+        });
+
+        ZalgoPromise.reject(new Error('foobar')).lazy();
+
+        return ZalgoPromise.delay(50).then(() => {
+            listener.cancel();
+            if (error) {
+                throw new Error(`Expected error to not be thrown`);
+            }
+        });
+    });
 });
