@@ -1,8 +1,5 @@
 import { isPromise } from './utils';
-import {
-    onPossiblyUnhandledException,
-    dispatchPossiblyUnhandledError
-} from './exceptions';
+import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
 import { startActive, endActive, awaitActive } from './flush';
 
 export class ZalgoPromise<R> {
@@ -22,38 +19,40 @@ export class ZalgoPromise<R> {
     stack ?: string;
 
     constructor(handler ?: (resolve : (result : R) => void, reject : (error : unknown) => void) => void) {
+
         this.resolved = false;
         this.rejected = false;
         this.errorHandled = false;
         this.handlers = [];
 
         if (handler) {
+
             let result;
             let error;
             let resolved = false;
             let rejected = false;
             let isAsync = false;
+
             startActive();
 
             try {
-                handler(
-                    (res) => {
-                        if (isAsync) {
-                            this.resolve(res);
-                        } else {
-                            resolved = true;
-                            result = res;
-                        }
-                    },
-                    (err) => {
-                        if (isAsync) {
-                            this.reject(err);
-                        } else {
-                            rejected = true;
-                            error = err;
-                        }
+                handler((res) => {
+                    if (isAsync) {
+                        this.resolve(res);
+                    } else {
+                        resolved = true;
+                        result = res;
                     }
-                );
+                },
+                (err) => {
+                    if (isAsync) {
+                        this.reject(err);
+                    } else {
+                        rejected = true;
+                        error = err;
+                    }
+                });
+
             } catch (err) {
                 endActive();
                 this.reject(err);
@@ -61,6 +60,7 @@ export class ZalgoPromise<R> {
             }
 
             endActive();
+
             isAsync = true;
 
             if (resolved) {
@@ -71,7 +71,6 @@ export class ZalgoPromise<R> {
         }
 
         // @ts-ignore
-        // eslint-disable-next-line no-undef
         if (__DEBUG__) {
             try {
                 throw new Error(`ZalgoPromise`);
@@ -106,12 +105,7 @@ export class ZalgoPromise<R> {
         }
 
         if (!error) {
-            const err =
-                // @ts-ignore
-                error && typeof error.toString === 'function'
-                    ? // @ts-ignore
-                    error.toString()
-                    : Object.prototype.toString.call(error);
+            const err = error && typeof (error as Error).toString === 'function' ? (error as Error).toString() : Object.prototype.toString.call(error);
             error = new Error(
                 `Expected reject to be called with Error, got ${ err }`
             );
@@ -123,8 +117,7 @@ export class ZalgoPromise<R> {
         if (!this.errorHandled) {
             setTimeout(() => {
                 if (!this.errorHandled) {
-                    // @ts-ignore
-                    dispatchPossiblyUnhandledError(error, this);
+                    dispatchPossiblyUnhandledError(error as Error, this);
                 }
             }, 1);
         }
@@ -140,6 +133,7 @@ export class ZalgoPromise<R> {
     }
 
     dispatch() : void {
+
         const { dispatching, resolved, rejected, handlers } = this;
 
         if (dispatching) {
@@ -165,19 +159,23 @@ export class ZalgoPromise<R> {
             );
         };
 
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < handlers.length; i++) {
+
             const { onSuccess, onError, promise } = handlers[i];
+
             let result;
 
             if (resolved) {
+
                 try {
                     result = onSuccess ? onSuccess(this.value) : this.value;
                 } catch (err) {
                     promise.reject(err);
                     continue;
                 }
+
             } else if (rejected) {
+
                 if (!onError) {
                     promise.reject(this.error);
                     continue;

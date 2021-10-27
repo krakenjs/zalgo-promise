@@ -9,6 +9,7 @@ const dispatchedErrors : Array<Error> = [];
 const possiblyUnhandledPromiseHandlers : TypeHandlers<any> = [];
 
 export function dispatchPossiblyUnhandledError<T>(err : Error, promise : ZalgoPromise<T>) : void {
+
     if (dispatchedErrors.indexOf(err) !== -1) {
         return;
     }
@@ -17,16 +18,13 @@ export function dispatchPossiblyUnhandledError<T>(err : Error, promise : ZalgoPr
 
     setTimeout(() => {
         // @ts-ignore
-        // eslint-disable-next-line no-undef
         if (__DEBUG__) {
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string
-            throw new Error(`${ err.stack ?? err.toString() }\n\nFrom promise:\n\n${ promise.stack }`);
+            throw new Error(`${ err.stack || err.toString() }\n\nFrom promise:\n\n${ promise.stack }`);
         }
 
         throw err;
     }, 1);
 
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
         possiblyUnhandledPromiseHandlers[j](err, promise);
     }
@@ -34,6 +32,7 @@ export function dispatchPossiblyUnhandledError<T>(err : Error, promise : ZalgoPr
 
 export function onPossiblyUnhandledException<T>(handler : TypeHandler<T>) : { cancel : () => void } {
     possiblyUnhandledPromiseHandlers.push(handler);
+
     return {
         cancel() {
             possiblyUnhandledPromiseHandlers.splice(
