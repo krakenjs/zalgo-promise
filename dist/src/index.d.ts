@@ -1,1 +1,0 @@
-export { ZalgoPromise } from './promise';

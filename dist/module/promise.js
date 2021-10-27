@@ -2,6 +2,7 @@ import { isPromise as _isPromise } from './utils';
 import { onPossiblyUnhandledException as _onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
 import { startActive, endActive, awaitActive } from './flush';
 export var ZalgoPromise = /*#__PURE__*/function () {
+  // eslint-disable-next-line flowtype/no-mutable-array
   function ZalgoPromise(handler) {
     var _this = this;
 
@@ -54,13 +55,12 @@ export var ZalgoPromise = /*#__PURE__*/function () {
       isAsync = true;
 
       if (resolved) {
-        // @ts-ignore - potentially undefined
+        // $FlowFixMe
         this.resolve(_result);
       } else if (rejected) {
         this.reject(_error);
       }
-    } // @ts-ignore
-
+    }
 
     if (__DEBUG__) {
       try {
@@ -100,9 +100,8 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     }
 
     if (!error) {
-      var _err = // @ts-ignore
-      error && typeof error.toString === 'function' ? // @ts-ignore
-      error.toString() : Object.prototype.toString.call(error);
+      // $FlowFixMe
+      var _err = error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error);
 
       error = new Error("Expected reject to be called with Error, got " + _err);
     }
@@ -113,7 +112,6 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     if (!this.errorHandled) {
       setTimeout(function () {
         if (!_this2.errorHandled) {
-          // @ts-ignore
           dispatchPossiblyUnhandledError(error, _this2);
         }
       }, 1);
@@ -164,7 +162,6 @@ export var ZalgoPromise = /*#__PURE__*/function () {
 
       if (resolved) {
         try {
-          // @ts-ignore
           _result2 = onSuccess ? onSuccess(this.value) : this.value;
         } catch (err) {
           promise.reject(err);
@@ -185,13 +182,15 @@ export var ZalgoPromise = /*#__PURE__*/function () {
       }
 
       if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
-        if (_result2.resolved) {
-          promise.resolve(_result2.value);
+        var promiseResult = _result2;
+
+        if (promiseResult.resolved) {
+          promise.resolve(promiseResult.value);
         } else {
-          promise.reject(_result2.error);
+          promise.reject(promiseResult.error);
         }
 
-        _result2.errorHandled = true;
+        promiseResult.errorHandled = true;
       } else if (_isPromise(_result2)) {
         if (_result2 instanceof ZalgoPromise && (_result2.resolved || _result2.rejected)) {
           if (_result2.resolved) {
@@ -200,7 +199,7 @@ export var ZalgoPromise = /*#__PURE__*/function () {
             promise.reject(_result2.error);
           }
         } else {
-          // @ts-ignore
+          // $FlowFixMe
           chain(_result2, promise);
         }
       } else {
@@ -214,16 +213,13 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   _proto.then = function then(onSuccess, onError) {
-    // @ts-ignore
     if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
       throw new Error('Promise.then expected a function for success handler');
-    } // @ts-ignore
-
+    }
 
     if (onError && typeof onError !== 'function' && !onError.call) {
       throw new Error('Promise.then expected a function for error handler');
-    } // @ts-ignore
-
+    }
 
     var promise = new ZalgoPromise();
     this.handlers.push({
@@ -237,15 +233,15 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   _proto.catch = function _catch(onError) {
-    return this.then(undefined, onError);
+    // $FlowFixMe incompatible-call
+    var resultPromise = this.then(undefined, onError);
+    return resultPromise;
   };
 
   _proto.finally = function _finally(onFinally) {
-    // @ts-ignore
     if (onFinally && typeof onFinally !== 'function' && !onFinally.call) {
       throw new Error('Promise.finally expected a function');
-    } // @ts-ignore - doesn't match ZalgoPromise<R>
-
+    }
 
     return this.then(function (result) {
       return ZalgoPromise.try(onFinally).then(function () {
@@ -276,30 +272,37 @@ export var ZalgoPromise = /*#__PURE__*/function () {
       clearTimeout(timeout);
       return result;
     });
-  };
+  } // $FlowFixMe
+  ;
 
   _proto.toPromise = function toPromise() {
+    // $FlowFixMe
     if (typeof Promise === 'undefined') {
       throw new TypeError("Could not find Promise");
-    } // @ts-ignore
+    } // $FlowFixMe
 
 
     return Promise.resolve(this); // eslint-disable-line compat/compat
   };
 
+  _proto.lazy = function lazy() {
+    this.errorHandled = true;
+    return this;
+  };
+
   ZalgoPromise.resolve = function resolve(value) {
     if (value instanceof ZalgoPromise) {
-      return value;
+      // $FlowFixMe incompatible-type-arg
+      var _result3 = value;
+      return _result3;
     }
 
     if (_isPromise(value)) {
+      // $FlowFixMe
       return new ZalgoPromise(function (resolve, reject) {
-        return (// @ts-ignore is it a promise or a value who knows
-          value.then(resolve, reject)
-        );
+        return value.then(resolve, reject);
       });
-    } // @ts-ignore is it a promise or a value who knows
-
+    }
 
     return new ZalgoPromise().resolve(value);
   };
@@ -313,9 +316,11 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   ZalgoPromise.all = function all(promises) {
+    // eslint-disable-line no-undef
     var promise = new ZalgoPromise();
-    var count = promises.length;
-    var results = [];
+    var count = promises.length; // eslint-disable-next-line no-undef
+
+    var results = [].slice();
 
     if (!count) {
       promise.resolve(results);
@@ -361,6 +366,7 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   ZalgoPromise.hash = function hash(promises) {
+    // eslint-disable-line no-undef
     var result = {};
     var awaitPromises = [];
 
@@ -369,13 +375,10 @@ export var ZalgoPromise = /*#__PURE__*/function () {
         var value = promises[key];
 
         if (_isPromise(value)) {
-          awaitPromises.push( // @ts-ignore
-          value.then(function (res) {
-            // @ts-ignore
+          awaitPromises.push(value.then(function (res) {
             result[key] = res;
           }));
         } else {
-          // @ts-ignore
           result[key] = value;
         }
       }
@@ -391,7 +394,7 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   ZalgoPromise.map = function map(items, method) {
-    // @ts-ignore
+    // $FlowFixMe
     return ZalgoPromise.all(items.map(method));
   };
 
@@ -400,7 +403,6 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   ZalgoPromise.try = function _try(method, context, args) {
-    // @ts-ignore
     if (method && typeof method !== 'function' && !method.call) {
       throw new Error('Promise.try expected a function');
     }
@@ -409,17 +411,16 @@ export var ZalgoPromise = /*#__PURE__*/function () {
     startActive();
 
     try {
-      // @ts-ignore
       result = method.apply(context, args || []);
     } catch (err) {
-      endActive(); // @ts-ignore
-
+      endActive();
       return ZalgoPromise.reject(err);
     }
 
-    endActive(); // @ts-ignore
+    endActive(); // $FlowFixMe incompatible-call
 
-    return ZalgoPromise.resolve(result);
+    var resultPromise = ZalgoPromise.resolve(result);
+    return resultPromise;
   };
 
   ZalgoPromise.delay = function delay(_delay) {
@@ -437,7 +438,6 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   };
 
   ZalgoPromise.flush = function flush() {
-    // @ts-ignore
     return awaitActive(ZalgoPromise);
   };
 

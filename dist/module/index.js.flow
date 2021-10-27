@@ -1,0 +1,52 @@
+// @flow
+
+declare class Class0 {
+  static $call(message?: string): Class0;
+  static captureStackTrace(target: Object, constructor?: Function): void;
+  static prepareStackTrace: (err: Class0, stack: Array<CallSite>) => mixed;
+  static stackTraceLimit: number;
+
+  columnNumber?: number;
+  description?: string;
+  fileName?: string;
+  lineNumber?: number;
+  message: string;
+  name: string;
+  number?: number;
+  stack: string;
+  constructor(message?: mixed): void;
+  toString(): string;
+}
+declare export class ZalgoPromise<R> {
+  static all<X: [mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | [mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */, mixed /* UNEXPECTED TYPE: ExistsT */] | Array<mixed>>(promises: X): ZalgoPromise<mixed /* UNEXPECTED TYPE: EvalT */>;
+  static asyncReject(error: mixed): ZalgoPromise<R>;
+  static delay(delay: number): ZalgoPromise<void>;
+  static flush(): ZalgoPromise<void>;
+  static hash<O: {[_: string]: mixed /* UNEXPECTED TYPE: ExistsT */}>(promises: O): ZalgoPromise<mixed /* UNEXPECTED TYPE: EvalT */>;
+  static isPromise(value: mixed): boolean;
+  static map<T, X>(items: Array<T>, method: (_: T) => ZalgoPromise<X> | X): ZalgoPromise<Array<X>>;
+  static onPossiblyUnhandledException(handler: (err: mixed) => void): {cancel: () => void};
+  static reject(error: mixed): ZalgoPromise<R>;
+  static resolve<X>(value: X | ZalgoPromise<X>): ZalgoPromise<X>;
+  static try<X, Y, C, A: Array<mixed>>(method: (...args: A) => ZalgoPromise<X> | Y, context: ?C, args: ?A): ZalgoPromise<X | Y>;
+
+  dispatching: boolean;
+  error: mixed;
+  errorHandled: boolean;
+  handlers: Array<{onError: void | (error: mixed) => mixed, onSuccess: void | (result: R) => mixed, promise: ZalgoPromise<mixed /* UNEXPECTED TYPE: ExistsT */>}>;
+  rejected: boolean;
+  resolved: boolean;
+  stack: string;
+  value: R;
+  asyncReject(error: mixed): ZalgoPromise<R>;
+  catch<X, Y>(onError: (error: mixed) => ZalgoPromise<X> | Y): ZalgoPromise<X | Y>;
+  constructor(handler: ?(resolve: (result: R) => void, reject: (error: mixed) => void) => void): any;
+  dispatch(): any;
+  finally(onFinally: () => mixed): ZalgoPromise<R>;
+  reject(error: mixed): ZalgoPromise<R>;
+  resolve(result: R): ZalgoPromise<R>;
+  then<X, Y>(onSuccess: void | (result: R) => ZalgoPromise<X> | Y, onError: void | (error: mixed) => ZalgoPromise<X> | Y): ZalgoPromise<X | Y>;
+  timeout(time: number, err: ?Class0): ZalgoPromise<R>;
+  toPromise(): Class<Promise<R>> | Class<Promise> | Promise<+R>;
+}
+
