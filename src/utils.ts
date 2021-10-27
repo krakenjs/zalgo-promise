@@ -24,6 +24,7 @@ export function isPromise(item : unknown) : boolean {
             return false;
         }
 
+        // eslint-disable-next-line  @typescript-eslint/unbound-method
         const toString = {}.toString;
 
         if (toString) {
@@ -38,7 +39,8 @@ export function isPromise(item : unknown) : boolean {
             }
         }
 
-        if (typeof (item as { then : any }).then === 'function') {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        if (typeof (item as { then : Function }).then === 'function') {
             return true;
         }
     } catch (err) {

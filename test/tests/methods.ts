@@ -1,6 +1,7 @@
 import { ZalgoPromise } from '../../src';
 
 describe('promise method cases', () => {
+
     it('should work with a set of resolved promises in promise.all', () => {
         return ZalgoPromise.all([
             ZalgoPromise.resolve(1),
@@ -23,6 +24,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a set of resolved values or promises in promise.all', () => {
         return ZalgoPromise.all([ 1, ZalgoPromise.resolve(2), 3 ])
             // @ts-ignore the then parameters are unexpected
@@ -41,6 +43,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should reject with any rejected promise from promise.all', () => {
         const error = 'SERIOUS_ERROR';
         return ZalgoPromise.all([
@@ -64,6 +67,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should reject with the first rejected promise from promise.all', () => {
         const error = 'SERIOUS_ERROR';
         const error2 = 'SERIOUS_ERROR2';
@@ -88,6 +92,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should call promise.delay and wait some time', () => {
         let timeoutCalled = false;
         const timeout = setTimeout(() => {
@@ -103,6 +108,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a set of resolved promises in promise.hash', () => {
         return ZalgoPromise.hash({
             one:   ZalgoPromise.resolve(1),
@@ -124,6 +130,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a set of resolved values or promises in promise.hash', () => {
         return ZalgoPromise.hash({
             one:   1,
@@ -145,6 +152,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should reject with any rejected promise from promise.hash', () => {
         const error = 'SERIOUS_ERROR';
         return ZalgoPromise.hash({
@@ -168,6 +176,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should reject with the first rejected promise from promise.hash', () => {
         const error = 'SERIOUS_ERROR';
         const error2 = 'SERIOUS_ERROR2';
@@ -192,6 +201,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a set of values in promise.map', () => {
         return ZalgoPromise.map([ 1, 2, 3 ], (x) => x + 1)
             .then(([ two, three, four ]) => {
@@ -209,6 +219,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a set of values and a promise returning function in promise.map', () => {
         return ZalgoPromise.map([ 1, 2, 3 ], (x) => ZalgoPromise.resolve(x + 1))
             .then(([ two, three, four ]) => {
@@ -226,6 +237,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a simple method passed to promise.try', () => {
         const value = 'foobar';
         return ZalgoPromise.try(() => {
@@ -238,6 +250,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a conditional method passed to promise.try', () => {
         const value = 'foobar';
         return ZalgoPromise.try(() => {
@@ -252,6 +265,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a promise returning method passed to promise.try', () => {
         const value = 'foobar';
         return ZalgoPromise.try(() => {
@@ -259,11 +273,13 @@ describe('promise method cases', () => {
         })
             .then((result) => {
                 if (result !== value) {
+                    // eslint-disable-next-line @typescript-eslint/no-base-to-string
                     throw new Error(`Expected ${ result } to equal ${ value }`);
                 }
             })
             .toPromise();
     });
+
     it('should work with a conditional promise returning method passed to promise.try', () => {
         const value = 'foobar';
         return ZalgoPromise.try(() => {
@@ -278,6 +294,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a conditional promise returning method passed to promise.try, with an inner promise.try', () => {
         const value = 'foobar';
         return ZalgoPromise.try(() => {
@@ -294,6 +311,7 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
     it('should work with a conditional promise returning method passed to promise.try, calling an external function', () => {
         const value = 'foobar';
 
@@ -316,4 +334,5 @@ describe('promise method cases', () => {
             })
             .toPromise();
     });
+
 });
