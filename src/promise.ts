@@ -7,17 +7,17 @@ export class ZalgoPromise<R> {
   resolved : boolean;
   rejected : boolean;
   errorHandled : boolean;
-  value : R;
+  value ?: R;
   error : unknown;
   handlers : Array<{
       promise : ZalgoPromise<unknown>,
       // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-      onSuccess : undefined | ((result : R) => unknown),
+      onSuccess ?: ((result : R) => unknown),
       // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-      onError : undefined | ((error : unknown) => unknown),
+      onError ?: ((error : unknown) => unknown),
   }>;
-  dispatching : boolean;
-  stack : string;
+  dispatching ?: boolean;
+  stack ?: string;
 
   constructor(handler : ((resolve : (result : R) => void, reject : (error : unknown) => void) => void) | null | undefined) {
       this.resolved = false;
@@ -59,18 +59,19 @@ export class ZalgoPromise<R> {
           isAsync = true;
 
           if (resolved) {
-              // $FlowFixMe
+              // @ts-ignore
               this.resolve(result);
           } else if (rejected) {
               this.reject(error);
           }
       }
 
+      // @ts-ignore - global
       if (__DEBUG__) {
           try {
               throw new Error(`ZalgoPromise`);
           } catch (err) {
-              this.stack = err.stack;
+              this.stack = (err as Error).stack;
           }
       }
   }
@@ -100,7 +101,7 @@ export class ZalgoPromise<R> {
       }
 
       if (!error) {
-      // $FlowFixMe
+          // @ts-ignore
           const err = error && typeof error.toString === 'function' ? error.toString() : Object.prototype.toString.call(error);
           error = new Error(`Expected reject to be called with Error, got ${ err }`);
       }
@@ -141,7 +142,8 @@ export class ZalgoPromise<R> {
       this.dispatching = true;
       startActive();
 
-      const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T> | T => {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<void | T>  => {
           return firstPromise.then(res => {
               secondPromise.resolve(res);
           }, err => {
@@ -199,7 +201,7 @@ export class ZalgoPromise<R> {
                       promise.reject(result.error);
                   }
               } else {
-                  // $FlowFixMe
+                  // @ts-ignore
                   chain(result, promise);
               }
           } else {
@@ -212,16 +214,19 @@ export class ZalgoPromise<R> {
       endActive();
   }
 
-  then<X, Y>(onSuccess : undefined | ((result : R) => ZalgoPromise<X> | Y), onError : undefined | ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+  then<X, Y>(onSuccess ?: ((result : R) => ZalgoPromise<X> | Y), onError ?: ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
 
+      // @ts-ignore - not a function by the time it gets to call
       if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
           throw new Error('Promise.then expected a function for success handler');
       }
 
+      // @ts-ignore - not a function by the time it gets to call
       if (onError && typeof onError !== 'function' && !onError.call) {
           throw new Error('Promise.then expected a function for error handler');
       }
 
+      // @ts-ignore - zalgo promise requires an arg
       const promise = new ZalgoPromise();
 
       this.handlers.push({
@@ -372,7 +377,7 @@ export class ZalgoPromise<R> {
       return promise;
   }
 
-  static hash<O extends Record<string, unknown>>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> {
+  static hash<O extends Record<string, ZalgoPromise<unknown>>>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> {
       const result = {};
       const awaitPromises = [];
 
@@ -394,7 +399,6 @@ export class ZalgoPromise<R> {
   }
 
   static map<T, X>(items : ReadonlyArray<T>, method : (arg0 : T) => ZalgoPromise<X> | X) : ZalgoPromise<ReadonlyArray<X>> {
-      // $FlowFixMe
       return ZalgoPromise.all(items.map(method));
   }
 
@@ -404,8 +408,9 @@ export class ZalgoPromise<R> {
       return onPossiblyUnhandledException(handler);
   }
 
-  static try<X, Y, C, A extends ReadonlyArray<unknown>>(method : (...args : ReadonlyArray<unknown>) => ZalgoPromise<X> | Y, context ?: C, args ?: A) : ZalgoPromise<X | Y> {
+  static try<X, Y, C, A extends Array<unknown>>(method : (...args : ReadonlyArray<unknown>) => ZalgoPromise<X> | Y, context ?: C, args ?: A) : ZalgoPromise<X | Y> {
 
+      // @ts-ignore by the time we get to call its not a function signauture
       if (method && typeof method !== 'function' && !method.call) {
           throw new Error('Promise.try expected a function');
       }
@@ -423,7 +428,6 @@ export class ZalgoPromise<R> {
 
       endActive();
 
-      // $FlowFixMe incompatible-call
       const resultPromise = ZalgoPromise.resolve(result);
 
       return resultPromise;
