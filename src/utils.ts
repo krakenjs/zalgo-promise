@@ -1,6 +1,4 @@
-/* @flow */
-
-export function isPromise(item : mixed) : boolean {
+export function isPromise(item : unknown) : boolean {
     try {
         if (!item) {
             return false;
@@ -18,7 +16,7 @@ export function isPromise(item : mixed) : boolean {
             return false;
         }
 
-        const toString = ({}).toString;
+        const toString = {}.toString;
 
         if (toString) {
             const name = toString.call(item);

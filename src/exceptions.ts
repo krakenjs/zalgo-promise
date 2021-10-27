@@ -1,11 +1,9 @@
-/* @flow */
-
 import type { ZalgoPromise } from './promise';
 
 const dispatchedErrors = [];
-const possiblyUnhandledPromiseHandlers : Array<(mixed, promise? : ZalgoPromise<mixed>) => void> = [];
+const possiblyUnhandledPromiseHandlers : Array<(arg0 : unknown, promise ?: ZalgoPromise<unknown>) => void> = [];
 
-export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPromise<T>) {
+export function dispatchPossiblyUnhandledError<T>(err : unknown, promise : ZalgoPromise<T>) {
 
     if (dispatchedErrors.indexOf(err) !== -1) {
         return;
@@ -23,17 +21,17 @@ export function dispatchPossiblyUnhandledError<T>(err : mixed, promise : ZalgoPr
     }, 1);
 
     for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-        // $FlowFixMe
+    // $FlowFixMe
         possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
 
-export function onPossiblyUnhandledException(handler : (mixed, promise? : ZalgoPromise<mixed>) => void) : {| cancel : () => void |} {
+export function onPossiblyUnhandledException(handler : (arg0 : unknown, promise ?: ZalgoPromise<unknown>) => void) : { cancel : () => void } {
     possiblyUnhandledPromiseHandlers.push(handler);
-
     return {
         cancel() {
             possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
         }
+
     };
 }

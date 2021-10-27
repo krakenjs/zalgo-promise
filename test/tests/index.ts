@@ -1,5 +1,3 @@
-/* @flow */
-
 import './resolve';
 import './reject';
 import './window';

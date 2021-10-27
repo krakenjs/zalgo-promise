@@ -1,4 +1,4 @@
-/* @flow */
+import type { Class } from 'utility-types';
 
 import type { ZalgoPromise } from './promise';
 
@@ -22,7 +22,7 @@ export function endActive() {
     flushActive();
 }
 
-export function awaitActive(Zalgo : Class<ZalgoPromise<*>>) : ZalgoPromise<void> { // eslint-disable-line no-undef
+export function awaitActive(Zalgo : Class<ZalgoPromise<any>>) : ZalgoPromise<void> { // eslint-disable-line no-undef
     const promise = flushPromise = flushPromise || new Zalgo();
     flushActive();
     return promise;

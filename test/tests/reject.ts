@@ -1,4 +1,3 @@
-/* @flow */
 /* eslint max-lines: 0 */
 
 import { ZalgoPromise } from '../../src';
@@ -15,6 +14,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -31,6 +31,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -41,7 +42,7 @@ describe('reject cases', () => {
 
         const error = 'SERIOUS_ERROR';
 
-        return (new ZalgoPromise()).reject(new Error(error)).then(() => {
+        return new ZalgoPromise().reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             // $FlowFixMe
@@ -56,7 +57,7 @@ describe('reject cases', () => {
 
         const error = 'SERIOUS_ERROR';
 
-        return new ZalgoPromise((resolve, reject) => reject(new Error(error))).then(() => {
+        return new ZalgoPromise((resolve, reject) => { reject(new Error(error)); }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             // $FlowFixMe
@@ -72,7 +73,7 @@ describe('reject cases', () => {
         const error = 'SERIOUS_ERROR';
 
         return new ZalgoPromise((resolve, reject) => {
-            setTimeout(() => reject(new Error(error)), 50);
+            setTimeout(() => { reject(new Error(error)); }, 50);
         }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
@@ -113,6 +114,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -130,11 +132,13 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
+
             return value;
-        }).then((result) => {
+        }).then(result => {
             if (result !== value) {
                 throw new Error(`Expected ${ result } to be ${ value }`);
             }
@@ -169,6 +173,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -209,6 +214,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -222,7 +228,7 @@ describe('reject cases', () => {
 
         return ZalgoPromise.resolve(value).then(() => {
             return new ZalgoPromise((resolve, reject) => {
-                setTimeout(() => reject(new Error(error)), 50);
+                setTimeout(() => { reject(new Error(error)); }, 50);
             });
         }).then(() => {
             throw new Error(`Success handler should not be called`);
@@ -230,6 +236,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -249,6 +256,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
@@ -273,6 +281,7 @@ describe('reject cases', () => {
             if (!(err instanceof Error)) {
                 throw new TypeError(`Expected err to be Error type, got ${ typeof err }`);
             }
+
             if (err.message !== error2) {
                 throw new Error(`Expected ${ err.message } to be ${ error2 }`);
             }
@@ -388,7 +397,7 @@ describe('reject cases', () => {
         }
     });
 
-    it('should call unhandled promise method when promise is rejected without having a handler', (done) => {
+    it('should call unhandled promise method when promise is rejected without having a handler', done => {
 
         window.addEventListener('error', () => {
             // pass
@@ -396,16 +405,18 @@ describe('reject cases', () => {
 
         const listener = ZalgoPromise.onPossiblyUnhandledException(err => {
             listener.cancel();
+
             if (!(err instanceof Error)) {
                 return done(new Error(`Expected error to be thrown`));
             }
+
             return done();
         });
 
         ZalgoPromise.reject(new Error('foobar'));
     });
 
-    it('should not call unhandled promise method when promise is async-rejected without having a handler', (done) => {
+    it('should not call unhandled promise method when promise is async-rejected without having a handler', done => {
 
         window.addEventListener('error', () => {
             // pass
@@ -417,13 +428,15 @@ describe('reject cases', () => {
             onPossiblyUnhandledExceptionCalled = true;
         });
 
-        (new ZalgoPromise()).asyncReject(new Error('foobar'));
+        new ZalgoPromise().asyncReject(new Error('foobar'));
 
         setTimeout(() => {
             listener.cancel();
+
             if (onPossiblyUnhandledExceptionCalled) {
                 return done(new Error(`Expected onPossiblyUnhandledException handler to not be called`));
             }
+
             return done();
         }, 100);
     });
@@ -445,13 +458,14 @@ describe('reject cases', () => {
             if (err instanceof Error && err.message !== error) {
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
+
             if (!finallyCalled) {
                 throw new Error(`Expected finally to be called`);
             }
         }).toPromise();
     });
 
-    it('should call unhandled promise method only once for a given error', (done) => {
+    it('should call unhandled promise method only once for a given error', done => {
 
         window.addEventListener('error', () => {
             // pass
@@ -475,14 +489,16 @@ describe('reject cases', () => {
 
         setTimeout(() => {
             listener.cancel();
+
             if (handlerCalled !== 1) {
                 return done(new Error(`Expected handler to be called 1 time, got ${ handlerCalled }`));
             }
+
             return done();
         }, 50);
     });
 
-    it('should not call unhandled promise method when promise is rejected after a handler is subsequently added', (done) => {
+    it('should not call unhandled promise method when promise is rejected after a handler is subsequently added', done => {
 
         window.addEventListener('error', () => {
             // pass
@@ -505,9 +521,11 @@ describe('reject cases', () => {
 
             setTimeout(() => {
                 listener.cancel();
+
                 if (onPossiblyUnhandledExceptionCalled) {
                     return done(new Error(`Expected onPossiblyUnhandledException handler to not be called`));
                 }
+
                 return done();
             }, 100);
         }, 100);
@@ -518,7 +536,7 @@ describe('reject cases', () => {
         window.addEventListener('error', () => {
             // pass
         });
-        
+
         let error;
 
         const listener = ZalgoPromise.onPossiblyUnhandledException(err => {
@@ -529,6 +547,7 @@ describe('reject cases', () => {
 
         return ZalgoPromise.delay(50).then(() => {
             listener.cancel();
+
             if (error) {
                 throw new Error(`Expected error to not be thrown`);
             }

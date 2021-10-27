@@ -1,5 +1,3 @@
-/* @flow */
-
 import { ZalgoPromise } from '../../src';
 
 describe('flush cases', () => {
