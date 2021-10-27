@@ -7,7 +7,7 @@ export class ZalgoPromise<R> {
     rejected : boolean;
     errorHandled : boolean;
     value ?: R;
-    error ?: Error | unknown;
+    error ?: Error;
     handlers : Array<{
         promise : ZalgoPromise<R>,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -112,6 +112,7 @@ export class ZalgoPromise<R> {
         }
 
         this.rejected = true;
+        // @ts-ignore
         this.error = error;
 
         if (!this.errorHandled) {
@@ -227,7 +228,9 @@ export class ZalgoPromise<R> {
         endActive();
     }
 
-    then<X, Y>(onSuccess ?: ((result : R) => ZalgoPromise<X> | Y), onError ?: ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+
+    then<X, Y>(onSuccess ?: (result : R) => (ZalgoPromise<X> | Y), onError ?: (error : unknown) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+
         // @ts-ignore
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error(
@@ -279,7 +282,7 @@ export class ZalgoPromise<R> {
         );
     }
 
-    timeout(time : number, err : Error | null | undefined) : ZalgoPromise<R> {
+    timeout(time : number, err : Error | null | undefined) : this {
         if (this.resolved || this.rejected) {
             return this;
         }
@@ -291,6 +294,8 @@ export class ZalgoPromise<R> {
 
             this.reject(err ?? new Error(`Promise timed out after ${ time }ms`));
         }, time);
+
+        // @ts-ignore subtyping
         return this.then((result) => {
             clearTimeout(timeout);
             return result;
@@ -304,6 +309,11 @@ export class ZalgoPromise<R> {
 
         // @ts-ignore
         return Promise.resolve(this);
+    }
+
+    lazy() : this {
+        this.errorHandled = true;
+        return this;
     }
 
     static resolve<X>(value ?: X | ZalgoPromise<X>) : ZalgoPromise<X> {
@@ -329,12 +339,15 @@ export class ZalgoPromise<R> {
         return new ZalgoPromise().asyncReject(error);
     }
 
-    static all<X extends ReadonlyArray<unknown>>(promises : X) : ZalgoPromise<unknown> {
-        const promise = new ZalgoPromise();
+    static all<X extends ReadonlyArray<unknown>>(promises : X) : ZalgoPromise<X> {
+
+        const promise = new ZalgoPromise<X>();
         let count = promises.length;
-        const results : Array<unknown> = [];
+        // @ts-ignore
+        const results = [];
 
         if (!count) {
+            // @ts-ignore
             promise.resolve(results);
             return promise;
         }
@@ -347,6 +360,7 @@ export class ZalgoPromise<R> {
                     count -= 1;
 
                     if (count === 0) {
+                        // @ts-ignore
                         promise.resolve(results);
                     }
                 },
@@ -371,10 +385,12 @@ export class ZalgoPromise<R> {
                 continue;
             }
 
+            // @ts-ignore
             chain(i, ZalgoPromise.resolve(prom), promise);
         }
 
         if (count === 0) {
+            // @ts-ignore
             promise.resolve(results);
         }
 
@@ -412,7 +428,7 @@ export class ZalgoPromise<R> {
         return ZalgoPromise.all(items.map(method));
     }
 
-    static onPossiblyUnhandledException(handler : (err : unknown) => void) : { cancel : () => void } {
+    static onPossiblyUnhandledException(handler : (err : Error | unknown) => void) : { cancel : () => void } {
         return onPossiblyUnhandledException(handler);
     }
 

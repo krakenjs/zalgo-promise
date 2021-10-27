@@ -45,9 +45,9 @@ describe('reject cases', () => {
         return new ZalgoPromise().reject(new Error(error)).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
-            // $FlowFixMe
+            // @ts-ignore
             if (err.message !== error) {
-                // $FlowFixMe
+                // @ts-ignore
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -60,9 +60,9 @@ describe('reject cases', () => {
         return new ZalgoPromise((resolve, reject) => { reject(new Error(error)); }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
-            // $FlowFixMe
+            // @ts-ignore
             if (err.message !== error) {
-                // $FlowFixMe
+                // @ts-ignore
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -77,9 +77,9 @@ describe('reject cases', () => {
         }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
-            // $FlowFixMe
+            // @ts-ignore
             if (err.message !== error) {
-                // $FlowFixMe
+                // @ts-ignore
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -94,9 +94,9 @@ describe('reject cases', () => {
         }).then(() => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
-            // $FlowFixMe
+            // @ts-ignore
             if (err.message !== error) {
-                // $FlowFixMe
+                // @ts-ignore
                 throw new Error(`Expected ${ err.message } to be ${ error }`);
             }
         }).toPromise();
@@ -340,7 +340,6 @@ describe('reject cases', () => {
             throw new Error(`Success handler should not be called`);
         }).catch(err => {
             if (err !== error) {
-                // $FlowFixMe method-unbinding
                 throw new Error(`Expected ${ Object.prototype.toString.call(err) } to be ${ error }`);
             }
         }).toPromise();
@@ -352,7 +351,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
-            // $FlowFixMe
+            // @ts-ignore
             promise.then(123);
         } catch (err) {
             caughtErr = err;
@@ -369,7 +368,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
-            // $FlowFixMe
+            // @ts-ignore
             promise.then(null, 123);
         } catch (err) {
             caughtErr = err;
@@ -386,7 +385,7 @@ describe('reject cases', () => {
         let caughtErr;
 
         try {
-            // $FlowFixMe
+            // @ts-ignore
             promise.catch(123);
         } catch (err) {
             caughtErr = err;
@@ -537,10 +536,10 @@ describe('reject cases', () => {
             // pass
         });
 
-        let error;
+        let error : Error;
 
-        const listener = ZalgoPromise.onPossiblyUnhandledException(err => {
-            error = err;
+        const listener = ZalgoPromise.onPossiblyUnhandledException((err) => {
+            error = err as Error;
         });
 
         ZalgoPromise.reject(new Error('foobar')).lazy();

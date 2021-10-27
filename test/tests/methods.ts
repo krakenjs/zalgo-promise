@@ -5,14 +5,17 @@ describe('promise method cases', () => {
     it('should work with a set of resolved promises in promise.all', () => {
 
         return ZalgoPromise.all([ ZalgoPromise.resolve(1), ZalgoPromise.resolve(2), ZalgoPromise.resolve(3) ]).then(([ one, two, three ]) => {
+            // @ts-ignore
             if (one !== 1) {
                 throw new Error(`Expected 1, got ${ one }`);
             }
 
+            // @ts-ignore
             if (two !== 2) {
                 throw new Error(`Expected 2, got ${ two }`);
             }
 
+            // @ts-ignore
             if (three !== 3) {
                 throw new Error(`Expected 3, got ${ three }`);
             }
