@@ -46,6 +46,7 @@
     "grumbler-scripts": "^3",
     "mocha": "^4",
     "ts-node": "^10.1.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "utility-types": "^3.10.0"
   }
 }

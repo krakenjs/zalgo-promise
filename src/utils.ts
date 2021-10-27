@@ -16,6 +16,7 @@ export function isPromise(item : unknown) : boolean {
             return false;
         }
 
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         const toString = {}.toString;
 
         if (toString) {
@@ -26,6 +27,7 @@ export function isPromise(item : unknown) : boolean {
             }
         }
 
+        // @ts-ignore - write a guard for thenable
         if (typeof item.then === 'function') {
             return true;
         }

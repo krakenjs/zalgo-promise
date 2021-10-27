@@ -3,7 +3,7 @@ import type { ZalgoPromise } from './promise';
 const dispatchedErrors = [];
 const possiblyUnhandledPromiseHandlers : Array<(arg0 : unknown, promise ?: ZalgoPromise<unknown>) => void> = [];
 
-export function dispatchPossiblyUnhandledError<T>(err : unknown, promise : ZalgoPromise<T>) {
+export function dispatchPossiblyUnhandledError<T>(err : unknown, promise : ZalgoPromise<T>) : void {
 
     if (dispatchedErrors.indexOf(err) !== -1) {
         return;
@@ -21,7 +21,7 @@ export function dispatchPossiblyUnhandledError<T>(err : unknown, promise : Zalgo
     }, 1);
 
     for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-    // $FlowFixMe
+        // $FlowFixMe
         possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
@@ -32,6 +32,5 @@ export function onPossiblyUnhandledException(handler : (arg0 : unknown, promise 
         cancel() {
             possiblyUnhandledPromiseHandlers.splice(possiblyUnhandledPromiseHandlers.indexOf(handler), 1);
         }
-
     };
 }

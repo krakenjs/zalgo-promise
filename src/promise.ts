@@ -9,11 +9,12 @@ export class ZalgoPromise<R> {
   errorHandled : boolean;
   value : R;
   error : unknown;
-  // eslint-disable-next-line flowtype/no-mutable-array
   handlers : Array<{
-      promise : ZalgoPromise<any>,
-      onSuccess : void | ((result : R) => unknown),
-      onError : void | ((error : unknown) => unknown),
+      promise : ZalgoPromise<unknown>,
+      // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+      onSuccess : undefined | ((result : R) => unknown),
+      // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+      onError : undefined | ((error : unknown) => unknown),
   }>;
   dispatching : boolean;
   stack : string;
@@ -125,7 +126,7 @@ export class ZalgoPromise<R> {
       return this;
   }
 
-  dispatch() {
+  dispatch() : void {
 
       const { dispatching, resolved, rejected, handlers } = this;
 
@@ -140,7 +141,7 @@ export class ZalgoPromise<R> {
       this.dispatching = true;
       startActive();
 
-      const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
+      const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T> | T => {
           return firstPromise.then(res => {
               secondPromise.resolve(res);
           }, err => {
@@ -179,7 +180,7 @@ export class ZalgoPromise<R> {
           }
 
           if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
-              const promiseResult : ZalgoPromise<any> = result;
+              const promiseResult : ZalgoPromise<unknown> = result;
 
               if (promiseResult.resolved) {
                   promise.resolve(promiseResult.value);
@@ -211,7 +212,7 @@ export class ZalgoPromise<R> {
       endActive();
   }
 
-  then<X, Y>(onSuccess : void | ((result : R) => ZalgoPromise<X> | Y), onError : void | ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+  then<X, Y>(onSuccess : undefined | ((result : R) => ZalgoPromise<X> | Y), onError : undefined | ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
 
       if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
           throw new Error('Promise.then expected a function for success handler');
@@ -289,7 +290,7 @@ export class ZalgoPromise<R> {
       }
 
       // $FlowFixMe
-      return Promise.resolve(this); // eslint-disable-line compat/compat
+      return Promise.resolve(this);
   }
 
   lazy() : this {
@@ -321,11 +322,11 @@ export class ZalgoPromise<R> {
       return new ZalgoPromise().asyncReject(error);
   }
 
-  static all<X extends ReadonlyArray<unknown>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+  static all<X extends ReadonlyArray<unknown>>(promises : X) : ZalgoPromise<$TupleMap<X, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> {
 
       const promise = new ZalgoPromise();
       let count = promises.length;
-      // eslint-disable-next-line no-undef
+
       const results = ([] as $TupleMap<X, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>).slice();
 
       if (!count) {
@@ -333,7 +334,7 @@ export class ZalgoPromise<R> {
           return promise;
       }
 
-      const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) => {
+      const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T> | T => {
           return firstPromise.then(res => {
               results[i] = res;
               count -= 1;
@@ -371,7 +372,7 @@ export class ZalgoPromise<R> {
       return promise;
   }
 
-  static hash<O extends Record<string, any>>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> { // eslint-disable-line no-undef
+  static hash<O extends Record<string, unknown>>(promises : O) : ZalgoPromise<$ObjMap<O, <Y>(arg0 : ZalgoPromise<Y> | Y) => Y>> {
       const result = {};
       const awaitPromises = [];
 
