@@ -10,13 +10,13 @@ export class ZalgoPromise<R> {
     rejected : boolean;
     errorHandled : boolean;
     value ?: R;
-    error ?: Error;
+    error ?: Error | unknown;
     handlers : Array<{
         promise : ZalgoPromise<R>,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         onSuccess : ((result : R | undefined) => unknown),
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        onError : ((error : Error) => unknown),
+        onError : ((error : Error | unknown) => unknown),
     }>;
     dispatching ?: boolean;
     stack ?: string;
@@ -153,7 +153,8 @@ export class ZalgoPromise<R> {
         this.dispatching = true;
         startActive();
 
-        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T> => {
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<void | T> => {
             return firstPromise.then(
                 (res) => {
                     secondPromise.resolve(res);
@@ -192,6 +193,8 @@ export class ZalgoPromise<R> {
 
             if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
                 if (result.resolved) {
+                    // result can be too many things
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     promise.resolve(result.value);
                 } else {
                     promise.reject(result.error);
@@ -204,6 +207,8 @@ export class ZalgoPromise<R> {
                     (result.resolved || result.rejected)
                 ) {
                     if (result.resolved) {
+                    // result can be too many things
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         promise.resolve(result.value);
                     } else {
                         promise.reject(result.error);
@@ -213,6 +218,8 @@ export class ZalgoPromise<R> {
                     chain(result, promise);
                 }
             } else {
+                // result can be too many things
+                // @ts-ignore
                 promise.resolve(result);
             }
         }
@@ -222,7 +229,7 @@ export class ZalgoPromise<R> {
         endActive();
     }
 
-    then<X, Y>(onSuccess : void | ((result : R) => ZalgoPromise<X> | Y), onError : void | ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
+    then<X, Y>(onSuccess ?: ((result : R) => ZalgoPromise<X> | Y), onError ?: ((error : unknown) => ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
         // @ts-ignore
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
             throw new Error(
@@ -238,11 +245,10 @@ export class ZalgoPromise<R> {
         }
 
         const promise : ZalgoPromise<X | Y> = new ZalgoPromise<X | Y>();
-        this.handlers.push({
-            promise,
-            onSuccess,
-            onError
-        });
+
+        // @ts-ignore - need to redo these generics
+        this.handlers.push({ promise, onSuccess, onError });
+
         this.errorHandled = true;
         this.dispatch();
         return promise;
@@ -335,7 +341,8 @@ export class ZalgoPromise<R> {
             return promise;
         }
 
-        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T> => {
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T | void> => {
             return firstPromise.then(
                 (res) => {
                     results[i] = res;
@@ -376,7 +383,7 @@ export class ZalgoPromise<R> {
         return promise;
     }
 
-    static hash<O extends Record<string, unknown>>(promises : O) : ZalgoPromise<unknown> {
+    static hash<T>(promises : Record<string, ZalgoPromise<T> | T>) : ZalgoPromise<Record<string, ZalgoPromise<T> | T>> {
         const result = {};
         const awaitPromises = [];
 

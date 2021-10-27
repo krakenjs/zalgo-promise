@@ -110,7 +110,7 @@ describe('promise method cases', () => {
     });
 
     it('should work with a set of resolved promises in promise.hash', () => {
-        return ZalgoPromise.hash({
+        return ZalgoPromise.hash<number>({
             one:   ZalgoPromise.resolve(1),
             two:   ZalgoPromise.resolve(2),
             three: ZalgoPromise.resolve(3)
