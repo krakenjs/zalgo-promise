@@ -1,6 +1,7 @@
 import { ZalgoPromise } from '../../src';
 
 describe('resolve cases', () => {
+
     it('should create a resolved promise and get the value', () => {
         const value = 'foobar';
         return ZalgoPromise.resolve(value)
@@ -32,6 +33,7 @@ describe('resolve cases', () => {
             )
             .toPromise();
     });
+
     it('should create a resolved existing promise and get the value', () => {
         const value = 'foobar';
         return new ZalgoPromise()
@@ -43,20 +45,24 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise with the constructor and get the value', () => {
         const value = 'foobar';
-        return new ZalgoPromise((resolve) => { resolve(value); })
-            .then((result) => {
-                if (result !== value) {
-                    throw new Error(`Expected ${ result } to be ${ value }`);
-                }
-            })
-            .toPromise();
+        return new ZalgoPromise((resolve) => {
+            resolve(value);
+        }).then((result) => {
+            if (result !== value) {
+                throw new Error(`Expected ${ result } to be ${ value }`);
+            }
+        }).toPromise();
     });
+
     it('should create a resolved promise asynchronously with the constructor and get the value', () => {
         const value = 'foobar';
         return new ZalgoPromise((resolve) => {
-            setTimeout(() => { resolve(value); }, 50);
+            setTimeout(() => {
+                resolve(value);
+            }, 50);
         })
             .then((result) => {
                 if (result !== value) {
@@ -65,6 +71,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise and get the value', () => {
         const value = 'foobar';
         return ZalgoPromise.resolve(value)
@@ -75,6 +82,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should resolve synchronously', () => {
         let hasResolved = false;
         ZalgoPromise.resolve('').then(() => {
@@ -85,6 +93,7 @@ describe('resolve cases', () => {
             throw new Error(`Expected sync promise to have resolved`);
         }
     });
+
     it('should only be able to resolve a promise once', () => {
         const value = 'foobar';
         const promise = ZalgoPromise.resolve(value);
@@ -98,6 +107,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should resolve with an existing promise', () => {
         const value = 'foobar';
         return ZalgoPromise.resolve(ZalgoPromise.resolve(value))
@@ -108,6 +118,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should allow returning a promise in then', () => {
         const value = 'foobar';
         const value2 = 'fizzbuzz';
@@ -117,18 +128,22 @@ describe('resolve cases', () => {
             })
             .then((result) => {
                 if (result !== value2) {
+                    // eslint-disable-next-line  @typescript-eslint/no-base-to-string
                     throw new Error(`Expected ${ result } to be ${ value2 }`);
                 }
             })
             .toPromise();
     });
+
     it('should allow returning an asynchronous promise in then', () => {
         const value = 'foobar';
         const value2 = 'fizzbuzz';
         return ZalgoPromise.resolve(value)
             .then(() => {
                 return new ZalgoPromise((resolve) => {
-                    setTimeout(() => { resolve(value2); }, 50);
+                    setTimeout(() => {
+                        resolve(value2);
+                    }, 50);
                 });
             })
             .then((result) => {
@@ -138,12 +153,15 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should fail when trying to resolve an existing promise with a promise', () => {
         const value = 'foobar';
         let caughtErr;
 
         try {
-            new ZalgoPromise((resolve) => { resolve(ZalgoPromise.resolve(value)); }); // eslint-disable-line no-new
+            new ZalgoPromise((resolve) => { // eslint-disable-line no-new
+                resolve(ZalgoPromise.resolve(value));
+            });
         } catch (err) {
             caughtErr = err;
         }
@@ -152,6 +170,7 @@ describe('resolve cases', () => {
             throw new TypeError(`Expected error to be thrown`);
         }
     });
+
     it('should create a resolved promise and call finally', () => {
         const value = 'foobar';
         let finallyCalled = false;
@@ -170,6 +189,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should be able to attach a then handler in the then handler for a promise', () => {
         const promise = ZalgoPromise.resolve('');
         return promise
@@ -180,6 +200,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise and register multiple then handlers', () => {
         const value = 'foobar';
         const promise = ZalgoPromise.resolve(value);
@@ -209,10 +230,13 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise and register multiple then handlers, resolved asynchronously', () => {
         const value = 'foobar';
         const promise = new ZalgoPromise((resolve) => {
-            setTimeout(() => { resolve(value); }, 1);
+            setTimeout(() => {
+                resolve(value);
+            }, 1);
         });
         let thenCount = 0;
         return ZalgoPromise.all([
@@ -240,6 +264,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise and register multiple then handlers with one failure', () => {
         const value = 'foobar';
         const promise = ZalgoPromise.resolve(value);
@@ -281,10 +306,13 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should create a resolved promise and register multiple then handlers with one failure, resolved asynchronously', () => {
         const value = 'foobar';
         const promise = new ZalgoPromise((resolve) => {
-            setTimeout(() => { resolve(value); }, 1);
+            setTimeout(() => {
+                resolve(value);
+            }, 1);
         });
         let thenCount = 0;
         let errorHandlerCalled = false;
@@ -324,6 +352,7 @@ describe('resolve cases', () => {
             })
             .toPromise();
     });
+
     it('should work when trying to return a promise in its own then method', () => {
         const value = 'foobar';
         const promise = ZalgoPromise.resolve(value);
@@ -331,9 +360,11 @@ describe('resolve cases', () => {
             .then(() => promise)
             .then((result) => {
                 if (result !== value) {
+                    // eslint-disable-next-line @typescript-eslint/no-base-to-string
                     throw new Error(`Expected ${ result } to be ${ value }`);
                 }
             })
             .toPromise();
     });
+
 });
