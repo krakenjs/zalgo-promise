@@ -3,17 +3,19 @@ import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './
 import { startActive, endActive, awaitActive } from './flush';
 
 export class ZalgoPromise<R> {
+
     resolved : boolean;
     rejected : boolean;
     errorHandled : boolean;
     value ?: R;
     error ?: Error;
     handlers : Array<{
-        promise : ZalgoPromise<R>,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        promise : ZalgoPromise<any>,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        onSuccess : ((result : R | undefined) => unknown),
+        onSuccess : ((result ?: R) => ZalgoPromise<unknown> | unknown),
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        onError : ((error : Error | unknown) => unknown),
+        onError : ((error ?: Error) => ZalgoPromise<unknown> | unknown),
     }>;
     dispatching ?: boolean;
     stack ?: string;
@@ -36,7 +38,7 @@ export class ZalgoPromise<R> {
             startActive();
 
             try {
-                handler((res) => {
+                handler(res => {
                     if (isAsync) {
                         this.resolve(res);
                     } else {
@@ -44,7 +46,7 @@ export class ZalgoPromise<R> {
                         result = res;
                     }
                 },
-                (err) => {
+                err => {
                     if (isAsync) {
                         this.reject(err);
                     } else {
@@ -148,8 +150,7 @@ export class ZalgoPromise<R> {
         this.dispatching = true;
         startActive();
 
-        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<void | T> => {
+        const chain = <T>(firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<void> => {
             return firstPromise.then(
                 (res) => {
                     secondPromise.resolve(res);
@@ -192,8 +193,6 @@ export class ZalgoPromise<R> {
 
             if (result instanceof ZalgoPromise && (result.resolved || result.rejected)) {
                 if (result.resolved) {
-                    // result can be too many things
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     promise.resolve(result.value);
                 } else {
                     promise.reject(result.error);
@@ -206,8 +205,6 @@ export class ZalgoPromise<R> {
                     (result.resolved || result.rejected)
                 ) {
                     if (result.resolved) {
-                    // result can be too many things
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                         promise.resolve(result.value);
                     } else {
                         promise.reject(result.error);
@@ -217,8 +214,6 @@ export class ZalgoPromise<R> {
                     chain(result, promise);
                 }
             } else {
-                // result can be too many things
-                // @ts-ignore
                 promise.resolve(result);
             }
         }
@@ -228,26 +223,24 @@ export class ZalgoPromise<R> {
         endActive();
     }
 
+    then<X = R, Y = never>(
+        onSuccess ?: (result : R) => X | ZalgoPromise<X>,
+        onError ?: (error : unknown) => Y | ZalgoPromise<Y>
+    ) : ZalgoPromise<X | Y> {
 
-    then<X, Y>(onSuccess ?: (result : R) => (ZalgoPromise<X> | Y), onError ?: (error : unknown) => (ZalgoPromise<X> | Y)) : ZalgoPromise<X | Y> {
-
-        // @ts-ignore
+        // @ts-ignore .call
         if (onSuccess && typeof onSuccess !== 'function' && !onSuccess.call) {
-            throw new Error(
-                'Promise.then expected a function for success handler'
-            );
+            throw new Error('Promise.then expected a function for success handler');
         }
 
-        // @ts-ignore
+        // @ts-ignore .call
         if (onError && typeof onError !== 'function' && !onError.call) {
-            throw new Error(
-                'Promise.then expected a function for error handler'
-            );
+            throw new Error('Promise.then expected a function for error handler');
         }
 
         const promise : ZalgoPromise<X | Y> = new ZalgoPromise<X | Y>();
 
-        // @ts-ignore - need to redo these generics
+        // @ts-ignore - update onSuccess and onError
         this.handlers.push({ promise, onSuccess, onError });
 
         this.errorHandled = true;
@@ -256,7 +249,7 @@ export class ZalgoPromise<R> {
     }
 
     catch<X, Y>(
-        onError : (error : unknown) => ZalgoPromise<X> | Y
+        onError : (error : unknown) => ZalgoPromise<Y> | Y
     ) : ZalgoPromise<X | Y> {
         return this.then(undefined, onError);
     }
@@ -352,8 +345,7 @@ export class ZalgoPromise<R> {
             return promise;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<T | void> => {
+        const chain = <T>(i : number, firstPromise : ZalgoPromise<T>, secondPromise : ZalgoPromise<T>) : ZalgoPromise<void> => {
             return firstPromise.then(
                 (res) => {
                     results[i] = res;
