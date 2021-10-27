@@ -45,7 +45,7 @@ describe('resolve cases', () => {
     });
     it('should create a resolved promise with the constructor and get the value', () => {
         const value = 'foobar';
-        return new ZalgoPromise((resolve) => resolve(value))
+        return new ZalgoPromise((resolve) => { resolve(value); })
             .then((result) => {
                 if (result !== value) {
                     throw new Error(`Expected ${ result } to be ${ value }`);
@@ -56,7 +56,7 @@ describe('resolve cases', () => {
     it('should create a resolved promise asynchronously with the constructor and get the value', () => {
         const value = 'foobar';
         return new ZalgoPromise((resolve) => {
-            setTimeout(() => resolve(value), 50);
+            setTimeout(() => { resolve(value); }, 50);
         })
             .then((result) => {
                 if (result !== value) {
@@ -128,7 +128,7 @@ describe('resolve cases', () => {
         return ZalgoPromise.resolve(value)
             .then(() => {
                 return new ZalgoPromise((resolve) => {
-                    setTimeout(() => resolve(value2), 50);
+                    setTimeout(() => { resolve(value2); }, 50);
                 });
             })
             .then((result) => {
@@ -143,7 +143,7 @@ describe('resolve cases', () => {
         let caughtErr;
 
         try {
-            new ZalgoPromise((resolve) => resolve(ZalgoPromise.resolve(value))); // eslint-disable-line no-new
+            new ZalgoPromise((resolve) => { resolve(ZalgoPromise.resolve(value)); }); // eslint-disable-line no-new
         } catch (err) {
             caughtErr = err;
         }
@@ -212,7 +212,7 @@ describe('resolve cases', () => {
     it('should create a resolved promise and register multiple then handlers, resolved asynchronously', () => {
         const value = 'foobar';
         const promise = new ZalgoPromise((resolve) => {
-            setTimeout(() => resolve(value), 1);
+            setTimeout(() => { resolve(value); }, 1);
         });
         let thenCount = 0;
         return ZalgoPromise.all([
@@ -284,7 +284,7 @@ describe('resolve cases', () => {
     it('should create a resolved promise and register multiple then handlers with one failure, resolved asynchronously', () => {
         const value = 'foobar';
         const promise = new ZalgoPromise((resolve) => {
-            setTimeout(() => resolve(value), 1);
+            setTimeout(() => { resolve(value); }, 1);
         });
         let thenCount = 0;
         let errorHandlerCalled = false;

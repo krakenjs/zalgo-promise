@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
-    "lint": "eslint --ext ts,tsx,js,jsx src/ test/",
+    "lint": "eslint --ext ts,tsx,js,jsx src/ test/ --fix",
     "tsc": "tsc",
     "karma": "cross-env NODE_ENV=test babel-node --trace-deprecation --presets '@babel/preset-env' ./node_modules/.bin/karma start",
     "babel": "babel src/ --out-dir dist/module --extensions .ts,.tsx",

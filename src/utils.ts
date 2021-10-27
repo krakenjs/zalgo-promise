@@ -1,4 +1,4 @@
-export function isPromise(item: unknown): boolean {
+export function isPromise(item : unknown) : boolean {
     try {
         if (!item) {
             return false;
@@ -38,7 +38,7 @@ export function isPromise(item: unknown): boolean {
             }
         }
 
-        if (typeof (item as { then: any }).then === 'function') {
+        if (typeof (item as { then : any }).then === 'function') {
             return true;
         }
     } catch (err) {

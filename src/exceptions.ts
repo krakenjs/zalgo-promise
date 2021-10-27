@@ -1,44 +1,38 @@
 import type { ZalgoPromise } from './promise';
 
-const dispatchedErrors: Error[] = [];
-const possiblyUnhandledPromiseHandlers: Array<
-    (arg0: unknown, promise?: ZalgoPromise<unknown>) => void
-> = [];
-export function dispatchPossiblyUnhandledError<T>(
-    err: Error,
-    promise: ZalgoPromise<T>
-): void {
-    // @ts-ignore
+type TypeHandler<T> = (a : unknown, promise ?: ZalgoPromise<T>) => void;
+type TypeHandlers<T> = Array<TypeHandler<T>>;
+
+const dispatchedErrors : Array<Error> = [];
+// need to somehow supply matching T from function invoke
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const possiblyUnhandledPromiseHandlers : TypeHandlers<any> = [];
+
+export function dispatchPossiblyUnhandledError<T>(err : Error, promise : ZalgoPromise<T>) : void {
     if (dispatchedErrors.indexOf(err) !== -1) {
         return;
     }
 
-    // @ts-ignore
     dispatchedErrors.push(err);
+
     setTimeout(() => {
         // @ts-ignore
+        // eslint-disable-next-line no-undef
         if (__DEBUG__) {
-            // $FlowFixMe
-            throw new Error(
-                `${ err.stack || err.toString() }\n\nFrom promise:\n\n${
-                    promise.stack
-                }`
-            );
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            throw new Error(`${ err.stack ?? err.toString() }\n\nFrom promise:\n\n${ promise.stack }`);
         }
 
         throw err;
     }, 1);
 
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let j = 0; j < possiblyUnhandledPromiseHandlers.length; j++) {
-        // @ts-ignore
         possiblyUnhandledPromiseHandlers[j](err, promise);
     }
 }
-export function onPossiblyUnhandledException(
-    handler: (arg0: unknown, promise?: ZalgoPromise<unknown>) => void
-): {
-    cancel: () => void;
-} {
+
+export function onPossiblyUnhandledException<T>(handler : TypeHandler<T>) : { cancel : () => void } {
     possiblyUnhandledPromiseHandlers.push(handler);
     return {
         cancel() {

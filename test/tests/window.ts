@@ -7,8 +7,8 @@ describe('window cases', () => {
         let windowThenCalled = false;
         // $FlowFixMe
         Object.defineProperty(window, 'then', {
-            configurable:true,
-            get:         () => {
+            configurable: true,
+            get:          () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;
@@ -46,8 +46,8 @@ describe('window cases', () => {
         const win = new window.constructor();
         // $FlowFixMe
         Object.defineProperty(win, 'then', {
-            configurable:true,
-            get:         () => {
+            configurable: true,
+            get:          () => {
                 windowThenAccessed = true;
                 return () => {
                     windowThenCalled = true;

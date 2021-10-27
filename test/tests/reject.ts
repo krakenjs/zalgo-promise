@@ -62,7 +62,7 @@ describe('reject cases', () => {
     });
     it('should create a rejected promise with the constructor and catch the error', () => {
         const error = 'SERIOUS_ERROR';
-        return new ZalgoPromise((resolve, reject) => reject(new Error(error)))
+        return new ZalgoPromise((resolve, reject) => { reject(new Error(error)); })
             .then(() => {
                 throw new Error(`Success handler should not be called`);
             })
@@ -78,7 +78,7 @@ describe('reject cases', () => {
     it('should create a rejected promise asynchronously with the constructor and catch the error', () => {
         const error = 'SERIOUS_ERROR';
         return new ZalgoPromise((resolve, reject) => {
-            setTimeout(() => reject(new Error(error)), 50);
+            setTimeout(() => { reject(new Error(error)); }, 50);
         })
             .then(() => {
                 throw new Error(`Success handler should not be called`);
@@ -241,7 +241,7 @@ describe('reject cases', () => {
         return ZalgoPromise.resolve(value)
             .then(() => {
                 return new ZalgoPromise((resolve, reject) => {
-                    setTimeout(() => reject(new Error(error)), 50);
+                    setTimeout(() => { reject(new Error(error)); }, 50);
                 });
             })
             .then(() => {

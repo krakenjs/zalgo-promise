@@ -105,9 +105,9 @@ describe('promise method cases', () => {
     });
     it('should work with a set of resolved promises in promise.hash', () => {
         return ZalgoPromise.hash({
-            one:  ZalgoPromise.resolve(1),
-            two:  ZalgoPromise.resolve(2),
-            three:ZalgoPromise.resolve(3)
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.resolve(2),
+            three: ZalgoPromise.resolve(3)
         })
             .then(({ one, two, three }) => {
                 if (one !== 1) {
@@ -126,9 +126,9 @@ describe('promise method cases', () => {
     });
     it('should work with a set of resolved values or promises in promise.hash', () => {
         return ZalgoPromise.hash({
-            one:  1,
-            two:  ZalgoPromise.resolve(2),
-            three:3
+            one:   1,
+            two:   ZalgoPromise.resolve(2),
+            three: 3
         })
             .then(({ one, two, three }) => {
                 if (one !== 1) {
@@ -148,9 +148,9 @@ describe('promise method cases', () => {
     it('should reject with any rejected promise from promise.hash', () => {
         const error = 'SERIOUS_ERROR';
         return ZalgoPromise.hash({
-            one:  ZalgoPromise.resolve(1),
-            two:  ZalgoPromise.reject(new Error(error)),
-            three:ZalgoPromise.resolve(3)
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.reject(new Error(error)),
+            three: ZalgoPromise.resolve(3)
         })
             .then(() => {
                 throw new Error(`Expected then to not be called`);
@@ -172,9 +172,9 @@ describe('promise method cases', () => {
         const error = 'SERIOUS_ERROR';
         const error2 = 'SERIOUS_ERROR2';
         return ZalgoPromise.hash({
-            one:  ZalgoPromise.resolve(1),
-            two:  ZalgoPromise.reject(new Error(error)),
-            three:ZalgoPromise.reject(new Error(error2))
+            one:   ZalgoPromise.resolve(1),
+            two:   ZalgoPromise.reject(new Error(error)),
+            three: ZalgoPromise.reject(new Error(error2))
         })
             .then(() => {
                 throw new Error(`Expected then to not be called`);
@@ -297,7 +297,7 @@ describe('promise method cases', () => {
     it('should work with a conditional promise returning method passed to promise.try, calling an external function', () => {
         const value = 'foobar';
 
-        function getValue(): ZalgoPromise<string> {
+        function getValue() : ZalgoPromise<string> {
             return ZalgoPromise.try(() => {
                 return value;
             });
