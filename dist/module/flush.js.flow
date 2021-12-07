@@ -1,0 +1,8 @@
+/* @flow */
+import type { ZalgoPromise } from './promise';
+let activeCount = 0;
+let flushPromise;
+declare function flushActive(): any;
+declare export function startActive(): any;
+declare export function endActive(): any;
+declare export function awaitActive(Zalgo: Class<ZalgoPromise<*>>): ZalgoPromise<void>;

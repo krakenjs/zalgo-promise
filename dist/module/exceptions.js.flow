@@ -1,0 +1,8 @@
+/* @flow */
+import type { ZalgoPromise } from './promise';
+const dispatchedErrors = [];
+const possiblyUnhandledPromiseHandlers: Array<(mixed, promise?: ZalgoPromise<mixed>) => void> = [];
+declare export function dispatchPossiblyUnhandledError<T>(err: mixed, promise: ZalgoPromise<T>): any;
+declare export function onPossiblyUnhandledException(handler: (mixed, promise?: ZalgoPromise<mixed>) => void): {|
+  cancel: () => void
+|};

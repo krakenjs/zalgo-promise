@@ -1,0 +1,42 @@
+/* @flow */
+import { isPromise } from './utils';
+import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
+import { startActive, endActive, awaitActive } from './flush';
+declare export class ZalgoPromise<R: mixed> {
+  resolved: boolean,
+  rejected: boolean,
+  errorHandled: boolean,
+  value: R,
+  error: mixed,
+  handlers: Array<{|
+    promise: ZalgoPromise<*>,
+    onSuccess: void | ((result: R) => mixed),
+    onError: void | ((error: mixed) => mixed),
+  |}>,
+  dispatching: boolean,
+  stack: string,
+  constructor(handler: ?(resolve: (result: R) => void, reject: (error: mixed) => void) => void): any,
+  resolve(result: R): ZalgoPromise<R>,
+  reject(error: mixed): ZalgoPromise<R>,
+  asyncReject(error: mixed): ZalgoPromise<R>,
+  dispatch(): any,
+  then<X, Y>(onSuccess: void | ((result: R) => ZalgoPromise<X> | Y), onError: void | ((error: mixed) => ZalgoPromise<X> | Y)): ZalgoPromise<X | Y>,
+  catch<X, Y>(onError: (error: mixed) => ZalgoPromise<X> | Y): ZalgoPromise<X | Y>,
+  finally(onFinally: () => mixed): ZalgoPromise<R>,
+  timeout(time: number, err: ?Error): ZalgoPromise<R>,
+  toPromise(): Promise<R>,
+  lazy(): ZalgoPromise<R>,
+  static resolve<X, Y>(value: ZalgoPromise<X> | Y): ZalgoPromise<X | Y>,
+  static reject(error: mixed): ZalgoPromise<R>,
+  static asyncReject(error: mixed): ZalgoPromise<R>,
+  static all<X: $ReadOnlyArray<mixed>>(promises: X): ZalgoPromise<$TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>>,
+  static hash<O: Object>(promises: O): ZalgoPromise<$ObjMap<O, <Y>(ZalgoPromise<Y> | Y) => Y>>,
+  static map<T, X>(items: $ReadOnlyArray<T>, method: (T) => ZalgoPromise<X> | X): ZalgoPromise<$ReadOnlyArray<X>>,
+  static onPossiblyUnhandledException(handler: (err: mixed) => void): {|
+    cancel: () => void
+  |},
+  static try<X, Y, C: mixed, A: $ReadOnlyArray<mixed>>(method: (...args: $ReadOnlyArray<mixed>) => ZalgoPromise<X> | Y, context?: C, args?: A): ZalgoPromise<X | Y>,
+  static delay(delay: number): ZalgoPromise<void>,
+  static isPromise(value: mixed): boolean,
+  static flush(): ZalgoPromise<void>,
+}

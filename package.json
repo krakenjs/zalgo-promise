@@ -7,12 +7,13 @@
     "setup": "npm install && npm run flow-typed",
     "lint": "eslint src/ test/ *.js",
     "flow-typed": "flow-typed install",
+    "build:types": "gen-flow-files src --out-dir dist/module",
     "flow": "flow",
     "karma": "cross-env NODE_ENV=test babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/karma start",
     "babel": "babel src/ --out-dir dist/module",
     "webpack": "babel-node --plugins=transform-es2015-modules-commonjs ./node_modules/.bin/webpack --display-optimization-bailout --progress",
     "test": "npm run lint && npm run flow-typed && npm run flow && npm run karma",
-    "build": "npm run test && npm run babel && npm run webpack",
+    "build": "npm run test && npm run babel && npm run webpack && npm run build:types",
     "release": "./publish.sh",
     "release:patch": "./publish.sh patch",
     "release:minor": "./publish.sh minor",
@@ -41,6 +42,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "flow-bin": "0.155.0",
+    "gen-flow-files": "^0.4.11",
     "grumbler-scripts": "^3",
     "mocha": "^4"
   },
