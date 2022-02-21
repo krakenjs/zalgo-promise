@@ -1,4 +1,5 @@
 /* @flow */
+/* eslint no-use-before-define: off */
 
 import { isPromise } from './utils';
 import { onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
@@ -6,19 +7,19 @@ import { startActive, endActive, awaitActive } from './flush';
 
 export class ZalgoPromise<R : mixed> {
 
-    resolved : boolean
-    rejected : boolean
-    errorHandled : boolean
-    value : R
-    error : mixed
+    resolved : boolean;
+    rejected : boolean;
+    errorHandled : boolean;
+    value : R;
+    error : mixed;
     // eslint-disable-next-line flowtype/no-mutable-array
     handlers : Array<{|
         promise : ZalgoPromise<*>,
         onSuccess : void | (result : R) => mixed,
         onError : void | (error : mixed) => mixed
-    |}>
-    dispatching : boolean
-    stack : string
+    |}>;
+    dispatching : boolean;
+    stack : string;
 
     constructor(handler : ?(resolve : (result : R) => void, reject : (error : mixed) => void) => void) {
 
@@ -135,7 +136,7 @@ export class ZalgoPromise<R : mixed> {
         this.reject(error);
         return this;
     }
-    
+
     dispatch() {
 
         const { dispatching, resolved, rejected, handlers } = this;
@@ -340,7 +341,7 @@ export class ZalgoPromise<R : mixed> {
 
         const promise = new ZalgoPromise();
         let count = promises.length;
-        // eslint-disable-next-line no-undef
+        // eslint-disable-next-line no-undef, unicorn/prefer-spread
         const results = ([] : $TupleMap<X, <Y>(ZalgoPromise<Y> | Y) => Y>).slice();
 
         if (!count) {
@@ -402,7 +403,7 @@ export class ZalgoPromise<R : mixed> {
                 }
             }
         }
-        
+
         return ZalgoPromise.all(awaitPromises).then(() => result);
     }
 
@@ -424,7 +425,7 @@ export class ZalgoPromise<R : mixed> {
         let result : ZalgoPromise<X> | Y;
 
         startActive();
-        
+
         try {
             result = method.apply(context, args || []);
         } catch (err) {
