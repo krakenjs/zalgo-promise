@@ -1,5 +1,5 @@
 {
-  "name": "zalgo-promise",
+  "name": "@krakenjs/zalgo-promise",
   "version": "1.0.48",
   "description": "Javascript module template.",
   "main": "index.js",
