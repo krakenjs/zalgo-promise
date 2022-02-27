@@ -1,3 +1,4 @@
+/* eslint no-use-before-define: off */
 import { isPromise as _isPromise } from './utils';
 import { onPossiblyUnhandledException as _onPossiblyUnhandledException, dispatchPossiblyUnhandledError } from './exceptions';
 import { startActive, endActive, awaitActive } from './flush';
@@ -318,7 +319,7 @@ export var ZalgoPromise = /*#__PURE__*/function () {
   ZalgoPromise.all = function all(promises) {
     // eslint-disable-line no-undef
     var promise = new ZalgoPromise();
-    var count = promises.length; // eslint-disable-next-line no-undef
+    var count = promises.length; // eslint-disable-next-line no-undef, unicorn/prefer-spread
 
     var results = [].slice();
 
