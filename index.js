@@ -1,4 +1,2 @@
-/* @flow */
-
-// eslint-disable-next-line import/no-commonjs
+/* eslint flowtype/require-valid-file-annotation: off, import/no-commonjs: off */
 module.exports = require('./dist/zalgo-promise');
