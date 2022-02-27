@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/krakenjs/zalgo-promise/compare/v2.0.0...v2.0.1) (2022-02-27)
+
+
+* update npmrc to proper registry ([7610408](https://github.com/krakenjs/zalgo-promise/commit/76104089c557f77bd2e484dde940a7fc8558b6e2))
+
 ## [2.0.0](https://github.com/krakenjs/zalgo-promise/compare/v1.0.48...v2.0.0) (2022-02-27)
 
 
