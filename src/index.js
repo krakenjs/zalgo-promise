@@ -1,3 +1,3 @@
 /* @flow */
 
-export { ZalgoPromise } from './promise';
+export { ZalgoPromise } from "./promise";

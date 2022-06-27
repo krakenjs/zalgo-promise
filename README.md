@@ -1,5 +1,4 @@
-zalgo-promise
--------------
+## zalgo-promise
 
 [![build status][build-badge]][build]
 [![code coverage][coverage-badge]][coverage]
@@ -50,18 +49,18 @@ new ZalgoPromise( ... );
 Promises are asynchronous by default. This means that:
 
 ```javascript
-Promise.resolve('foo').then(function(result) {
-    console.log(result);
+Promise.resolve("foo").then(function (result) {
+  console.log(result);
 });
 
-console.log('bar');
+console.log("bar");
 ```
 
 Will log:
 
 ```javascript
-bar
-foo
+bar;
+foo;
 ```
 
 Even if we don't do anything explicitly asynchronous in the promise, it becomes asynchronous by default.
@@ -79,21 +78,21 @@ In this case, any promises you run in the unfocused window will try to run `setT
 ZalgoPromise attempts to resolve this problem by introducing promises which are not asynchronous by default, only if you explicitly do something asynchronous like an ajax call, a post-message, a setTimeout or something else.
 
 ```javascript
-var promise = new ZalgoPromise(function(resolve) {
-    resolve();
+var promise = new ZalgoPromise(function (resolve) {
+  resolve();
 });
 
-promise.then(function() {
-    // This function will be called *synchronously*
+promise.then(function () {
+  // This function will be called *synchronously*
 });
 ```
 
 ```javascript
-var promise = new ZalgoPromise(function(resolve) {
-    setTimeout(resolve, 100);
+var promise = new ZalgoPromise(function (resolve) {
+  setTimeout(resolve, 100);
 });
 
-promise.then(function() {
-    // This function will be called *asynchronously*
+promise.then(function () {
+  // This function will be called *asynchronously*
 });
 ```
