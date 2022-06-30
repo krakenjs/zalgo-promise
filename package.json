@@ -3,6 +3,7 @@
   "version": "2.0.1",
   "description": "Javascript module template.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "setup": "npm install && npm run flow-typed",
     "lint": "eslint src/ test/ *.js",
@@ -78,7 +79,8 @@
   ],
   "files": [
     "dist/",
-    "src/"
+    "src/",
+    "index.d.ts"
   ],
   "readmeFilename": "README.md",
   "devDependencies": {
