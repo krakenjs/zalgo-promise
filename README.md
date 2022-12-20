@@ -4,7 +4,7 @@
 [![code coverage][coverage-badge]][coverage]
 [![npm version][version-badge]][package]
 
-[build-badge]: https://img.shields.io/github/workflow/status/krakenjs/zalgo-promise/build?logo=github&style=flat-square
+[build-badge]: https://img.shields.io/github/actions/workflow/status/krakenjs/zalgo-promise/main.yml?branch=main&logo=github&style=flat-square
 [build]: https://github.com/krakenjs/zalgo-promise/actions?query=workflow%3Abuild
 [coverage-badge]: https://img.shields.io/codecov/c/github/krakenjs/zalgo-promise.svg?style=flat-square
 [coverage]: https://codecov.io/github/krakenjs/zalgo-promise/
